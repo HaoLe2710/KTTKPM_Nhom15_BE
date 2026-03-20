@@ -2,10 +2,11 @@ package fit.iuh.kttkpm_nhom15_be.catalog.infrastructure.facades;
 
 import fit.iuh.kttkpm_nhom15_be.carts.application.dto.CartItemDTO;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.interfaces.CatalogFacade;
+import fit.iuh.kttkpm_nhom15_be.orders.application.dto.StockRestoreItem;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.VariantSnapshot;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,7 @@ import java.util.Map;
  * Stub implementation of CatalogFacade.
  * TODO: Replace with real JPA-backed implementation querying variants, options, and media tables.
  */
+@Slf4j
 @Component
 public class CatalogFacadeImpl implements CatalogFacade {
 
@@ -30,5 +32,14 @@ public class CatalogFacadeImpl implements CatalogFacade {
       .attributes(Map.of("Màu sắc", "Đỏ", "Dung tích", "50ml"))
       .build()
     ).toList();
+  }
+
+  @Override
+  public void restoreStock(List<StockRestoreItem> items) {
+    // Stub: log và không làm gì — chờ tích hợp DB thật
+    // TODO: UPDATE variants SET stock_quantity = stock_quantity + :qty WHERE id = :variantId
+    items.forEach(item ->
+      log.info("[STUB] Hoàn lại tồn kho: variantId={}, quantity={}", item.variantId(), item.quantity())
+    );
   }
 }
