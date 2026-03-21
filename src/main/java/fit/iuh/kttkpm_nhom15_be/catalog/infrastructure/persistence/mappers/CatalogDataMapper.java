@@ -16,8 +16,13 @@ public interface CatalogDataMapper {
 
     // Auto map các Entity con khác nếu được gọi trực tiếp
     ProductTypeJpaEntity toJpaEntity(ProductType domain);
+    ProductType toDomainModel(ProductTypeJpaEntity entity);
+
     OptionJpaEntity toJpaEntity(Option domain);
+    Option toDomainModel(OptionJpaEntity entity);
+
     OptionValueJpaEntity toJpaEntity(OptionValue domain);
+    OptionValue toDomainModel(OptionValueJpaEntity entity);
 
     @AfterMapping
     default void linkProductChildren(@MappingTarget ProductJpaEntity productJpa) {

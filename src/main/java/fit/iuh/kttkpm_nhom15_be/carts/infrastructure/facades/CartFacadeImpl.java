@@ -3,45 +3,58 @@ package fit.iuh.kttkpm_nhom15_be.carts.infrastructure.facades;
 import fit.iuh.kttkpm_nhom15_be.carts.application.dto.CartDTO;
 import fit.iuh.kttkpm_nhom15_be.carts.application.dto.CartItemDTO;
 import fit.iuh.kttkpm_nhom15_be.carts.application.interfaces.CartFacade;
+import fit.iuh.kttkpm_nhom15_be.carts.domain.models.Cart;
+import fit.iuh.kttkpm_nhom15_be.carts.domain.models.CartStatus;
+import fit.iuh.kttkpm_nhom15_be.carts.domain.repositories.CartRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Stub implementation of CartFacade.
- * TODO: Replace with real JPA-backed implementation that queries the carts module DB.
+ * Implementation of CartFacade interacting with the real Cart Database.
  */
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class CartFacadeImpl implements CartFacade {
 
-  @Override
-  public CartDTO getActiveCart(String userId) {
-    // Stub: trả về giỏ hàng mẫu với 1 item để test flow
-    // TODO: truy vấn bảng carts + cart_items theo userId và status = 'ACTIVE'
-    CartItemDTO item = CartItemDTO.builder()
-      .variantId("variant-demo-001")
-      .quantity(2)
-      .price(new BigDecimal("150000"))
-      .build();
+  private final CartRepository cartRepository;
 
-    CartDTO cart = CartDTO.builder()
-      .cartId("cart-demo-001")
-      .userId(userId)
-      .items(List.of(item))
-      .build();
+  @Override
+  @Transactional(readOnly = true)
+  public CartDTO getActiveCart(String userId) {
+    Cart cart = cartRepository.findActiveCart(userId)
+      .orElseThrow(() -> new IllegalStateException("Giỏ hàng của người dùng '" + userId + "' đang trống hoặc không tồn tại."));
 
     if (cart.getItems() == null || cart.getItems().isEmpty()) {
       throw new IllegalStateException("Giỏ hàng của người dùng '" + userId + "' đang trống");
     }
 
-    return cart;
+    List<CartItemDTO> itemDTOs = cart.getItems().stream()
+      .map(item -> CartItemDTO.builder()
+        .variantId(item.getVariantId())
+        .quantity(item.getQuantity())
+        .price(item.getUnitPrice())
+        .build())
+      .toList();
+
+    return CartDTO.builder()
+      .cartId(cart.getId())
+      .userId(cart.getUserId())
+      .items(itemDTOs)
+      .build();
   }
 
   @Override
+  @Transactional
   public void clearCart(String userId) {
-    // Stub: log xóa giỏ hàng
-    // TODO: cập nhật status bản ghi cart thành 'CLEARED' hoặc xóa cart_items
-    System.out.println("[CartFacadeImpl] Đã xóa giỏ hàng của user: " + userId);
+    cartRepository.findActiveCart(userId).ifPresent(cart -> {
+      log.info("Updating cart {} status from ACTIVE to CHECKED_OUT for user {}", cart.getId(), userId);
+      cart.setStatus(CartStatus.CHECKED_OUT);
+      cartRepository.save(cart);
+    });
   }
 }
