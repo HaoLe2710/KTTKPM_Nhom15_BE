@@ -16,4 +16,11 @@ public interface OrderDataMapper {
     default void linkItems(@MappingTarget OrderJpaEntity orderJpa) {
         if (orderJpa.getItems() != null) orderJpa.getItems().forEach(i -> i.setOrder(orderJpa));
     }
+
+    @AfterMapping
+    default void initOrderStateBehavior(@MappingTarget Order orderDomain) {
+        if (orderDomain != null) {
+            orderDomain.initBehavior();
+        }
+    }
 }
