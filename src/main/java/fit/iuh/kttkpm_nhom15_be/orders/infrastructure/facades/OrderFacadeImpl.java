@@ -21,4 +21,10 @@ public class OrderFacadeImpl implements OrderFacade {
         log.info("Fetching order statistics between {} and {}", startDate, endDate);
         return orderRepository.getOrderStatistics(startDate, endDate);
     }
+
+    @Override
+    public boolean hasPromotionBeenUsed(String promotionId) {
+        log.info("Checking whether promotion {} has been used by any order", promotionId);
+        return orderRepository.existsByPromotionId(promotionId);
+    }
 }

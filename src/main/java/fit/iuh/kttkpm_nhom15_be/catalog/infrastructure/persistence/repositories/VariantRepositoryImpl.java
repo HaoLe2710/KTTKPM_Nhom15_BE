@@ -14,6 +14,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.math.BigDecimal;
+import java.util.List;
 
 // 1. Interface Spring Data JPA thông thường
 interface JpaVariantRepository extends JpaRepository<VariantJpaEntity, String> {
@@ -21,6 +22,9 @@ interface JpaVariantRepository extends JpaRepository<VariantJpaEntity, String> {
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE VariantJpaEntity v SET v.stockQuantity = v.stockQuantity + :addedStock, v.price = :price WHERE v.id = :id")
     int applyPriceAndStockPatch(@Param("id") String id, @Param("price") BigDecimal price, @Param("addedStock") int addedStock);
+
+    @Query("SELECT COUNT(v) FROM VariantJpaEntity v WHERE v.id IN :ids")
+    long countExistingByIds(@Param("ids") List<String> ids);
 }
 
 // 2. Lớp Implement interface của tầng Domain
@@ -46,5 +50,10 @@ public class VariantRepositoryImpl implements VariantRepository {
   @Override
   public void patchPriceAndStock(String id, java.math.BigDecimal price, int addedStock) {
       jpaVariantRepository.applyPriceAndStockPatch(id, price, addedStock);
+  }
+
+  @Override
+  public long countExistingByIds(List<String> ids) {
+      return jpaVariantRepository.countExistingByIds(ids);
   }
 }

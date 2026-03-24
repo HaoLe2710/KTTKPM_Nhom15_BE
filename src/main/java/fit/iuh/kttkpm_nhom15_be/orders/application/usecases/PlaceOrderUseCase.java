@@ -8,8 +8,15 @@ import fit.iuh.kttkpm_nhom15_be.orders.application.commands.PlaceOrderCommand;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.VariantSnapshot;
 import fit.iuh.kttkpm_nhom15_be.orders.application.events.OrderPlacedEvent;
 import fit.iuh.kttkpm_nhom15_be.orders.application.results.PlaceOrderResult;
-import fit.iuh.kttkpm_nhom15_be.orders.domain.models.*;
+import fit.iuh.kttkpm_nhom15_be.orders.domain.models.Order;
+import fit.iuh.kttkpm_nhom15_be.orders.domain.models.OrderItem;
+import fit.iuh.kttkpm_nhom15_be.orders.domain.models.OrderStatus;
+import fit.iuh.kttkpm_nhom15_be.orders.domain.models.PaymentStatus;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.repositories.OrderRepository;
+import fit.iuh.kttkpm_nhom15_be.promotions.application.dto.AppliedPromotionDTO;
+import fit.iuh.kttkpm_nhom15_be.promotions.application.dto.OrderCartDTO;
+import fit.iuh.kttkpm_nhom15_be.promotions.application.dto.OrderCartItemDTO;
+import fit.iuh.kttkpm_nhom15_be.promotions.application.interfaces.PromotionFacade;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -18,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,25 +35,24 @@ public class PlaceOrderUseCase {
   private final OrderRepository orderRepository;
   private final CartFacade cartFacade;
   private final CatalogFacade catalogFacade;
+  private final PromotionFacade promotionFacade;
   private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
   public PlaceOrderResult execute(PlaceOrderCommand command) {
-    // 1. Kiểm tra giỏ hàng (CartFacade ném EmptyCartException nếu rỗng)
     CartDTO cart = cartFacade.getActiveCart(command.getUserId());
 
-    // 2. Kiểm tra tồn kho & lấy snapshot từ Catalog module
     List<CartItemDTO> cartItems = cart.getItems();
     List<VariantSnapshot> snapshots = catalogFacade.validateAndGetSnapshots(cartItems);
 
-    // Tạo lookup map: variantId → VariantSnapshot (để map nhanh O(n))
     Map<String, VariantSnapshot> snapshotMap = snapshots.stream()
       .collect(Collectors.toMap(VariantSnapshot::getVariantId, Function.identity()));
 
-    // 3. Xây dựng OrderItem — ghép CartItem + VariantSnapshot
     List<OrderItem> orderItems = cartItems.stream().map(cartItem -> {
       VariantSnapshot snap = snapshotMap.get(cartItem.getVariantId());
-      BigDecimal lineTotal = cartItem.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+      BigDecimal unitPrice = snap != null ? snap.getCurrentPrice() : cartItem.getPrice();
+      BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+
       return OrderItem.builder()
         .variantId(cartItem.getVariantId())
         .sku(snap != null ? snap.getSku() : null)
@@ -55,20 +60,20 @@ public class PlaceOrderUseCase {
         .imageUrl(snap != null ? snap.getImageUrl() : null)
         .optionsSnapshot(snap != null ? snap.getAttributes() : null)
         .quantity(cartItem.getQuantity())
-        .unitPrice(cartItem.getPrice())
+        .unitPrice(unitPrice)
         .lineTotal(lineTotal)
         .build();
     }).toList();
 
-    // 4. Tính toán tiền
     BigDecimal subtotal = orderItems.stream()
       .map(OrderItem::getLineTotal)
       .reduce(BigDecimal.ZERO, BigDecimal::add);
-    BigDecimal discount = BigDecimal.ZERO; // TODO: coupon/promotion logic
+
+    AppliedPromotionDTO appliedPromotion = resolvePromotion(command, subtotal, orderItems);
+    BigDecimal discount = appliedPromotion != null ? appliedPromotion.discountAmount() : BigDecimal.ZERO;
     BigDecimal shipping = command.getShippingFee();
     BigDecimal total = subtotal.subtract(discount).add(shipping);
 
-    // 5. Khởi tạo Order domain model
     Order newOrder = Order.builder()
       .orderNo(generateOrderNo())
       .userId(command.getUserId())
@@ -76,6 +81,8 @@ public class PlaceOrderUseCase {
       .discountAmount(discount)
       .shippingFee(shipping)
       .totalAmount(total)
+      .promotionId(appliedPromotion != null ? appliedPromotion.promotionId() : null)
+      .promotionCode(appliedPromotion != null ? appliedPromotion.promotionCode() : null)
       .status(OrderStatus.CREATED)
       .paymentMethod(command.getPaymentMethod())
       .paymentStatus(PaymentStatus.UNPAID)
@@ -90,16 +97,16 @@ public class PlaceOrderUseCase {
       .items(orderItems)
       .build();
 
-    // 6. Kích hoạt State Pattern (gán CreatedState)
     newOrder.initBehavior();
 
-    // 7. Lưu vào DB
     Order savedOrder = orderRepository.save(newOrder);
 
-    // 8. Dọn giỏ hàng
+    if (appliedPromotion != null) {
+      promotionFacade.markPromotionUsed(appliedPromotion.promotionId());
+    }
+
     cartFacade.clearCart(command.getUserId());
 
-    // 9. Publish domain event — các module khác (payments, notifications) subscribe tại đây
     eventPublisher.publishEvent(new OrderPlacedEvent(
       savedOrder.getId(),
       savedOrder.getOrderNo(),
@@ -111,6 +118,20 @@ public class PlaceOrderUseCase {
       .orderId(savedOrder.getId())
       .orderNo(savedOrder.getOrderNo())
       .build();
+  }
+
+  private AppliedPromotionDTO resolvePromotion(PlaceOrderCommand command, BigDecimal subtotal, List<OrderItem> orderItems) {
+    if (command.getPromotionCode() == null || command.getPromotionCode().isBlank()) {
+      return null;
+    }
+
+    OrderCartDTO promotionCart = new OrderCartDTO(
+      subtotal,
+      orderItems.stream()
+        .map(item -> new OrderCartItemDTO(item.getVariantId(), item.getQuantity(), item.getUnitPrice(), item.getLineTotal()))
+        .toList()
+    );
+    return promotionFacade.validateAndCalculate(command.getPromotionCode(), promotionCart);
   }
 
   private String generateOrderNo() {

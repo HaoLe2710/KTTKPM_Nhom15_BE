@@ -20,6 +20,8 @@ public class PlaceOrderRequest {
   @NotBlank(message = "userId không được để trống")
   private String userId;
 
+  private String promotionCode;
+
   // Thông tin nhận hàng
   @NotBlank(message = "Tên người nhận không được để trống")
   private String shipFullName;
