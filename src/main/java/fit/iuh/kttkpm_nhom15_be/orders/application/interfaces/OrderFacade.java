@@ -5,5 +5,6 @@ import java.time.LocalDateTime;
 
 public interface OrderFacade {
     RawOrderStatsDTO getOrderStatistics(LocalDateTime startDate, LocalDateTime endDate);
+    boolean hasPromotionBeenUsed(String promotionId);
     boolean hasOrdersByUser(String userId);
 }

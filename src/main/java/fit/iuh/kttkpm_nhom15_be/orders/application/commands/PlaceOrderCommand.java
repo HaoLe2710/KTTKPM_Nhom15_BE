@@ -15,6 +15,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class PlaceOrderCommand {
     private String userId;
+    private String promotionCode;
     
     // Thông tin giao nhận
     private String shipFullName;

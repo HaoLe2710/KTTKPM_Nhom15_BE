@@ -10,6 +10,6 @@ public interface OrderRepository {
     Order save(Order order);
     Optional<Order> findById(String id);
     RawOrderStatsDTO getOrderStatistics(LocalDateTime startDate, LocalDateTime endDate);
-
+    boolean existsByPromotionId(String promotionId);
     boolean hasOrdersByUser(String userId);
 }

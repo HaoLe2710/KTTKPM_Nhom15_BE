@@ -17,4 +17,5 @@ public interface CatalogFacade {
   // Kiểm tra tồn kho và lấy giá cho AddToCartUseCase
   // Ném ProductUnavailableException nếu không đủ hàng
   VariantInfoDTO checkAvailabilityAndPrice(String variantId, int quantity);
+  boolean checkVariantsExist(List<String> variantIds);
 }

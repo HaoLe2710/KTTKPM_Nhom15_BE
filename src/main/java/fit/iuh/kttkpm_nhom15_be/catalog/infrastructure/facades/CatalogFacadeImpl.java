@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Implementation of CatalogFacade interacting with the Catalog Domain via Repositories.
@@ -114,5 +115,25 @@ public class CatalogFacadeImpl implements CatalogFacade {
       .name(productName + (variant.getSku() != null ? " (" + variant.getSku() + ")" : ""))
       .price(variant.getPrice())
       .build();
+  }
+
+  @Override
+  public boolean checkVariantsExist(List<String> variantIds) {
+    if (variantIds == null || variantIds.isEmpty()) {
+      return false;
+    }
+
+    List<String> normalizedIds = variantIds.stream()
+      .filter(Objects::nonNull)
+      .map(String::trim)
+      .filter(id -> !id.isEmpty())
+      .distinct()
+      .toList();
+
+    if (normalizedIds.isEmpty()) {
+      return false;
+    }
+
+    return variantRepository.countExistingByIds(normalizedIds) == normalizedIds.size();
   }
 }

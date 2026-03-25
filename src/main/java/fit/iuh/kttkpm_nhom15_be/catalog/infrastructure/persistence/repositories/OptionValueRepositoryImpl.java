@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 // 1. Interface Spring Data JPA thông thường
 interface JpaOptionValueRepository extends JpaRepository<OptionValueJpaEntity, String> {
@@ -23,8 +25,21 @@ public class OptionValueRepositoryImpl implements OptionValueRepository {
   private final CatalogDataMapper catalogDataMapper;
 
   @Override
+  public OptionValue save(OptionValue optionValue) {
+      OptionValueJpaEntity entity = catalogDataMapper.toJpaEntity(optionValue);
+      return catalogDataMapper.toDomainModel(jpaOptionValueRepository.save(entity));
+  }
+
+  @Override
   public Optional<OptionValue> findById(String id) {
     return jpaOptionValueRepository.findById(id)
       .map(catalogDataMapper::toDomainModel);
+  }
+
+  @Override
+  public List<OptionValue> findAll() {
+      return jpaOptionValueRepository.findAll().stream()
+              .map(catalogDataMapper::toDomainModel)
+              .collect(Collectors.toList());
   }
 }

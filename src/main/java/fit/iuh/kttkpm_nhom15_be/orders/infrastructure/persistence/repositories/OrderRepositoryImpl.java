@@ -29,6 +29,7 @@ interface JpaOrderRepository extends JpaRepository<OrderJpaEntity, String> {
                    "ORDER BY statDate ASC", 
            nativeQuery = true)
     List<Object[]> getOrderStatistics(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
+    boolean existsByPromotionId(String promotionId);
     boolean existsByUserId(String userId);
 }
 
@@ -70,6 +71,12 @@ public class OrderRepositoryImpl implements OrderRepository {
         }).toList();
         return RawOrderStatsDTO.builder().dailyStats(dailyStats).build();
     }
+
+    @Override
+    public boolean existsByPromotionId(String promotionId) {
+        return jpaOrderRepository.existsByPromotionId(promotionId);
+    }
+  
     @Override
     public boolean hasOrdersByUser(String userId) {
         return jpaOrderRepository.existsByUserId(userId);

@@ -24,6 +24,12 @@ public interface CatalogDataMapper {
     OptionValueJpaEntity toJpaEntity(OptionValue domain);
     OptionValue toDomainModel(OptionValueJpaEntity entity);
 
+    VariantOptionJpaEntity toJpaEntity(VariantOption domain);
+    VariantOption toDomainModel(VariantOptionJpaEntity entity);
+
+    MediaJpaEntity toJpaEntity(Media domain);
+    Media toDomainModel(MediaJpaEntity entity);
+
     @AfterMapping
     default void linkProductChildren(@MappingTarget ProductJpaEntity productJpa) {
         if (productJpa.getVariants() != null) productJpa.getVariants().forEach(v -> v.setProduct(productJpa));
