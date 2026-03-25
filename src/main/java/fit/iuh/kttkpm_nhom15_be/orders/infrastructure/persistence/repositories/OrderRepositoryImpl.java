@@ -29,8 +29,8 @@ interface JpaOrderRepository extends JpaRepository<OrderJpaEntity, String> {
                    "ORDER BY statDate ASC", 
            nativeQuery = true)
     List<Object[]> getOrderStatistics(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
-
     boolean existsByPromotionId(String promotionId);
+    boolean existsByUserId(String userId);
 }
 
 // 2. Lớp Implement interface của tầng Domain
@@ -75,5 +75,10 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public boolean existsByPromotionId(String promotionId) {
         return jpaOrderRepository.existsByPromotionId(promotionId);
+    }
+  
+    @Override
+    public boolean hasOrdersByUser(String userId) {
+        return jpaOrderRepository.existsByUserId(userId);
     }
 }

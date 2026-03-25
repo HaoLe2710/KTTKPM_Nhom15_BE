@@ -11,4 +11,5 @@ public interface OrderRepository {
     Optional<Order> findById(String id);
     RawOrderStatsDTO getOrderStatistics(LocalDateTime startDate, LocalDateTime endDate);
     boolean existsByPromotionId(String promotionId);
+    boolean hasOrdersByUser(String userId);
 }
