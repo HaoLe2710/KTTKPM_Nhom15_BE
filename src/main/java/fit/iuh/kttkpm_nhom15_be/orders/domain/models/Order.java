@@ -21,6 +21,8 @@ public class Order {
   private BigDecimal discountAmount;
   private BigDecimal shippingFee;
   private BigDecimal totalAmount;
+  private String promotionId;
+  private String promotionCode;
   private OrderStatus status;
   private PaymentMethod paymentMethod;
   private PaymentStatus paymentStatus;

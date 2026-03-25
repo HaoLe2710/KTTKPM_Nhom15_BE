@@ -10,11 +10,17 @@ import fit.iuh.kttkpm_nhom15_be.orders.domain.exceptions.InvalidOrderStateTransi
 import fit.iuh.kttkpm_nhom15_be.orders.domain.exceptions.OrderNotFoundException;
 import fit.iuh.kttkpm_nhom15_be.orders.presentation.requests.CancelOrderRequest;
 import fit.iuh.kttkpm_nhom15_be.orders.presentation.requests.PlaceOrderRequest;
+import fit.iuh.kttkpm_nhom15_be.promotions.domain.exceptions.PromotionNotApplicableException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -26,14 +32,11 @@ public class OrderController {
   private final PlaceOrderUseCase placeOrderUseCase;
   private final CancelOrderUseCase cancelOrderUseCase;
 
-  /**
-   * POST /api/v1/orders
-   * Đặt hàng: lấy giỏ hàng, kiểm tra tồn kho, tạo Order với State Pattern, publish event.
-   */
   @PostMapping
   public ResponseEntity<PlaceOrderResult> placeOrder(@Valid @RequestBody PlaceOrderRequest request) {
     PlaceOrderCommand command = PlaceOrderCommand.builder()
       .userId(request.getUserId())
+      .promotionCode(request.getPromotionCode())
       .shipFullName(request.getShipFullName())
       .shipPhone(request.getShipPhone())
       .shipAddress(request.getShipAddress())
@@ -50,10 +53,6 @@ public class OrderController {
     return ResponseEntity.status(HttpStatus.CREATED).body(result);
   }
 
-  /**
-   * POST /api/v1/orders/{orderId}/cancel
-   * Hủy đơn hàng: áp dụng State Pattern, hoàn tồn kho, publish OrderCancelledEvent.
-   */
   @PostMapping("/{orderId}/cancel")
   public ResponseEntity<CancelOrderResult> cancelOrder(
     @PathVariable String orderId,
@@ -64,10 +63,8 @@ public class OrderController {
     return ResponseEntity.ok(result);
   }
 
-  // --- Exception Handlers ---
-
-  @ExceptionHandler(InvalidOrderStateTransitionException.class)
-  public ResponseEntity<Map<String, String>> handleInvalidStateTransition(InvalidOrderStateTransitionException ex) {
+  @ExceptionHandler({InvalidOrderStateTransitionException.class, PromotionNotApplicableException.class})
+  public ResponseEntity<Map<String, String>> handleBadRequest(RuntimeException ex) {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
       Map.of("error", ex.getMessage())
     );
@@ -80,4 +77,3 @@ public class OrderController {
     );
   }
 }
-
