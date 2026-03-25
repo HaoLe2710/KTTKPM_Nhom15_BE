@@ -1,6 +1,5 @@
 package fit.iuh.kttkpm_nhom15_be.chat.infrastructure.persistence.entities;
 
-import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.persistence.BaseJpaEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,13 +16,23 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class ChatRoomJpaEntity {
-    @Id @GeneratedValue(strategy = GenerationType.UUID) private String id;
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
     @CreationTimestamp
-    @Column(updatable = false) private LocalDateTime createdAt;
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    private String userId; private String staffId;
+    @Column(name = "user_id")
+    private String userId;
+
+    private String staffId;
+
+    @Column(name = "is_closed")
+    private boolean isClosed;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ChatMessageJpaEntity> messages;

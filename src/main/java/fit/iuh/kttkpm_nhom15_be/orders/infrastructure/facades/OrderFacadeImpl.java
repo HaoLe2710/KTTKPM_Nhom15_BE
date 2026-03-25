@@ -21,4 +21,9 @@ public class OrderFacadeImpl implements OrderFacade {
         log.info("Fetching order statistics between {} and {}", startDate, endDate);
         return orderRepository.getOrderStatistics(startDate, endDate);
     }
+
+    @Override
+    public boolean hasOrdersByUser(String userId) {
+        return orderRepository.hasOrdersByUser(userId);
+    }
 }
