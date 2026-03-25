@@ -26,6 +26,8 @@ public class OrderFacadeImpl implements OrderFacade {
     public boolean hasPromotionBeenUsed(String promotionId) {
         log.info("Checking whether promotion {} has been used by any order", promotionId);
         return orderRepository.existsByPromotionId(promotionId);
+    }
+
     public boolean hasOrdersByUser(String userId) {
         return orderRepository.hasOrdersByUser(userId);
     }
