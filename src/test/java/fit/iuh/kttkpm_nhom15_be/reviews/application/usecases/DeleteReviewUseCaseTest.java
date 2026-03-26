@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.reviews.application.usecases;
 
 import fit.iuh.kttkpm_nhom15_be.reviews.application.commands.DeleteReviewCommand;
+import fit.iuh.kttkpm_nhom15_be.reviews.application.events.ProductReviewChangedEvent;
 import fit.iuh.kttkpm_nhom15_be.reviews.application.events.ReviewDeletedEvent;
 import fit.iuh.kttkpm_nhom15_be.reviews.application.results.DeleteReviewResult;
 import fit.iuh.kttkpm_nhom15_be.reviews.domain.exceptions.ReviewNotFoundException;
@@ -40,6 +41,7 @@ class DeleteReviewUseCaseTest {
 
         verify(reviewRepository).deleteById("review-1");
         verify(eventPublisher).publishEvent(eventCaptor.capture());
+        verify(eventPublisher).publishEvent(any(ProductReviewChangedEvent.class));
 
         assertEquals("review-1", result.getReviewId());
         assertEquals("Đánh giá đã được xóa thành công", result.getMessage());
@@ -104,6 +106,7 @@ class DeleteReviewUseCaseTest {
 
         ArgumentCaptor<ReviewDeletedEvent> eventCaptor = ArgumentCaptor.forClass(ReviewDeletedEvent.class);
         verify(eventPublisher).publishEvent(eventCaptor.capture());
+        verify(eventPublisher).publishEvent(any(ProductReviewChangedEvent.class));
 
         Review deletedReviewData = eventCaptor.getValue().getReview();
         assertEquals("review-123", deletedReviewData.getId());
@@ -130,6 +133,7 @@ class DeleteReviewUseCaseTest {
         verify(reviewRepository).deleteById("review-1");
         // Verify event was published
         verify(eventPublisher).publishEvent(any(ReviewDeletedEvent.class));
+        verify(eventPublisher).publishEvent(any(ProductReviewChangedEvent.class));
     }
 
     private Review deletableReview(String reviewId, String userId) {

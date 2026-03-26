@@ -8,11 +8,13 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.VariantOption;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.ProductRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.VariantOptionRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.VariantRepository;
+import fit.iuh.kttkpm_nhom15_be.search.application.usecases.query.BrowseLegacyProductsUseCase;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -34,7 +36,8 @@ class CatalogProductUseCaseTest {
         ProductRepository productRepository = Mockito.mock(ProductRepository.class);
         VariantRepository variantRepository = Mockito.mock(VariantRepository.class);
         VariantOptionRepository variantOptionRepository = Mockito.mock(VariantOptionRepository.class);
-        CreateCompositeProductUseCase useCase = new CreateCompositeProductUseCase(productRepository, variantRepository, variantOptionRepository);
+        ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+        CreateCompositeProductUseCase useCase = new CreateCompositeProductUseCase(productRepository, variantRepository, variantOptionRepository, eventPublisher);
 
         when(productRepository.save(any(Product.class))).thenAnswer(invocation -> {
             Product product = invocation.getArgument(0);
@@ -96,13 +99,13 @@ class CatalogProductUseCaseTest {
 
     @Test
     void listProductsSummaryDelegatesFiltersAndPagination() {
-        ProductRepository productRepository = Mockito.mock(ProductRepository.class);
-        ListProductsSummaryUseCase useCase = new ListProductsSummaryUseCase(productRepository);
+        BrowseLegacyProductsUseCase browseLegacyProductsUseCase = Mockito.mock(BrowseLegacyProductsUseCase.class);
+        ListProductsSummaryUseCase useCase = new ListProductsSummaryUseCase(browseLegacyProductsUseCase);
         Page<ProductSummaryDTO> expectedPage = new PageImpl<>(List.of(
             ProductSummaryDTO.builder().id("product-1").name("Running Shoe").lowestPrice(new BigDecimal("99.99")).build()
         ));
 
-        when(productRepository.findProductsSummary("type-1", new BigDecimal("10.00"), new BigDecimal("100.00"), 2, 5))
+        when(browseLegacyProductsUseCase.execute("type-1", new BigDecimal("10.00"), new BigDecimal("100.00"), 2, 5))
             .thenReturn(expectedPage);
 
         Page<ProductSummaryDTO> result = useCase.execute("type-1", new BigDecimal("10.00"), new BigDecimal("100.00"), 2, 5);
@@ -113,12 +116,13 @@ class CatalogProductUseCaseTest {
     @Test
     void updateVariantPricingPatchesPriceAndStockWhenPriceIsPresent() {
         VariantRepository variantRepository = Mockito.mock(VariantRepository.class);
-        UpdateVariantPricingUseCase useCase = new UpdateVariantPricingUseCase(variantRepository);
+        ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+        UpdateVariantPricingUseCase useCase = new UpdateVariantPricingUseCase(variantRepository, eventPublisher);
         UpdateVariantPricingUseCase.PatchVariantRequest request = new UpdateVariantPricingUseCase.PatchVariantRequest();
         request.setPrice(new BigDecimal("149.99"));
         request.setAddedStock(7);
 
-        useCase.execute("variant-1", request);
+        useCase.execute("product-1", "variant-1", request);
 
         verify(variantRepository).patchPriceAndStock("variant-1", new BigDecimal("149.99"), 7);
     }
@@ -126,11 +130,12 @@ class CatalogProductUseCaseTest {
     @Test
     void updateVariantPricingRejectsRequestsWithoutExplicitPrice() {
         VariantRepository variantRepository = Mockito.mock(VariantRepository.class);
-        UpdateVariantPricingUseCase useCase = new UpdateVariantPricingUseCase(variantRepository);
+        ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+        UpdateVariantPricingUseCase useCase = new UpdateVariantPricingUseCase(variantRepository, eventPublisher);
         UpdateVariantPricingUseCase.PatchVariantRequest request = new UpdateVariantPricingUseCase.PatchVariantRequest();
         request.setAddedStock(7);
 
-        assertThrows(IllegalArgumentException.class, () -> useCase.execute("variant-1", request));
+        assertThrows(IllegalArgumentException.class, () -> useCase.execute("product-1", "variant-1", request));
         verify(variantRepository, never()).patchPriceAndStock(any(), any(), Mockito.anyInt());
     }
 }

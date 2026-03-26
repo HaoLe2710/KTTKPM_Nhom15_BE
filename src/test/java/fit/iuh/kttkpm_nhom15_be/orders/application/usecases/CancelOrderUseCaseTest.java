@@ -4,6 +4,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.interfaces.CatalogFacade;
 import fit.iuh.kttkpm_nhom15_be.orders.application.commands.CancelOrderCommand;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.StockRestoreItem;
 import fit.iuh.kttkpm_nhom15_be.orders.application.events.OrderCancelledEvent;
+import fit.iuh.kttkpm_nhom15_be.orders.application.events.ProductSalesChangedEvent;
 import fit.iuh.kttkpm_nhom15_be.orders.application.results.CancelOrderResult;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.exceptions.InvalidOrderStateTransitionException;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.exceptions.OrderNotFoundException;
@@ -47,6 +48,7 @@ class CancelOrderUseCaseTest {
 
         verify(catalogFacade).restoreStock(restoreItems.capture());
         verify(eventPublisher).publishEvent(eventCaptor.capture());
+        verify(eventPublisher).publishEvent(any(ProductSalesChangedEvent.class));
         verify(orderRepository).save(order);
 
         assertEquals(OrderStatus.CANCELLED, order.getStatus());
@@ -97,6 +99,7 @@ class CancelOrderUseCaseTest {
             .status(status)
             .totalAmount(new BigDecimal("220.00"))
             .items(List.of(OrderItem.builder()
+                .productId("product-1")
                 .variantId("variant-1")
                 .quantity(2)
                 .build()))

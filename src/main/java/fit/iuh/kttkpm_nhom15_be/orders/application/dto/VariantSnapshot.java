@@ -11,6 +11,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class VariantSnapshot {
     private String variantId;
+    private String productId;
     private String sku;
     private String productName;
     private String imageUrl;
