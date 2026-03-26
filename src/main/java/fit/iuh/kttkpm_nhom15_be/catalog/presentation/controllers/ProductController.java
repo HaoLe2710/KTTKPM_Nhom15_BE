@@ -51,7 +51,7 @@ public class ProductController {
     public ResponseEntity<Void> patchVariant(@PathVariable String productId,
                                              @PathVariable String variantId,
                                              @Valid @RequestBody UpdateVariantPricingUseCase.PatchVariantRequest request) {
-        updateVariantPricingUseCase.execute(variantId, request);
+        updateVariantPricingUseCase.execute(productId, variantId, request);
         return ResponseEntity.ok().build();
     }
 }

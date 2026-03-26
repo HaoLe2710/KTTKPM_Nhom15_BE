@@ -71,6 +71,7 @@ public class CatalogFacadeImpl implements CatalogFacade {
 
       return VariantSnapshot.builder()
         .variantId(variant.getId())
+        .productId(variant.getProductId())
         .sku(variant.getSku())
         .productName(productName)
         .imageUrl(imageUrl)

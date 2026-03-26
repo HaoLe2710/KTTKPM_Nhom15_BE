@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.reviews.application.usecases;
 
 import fit.iuh.kttkpm_nhom15_be.reviews.application.commands.DeleteReviewCommand;
+import fit.iuh.kttkpm_nhom15_be.reviews.application.events.ProductReviewChangedEvent;
 import fit.iuh.kttkpm_nhom15_be.reviews.application.events.ReviewDeletedEvent;
 import fit.iuh.kttkpm_nhom15_be.reviews.application.results.DeleteReviewResult;
 import fit.iuh.kttkpm_nhom15_be.reviews.domain.exceptions.ReviewNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +43,11 @@ public class DeleteReviewUseCase {
 
         // 4. Publish ReviewDeletedEvent for audit/logging/cleanup
         eventPublisher.publishEvent(new ReviewDeletedEvent(this, review));
+        eventPublisher.publishEvent(new ProductReviewChangedEvent(
+                review.getProductId(),
+                "REVIEW_DELETED",
+                LocalDateTime.now()
+        ));
 
         // 5. Return success result
         return DeleteReviewResult.success(command.getReviewId());

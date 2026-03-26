@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.reviews.application.usecases;
 
 import fit.iuh.kttkpm_nhom15_be.reviews.application.commands.CreateReviewCommand;
+import fit.iuh.kttkpm_nhom15_be.reviews.application.events.ProductReviewChangedEvent;
 import fit.iuh.kttkpm_nhom15_be.reviews.application.events.ReviewCreatedEvent;
 import fit.iuh.kttkpm_nhom15_be.reviews.application.interfaces.OrderFacade;
 import fit.iuh.kttkpm_nhom15_be.reviews.application.results.CreateReviewResult;
@@ -57,6 +58,7 @@ class CreateReviewUseCaseTest {
         verify(reviewRepository).findByUserIdAndProductId("user-1", "product-1");
         verify(reviewRepository).save(savedReviewCaptor.capture());
         verify(eventPublisher).publishEvent(eventCaptor.capture());
+        verify(eventPublisher).publishEvent(any(ProductReviewChangedEvent.class));
 
         assertEquals("review-1", result.getId());
         assertEquals("user-1", result.getUserId());
@@ -190,6 +192,7 @@ class CreateReviewUseCaseTest {
         assertEquals("review-1", result.getId());
         assertEquals(null, result.getContent());
         verify(reviewRepository).save(any(Review.class));
-        verify(eventPublisher).publishEvent(any());
+        verify(eventPublisher).publishEvent(any(ReviewCreatedEvent.class));
+        verify(eventPublisher).publishEvent(any(ProductReviewChangedEvent.class));
     }
 }
