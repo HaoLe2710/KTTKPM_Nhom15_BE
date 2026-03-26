@@ -1,11 +1,13 @@
 package fit.iuh.kttkpm_nhom15_be.users.presentation.controllers;
 
 import fit.iuh.kttkpm_nhom15_be.users.application.commands.CreateUserCommand;
+import fit.iuh.kttkpm_nhom15_be.users.application.commands.UpdateProfileCommand;
 import fit.iuh.kttkpm_nhom15_be.users.application.commands.UpdateUserCommand;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.UserResponse;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.*;
 import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.*;
 import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.CreateUserRequest;
+import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.UpdateProfileRequest;
 import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.UpdateUserRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ public class UserController {
     private final ToggleUserStatusUseCase toggleUserStatusUseCase;
     private final GetUsersUseCase getUsersUseCase;
     private final GetUserByIdUseCase getUserByIdUseCase;
+    private final UpdateProfileUseCase updateProfileUseCase;
 
     @PostMapping
     public ResponseEntity<Map<String, String>> createUser(@Valid @RequestBody CreateUserRequest req) {
@@ -42,6 +45,21 @@ public class UserController {
                 id, req.getEmail(), req.getPhone(), req.getFullName(), req.getRole()
         ));
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/profile")
+    public ResponseEntity<UserResponse> updateProfile(
+            @RequestHeader("X-User-Id") String userId,
+            @Valid @RequestBody UpdateProfileRequest req
+    ) {
+        UserResponse response = updateProfileUseCase.execute(new UpdateProfileCommand(
+                userId,
+                req.getEmail(),
+                req.getPhone(),
+                req.getFullName(),
+                req.getAvatar()
+        ));
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
