@@ -35,4 +35,6 @@ build/
 compose.yaml
 src/main/resources/application.properties
 .gitnexus
-docs
+docs/*
+!docs/api/
+!docs/api/**

@@ -31,6 +31,8 @@
         <java.version>21</java.version>
         <spring-modulith.version>2.0.3</spring-modulith.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
+        <springdoc.version>3.0.2</springdoc.version>
+        <springdoc.maven-plugin.version>1.5</springdoc.maven-plugin.version>
     </properties>
     <dependencies>
         <!-- Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-databind -->
@@ -154,6 +156,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc.version}</version>
+        </dependency>
     </dependencies>
     <dependencyManagement>
         <dependencies>
@@ -202,5 +209,85 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>api-docs</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <jvmArguments>-Dspring.application.admin.enabled=true -Dspring.application.name=KTTKPM_Nhom15_BE -Dapi.docs.version=v1 -Dspring.datasource.url=jdbc:postgresql://localhost:5432/cosmetics_db -Dspring.datasource.username=db_admin -Dspring.datasource.password=db_password_123</jvmArguments>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>pre-integration-test</id>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>post-integration-test</id>
+                                <goals>
+                                    <goal>stop</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springdoc</groupId>
+                        <artifactId>springdoc-openapi-maven-plugin</artifactId>
+                        <version>${springdoc.maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>generate-openapi</id>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <apiDocsUrl>http://localhost:8080/v3/api-docs.yaml</apiDocsUrl>
+                            <outputFileName>openapi.yaml</outputFileName>
+                            <outputDir>${project.build.directory}/generated-openapi</outputDir>
+                            <failOnError>true</failOnError>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>export-openapi-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <mkdir dir="${project.basedir}/docs/api/exports/frontend"/>
+                                        <mkdir dir="${project.basedir}/docs/api/exports/qa"/>
+                                        <copy file="${project.build.directory}/generated-openapi/openapi.yaml"
+                                              tofile="${project.basedir}/docs/api/openapi.yaml"
+                                              overwrite="true"/>
+                                        <copy file="${project.build.directory}/generated-openapi/openapi.yaml"
+                                              tofile="${project.basedir}/docs/api/exports/frontend/openapi.yaml"
+                                              overwrite="true"/>
+                                        <copy file="${project.build.directory}/generated-openapi/openapi.yaml"
+                                              tofile="${project.basedir}/docs/api/exports/qa/openapi.yaml"
+                                              overwrite="true"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

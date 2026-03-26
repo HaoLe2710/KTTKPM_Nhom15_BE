@@ -1,0 +1,52 @@
+name: API Docs
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  openapi-drift-check:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: cosmetics_db
+          POSTGRES_USER: db_admin
+          POSTGRES_PASSWORD: db_password_123
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U db_admin -d cosmetics_db"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      - name: Generate OpenAPI artifacts
+        run: ./mvnw -q -Papi-docs verify
+
+      - name: Check documentation drift
+        run: git diff --exit-code -- docs/api/openapi.yaml docs/api/exports/frontend/openapi.yaml docs/api/exports/qa/openapi.yaml
+
+      - name: Upload generated OpenAPI artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-artifacts
+          path: |
+            docs/api/openapi.yaml
+            docs/api/exports/frontend/openapi.yaml
+            docs/api/exports/qa/openapi.yaml

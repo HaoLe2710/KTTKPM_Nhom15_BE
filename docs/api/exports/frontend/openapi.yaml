@@ -1,0 +1,1535 @@
+openapi: 3.1.0
+info:
+  title: KTTKPM_Nhom15_BE API
+  description: Professional OpenAPI 3 documentation for the KTTKPM_Nhom15_BE backend.
+  contact:
+    name: Backend Team
+    email: backend-team@example.local
+  license:
+    name: Internal Use
+    url: https://example.local/internal-use
+  version: v1
+externalDocs:
+  description: Generated API artifacts for frontend and QA
+  url: /docs/api/openapi.yaml
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: Analytics
+  description: Reporting and operational metrics endpoints.
+- name: Cart
+  description: Shopping cart and cart line management.
+- name: Catalog
+  description: "Catalog, product, media, and master-data endpoints."
+- name: Chat
+  description: Chat room and conversation endpoints.
+- name: Orders
+  description: Order placement and order lifecycle endpoints.
+- name: Promotions
+  description: Promotion management endpoints.
+- name: Reviews
+  description: Product review creation and moderation endpoints.
+- name: Search
+  description: "Search, suggestions, and search projection administration endpoints."
+- name: Users
+  description: User management endpoints.
+paths:
+  /api/v1/users/{id}:
+    get:
+      tags:
+      - Users
+      operationId: getUserById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+    put:
+      tags:
+      - Users
+      operationId: updateUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - Users
+      operationId: deleteUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/v1/promotions/{promotionId}:
+    put:
+      tags:
+      - Promotions
+      operationId: updatePromotion
+      parameters:
+      - name: promotionId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePromotionRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PromotionResponseDTO"
+    delete:
+      tags:
+      - Promotions
+      operationId: deletePromotion
+      parameters:
+      - name: promotionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/v1/users:
+    get:
+      tags:
+      - Users
+      operationId: getUsers
+      parameters:
+      - name: keyword
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PageUserResponse"
+    post:
+      tags:
+      - Users
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /api/v1/search/projections/rebuild-all:
+    post:
+      tags:
+      - Search
+      operationId: rebuildAllProducts
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TriggerFullSearchProjectionRebuildResult"
+  /api/v1/reviews:
+    post:
+      tags:
+      - Reviews
+      operationId: createReview
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReviewRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CreateReviewResult"
+  /api/v1/promotions:
+    post:
+      tags:
+      - Promotions
+      operationId: createPromotion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePromotionRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PromotionResponseDTO"
+  /api/v1/promotions/{promotionId}/deactivate:
+    post:
+      tags:
+      - Promotions
+      operationId: deactivatePromotion
+      parameters:
+      - name: promotionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PromotionResponseDTO"
+  /api/v1/products:
+    get:
+      tags:
+      - Catalog
+      operationId: getProducts
+      parameters:
+      - name: typeId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: minPrice
+        in: query
+        required: false
+        schema:
+          type: number
+      - name: maxPrice
+        in: query
+        required: false
+        schema:
+          type: number
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PageProductSummaryDTO"
+    post:
+      tags:
+      - Catalog
+      operationId: createProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompositeProductRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/v1/products/{productId}/variants/{variantId}/media:
+    post:
+      tags:
+      - Catalog
+      operationId: uploadVariantMedia
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+              - file
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Media"
+  /api/v1/products/{productId}/media:
+    post:
+      tags:
+      - Catalog
+      operationId: uploadProductMedia
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+              - file
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Media"
+  /api/v1/product-types:
+    get:
+      tags:
+      - Catalog
+      operationId: getProductTypes
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductTypeResponse"
+    post:
+      tags:
+      - Catalog
+      operationId: createProductType
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductTypeRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductTypeResponse"
+  /api/v1/orders:
+    post:
+      tags:
+      - Orders
+      operationId: placeOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaceOrderRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PlaceOrderResult"
+  /api/v1/orders/{orderId}/cancel:
+    post:
+      tags:
+      - Orders
+      operationId: cancelOrder
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelOrderRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CancelOrderResult"
+  /api/v1/options:
+    get:
+      tags:
+      - Catalog
+      operationId: getOptions
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OptionResponse"
+    post:
+      tags:
+      - Catalog
+      operationId: createOption
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OptionResponse"
+  /api/v1/chat/rooms/{roomId}/messages:
+    get:
+      tags:
+      - Chat
+      operationId: getChatHistory
+      parameters:
+      - name: roomId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+    post:
+      tags:
+      - Chat
+      operationId: sendMessage
+      parameters:
+      - name: roomId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: X-User-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /api/v1/carts/items:
+    post:
+      tags:
+      - Cart
+      operationId: addToCart
+      parameters:
+      - name: X-User-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddToCartRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CartSummaryDTO"
+  /api/v1/users/{targetId}/toggle-status:
+    patch:
+      tags:
+      - Users
+      operationId: toggleStatus
+      parameters:
+      - name: X-User-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: targetId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/v1/products/{productId}/variants/{variantId}:
+    patch:
+      tags:
+      - Catalog
+      operationId: patchVariant
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchVariantRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/v1/search/suggestions:
+    get:
+      tags:
+      - Search
+      operationId: getSuggestions
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SearchSuggestionDTO"
+  /api/v1/products/{id}:
+    get:
+      tags:
+      - Catalog
+      operationId: getProduct
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Product"
+  /api/v1/products/search:
+    get:
+      tags:
+      - Search
+      operationId: searchProducts
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: typeIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: minPrice
+        in: query
+        required: false
+        schema:
+          type: number
+      - name: maxPrice
+        in: query
+        required: false
+        schema:
+          type: number
+      - name: inStock
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          default: relevance
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SearchResponseDTO"
+  /api/v1/analytics/report/pdf:
+    get:
+      tags:
+      - Analytics
+      operationId: downloadPdfReport
+      parameters:
+      - name: startDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: endDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+  /api/v1/analytics/dashboard:
+    get:
+      tags:
+      - Analytics
+      operationId: getDashboardReport
+      parameters:
+      - name: startDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: endDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DashboardReportResponse"
+  /api/v1/reviews/{reviewId}:
+    delete:
+      tags:
+      - Reviews
+      operationId: deleteReview
+      parameters:
+      - name: reviewId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DeleteReviewResult"
+components:
+  schemas:
+    UpdateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        phone:
+          type: string
+          minLength: 1
+        fullName:
+          type: string
+          minLength: 1
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - CUSTOMER
+          - STAFF
+      required:
+      - email
+      - fullName
+      - phone
+      - role
+    UpdatePromotionRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        type:
+          type: string
+          enum:
+          - ORDER_DISCOUNT
+          - PRODUCT_DISCOUNT
+          - BUY_X_GET_Y
+        config:
+          type: object
+          additionalProperties: {}
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        usageLimit:
+          type: integer
+          format: int32
+        active:
+          type: boolean
+      required:
+      - code
+      - config
+      - endDate
+      - name
+      - startDate
+      - type
+    PromotionResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - ORDER_DISCOUNT
+          - PRODUCT_DISCOUNT
+          - BUY_X_GET_Y
+        config:
+          type: object
+          additionalProperties: {}
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        usageLimit:
+          type: integer
+          format: int32
+        usedCount:
+          type: integer
+          format: int32
+        active:
+          type: boolean
+    CreateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        phone:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+        fullName:
+          type: string
+          minLength: 1
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - CUSTOMER
+          - STAFF
+      required:
+      - email
+      - fullName
+      - password
+      - phone
+      - role
+    TriggerFullSearchProjectionRebuildResult:
+      type: object
+      properties:
+        runId:
+          type: string
+        status:
+          type: string
+        queuedProducts:
+          type: integer
+          format: int32
+    CreateReviewRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          minLength: 1
+        productId:
+          type: string
+          minLength: 1
+        orderId:
+          type: string
+          minLength: 1
+        rating:
+          type: integer
+          format: int32
+          maximum: 5
+          minimum: 1
+        content:
+          type: string
+      required:
+      - orderId
+      - productId
+      - userId
+    CreateReviewResult:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        productId:
+          type: string
+        orderId:
+          type: string
+        rating:
+          type: integer
+          format: int32
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    CreatePromotionRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        type:
+          type: string
+          enum:
+          - ORDER_DISCOUNT
+          - PRODUCT_DISCOUNT
+          - BUY_X_GET_Y
+        config:
+          type: object
+          additionalProperties: {}
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        usageLimit:
+          type: integer
+          format: int32
+        active:
+          type: boolean
+      required:
+      - code
+      - config
+      - endDate
+      - name
+      - startDate
+      - type
+    CompositeProductRequestDTO:
+      type: object
+      properties:
+        typeId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        descriptionMd:
+          type: string
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/VariantRequestDTO"
+        customizable:
+          type: boolean
+      required:
+      - name
+      - typeId
+      - variants
+    OptionAssignmentDTO:
+      type: object
+      properties:
+        optionId:
+          type: string
+          minLength: 1
+        valueId:
+          type: string
+          minLength: 1
+      required:
+      - optionId
+      - valueId
+    VariantRequestDTO:
+      type: object
+      properties:
+        sku:
+          type: string
+          minLength: 1
+        price:
+          type: number
+          minimum: 0
+        stockQuantity:
+          type: integer
+          format: int32
+          minimum: 0
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionAssignmentDTO"
+      required:
+      - price
+      - sku
+    Media:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        variantId:
+          type: string
+        url:
+          type: string
+        publicId:
+          type: string
+        type:
+          type: string
+          enum:
+          - IMAGE
+          - VIDEO
+        primary:
+          type: boolean
+    ProductTypeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+      required:
+      - code
+      - name
+    ProductTypeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+    PlaceOrderRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          minLength: 1
+        promotionCode:
+          type: string
+        shipFullName:
+          type: string
+          minLength: 1
+        shipPhone:
+          type: string
+          minLength: 1
+        shipAddress:
+          type: string
+          minLength: 1
+        shipCity:
+          type: string
+          minLength: 1
+        shipDistrict:
+          type: string
+          minLength: 1
+        shipWard:
+          type: string
+          minLength: 1
+        shippingMode:
+          type: string
+          enum:
+          - HCM_FLAT
+          - PROVIDER_API
+          - STANDARD
+          - EXPRESS
+        shippingProvider:
+          type: string
+          enum:
+          - GHTK
+        shippingFee:
+          type: number
+        paymentMethod:
+          type: string
+          enum:
+          - COD
+          - VNPAY
+          - SEPAY
+      required:
+      - paymentMethod
+      - shipAddress
+      - shipCity
+      - shipDistrict
+      - shipFullName
+      - shipPhone
+      - shipWard
+      - shippingFee
+      - shippingMode
+      - userId
+    PlaceOrderResult:
+      type: object
+      properties:
+        orderId:
+          type: string
+        orderNo:
+          type: string
+        paymentRedirectUrl:
+          type: string
+    CancelOrderRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+      required:
+      - reason
+    CancelOrderResult:
+      type: object
+      properties:
+        orderId:
+          type: string
+        orderNo:
+          type: string
+        status:
+          type: string
+    OptionRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        values:
+          type: array
+          items:
+            type: string
+      required:
+      - code
+      - name
+    OptionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionValueResponse"
+    OptionValueResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        value:
+          type: string
+    AddToCartRequest:
+      type: object
+      properties:
+        variantId:
+          type: string
+          minLength: 1
+        quantity:
+          type: integer
+          format: int32
+      required:
+      - variantId
+    CartSummaryDTO:
+      type: object
+      properties:
+        totalItems:
+          type: integer
+          format: int32
+        subtotal:
+          type: number
+    PatchVariantRequest:
+      type: object
+      properties:
+        price:
+          type: number
+        addedStock:
+          type: integer
+          format: int32
+    PageUserResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: "#/components/schemas/SortObject"
+    SortObject:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        fullName:
+          type: string
+        avatarUrl:
+          type: string
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - CUSTOMER
+          - STAFF
+        isActive:
+          type: boolean
+    SearchSuggestionDTO:
+      type: object
+      properties:
+        text:
+          type: string
+        source:
+          type: string
+        weight:
+          type: integer
+          format: int32
+    PageProductSummaryDTO:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductSummaryDTO"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    ProductSummaryDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        typeId:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        lowestPrice:
+          type: number
+        totalInitialStock:
+          type: integer
+          format: int64
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        typeId:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        descriptionMd:
+          type: string
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Variant"
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/Media"
+        active:
+          type: boolean
+        customizable:
+          type: boolean
+    Variant:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        sku:
+          type: string
+        price:
+          type: number
+        stockQuantity:
+          type: integer
+          format: int32
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/VariantOption"
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/Media"
+        active:
+          type: boolean
+    VariantOption:
+      type: object
+      properties:
+        id:
+          type: string
+        variantId:
+          type: string
+        optionValueId:
+          type: string
+    SearchFacetBucketDTO:
+      type: object
+      properties:
+        value:
+          type: string
+        label:
+          type: string
+        count:
+          type: integer
+          format: int64
+    SearchFacetDTO:
+      type: object
+      properties:
+        key:
+          type: string
+        buckets:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchFacetBucketDTO"
+    SearchProductItemDTO:
+      type: object
+      properties:
+        productId:
+          type: string
+        slug:
+          type: string
+        productName:
+          type: string
+        typeId:
+          type: string
+        typeName:
+          type: string
+        minPrice:
+          type: number
+        maxPrice:
+          type: number
+        inStock:
+          type: boolean
+        activeVariantCount:
+          type: integer
+          format: int32
+        averageRating:
+          type: number
+        reviewCount:
+          type: integer
+          format: int32
+        soldCount:
+          type: integer
+          format: int32
+        totalScore:
+          type: number
+          format: double
+    SearchRedirectDTO:
+      type: object
+      properties:
+        type:
+          type: string
+        target:
+          type: string
+    SearchResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchProductItemDTO"
+        facets:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchFacetDTO"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int64
+        query:
+          type: string
+        normalizedQuery:
+          type: string
+        redirect:
+          $ref: "#/components/schemas/SearchRedirectDTO"
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: string
+        roomId:
+          type: string
+        senderId:
+          type: string
+        content:
+          type: string
+        sentAt:
+          type: string
+          format: date-time
+    DailyMetric:
+      type: object
+      properties:
+        date:
+          type: string
+        totalOrders:
+          type: integer
+          format: int64
+        revenue:
+          type: number
+        completedOrders:
+          type: integer
+          format: int64
+    DashboardReportResponse:
+      type: object
+      properties:
+        netRevenue:
+          type: number
+        successRate:
+          type: number
+          format: double
+        chartData:
+          type: array
+          items:
+            $ref: "#/components/schemas/DailyMetric"
+    DeleteReviewResult:
+      type: object
+      properties:
+        reviewId:
+          type: string
+        message:
+          type: string
