@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.reviews.application.usecases;
 
 import fit.iuh.kttkpm_nhom15_be.reviews.application.commands.CreateReviewCommand;
+import fit.iuh.kttkpm_nhom15_be.reviews.application.events.ProductReviewChangedEvent;
 import fit.iuh.kttkpm_nhom15_be.reviews.application.events.ReviewCreatedEvent;
 import fit.iuh.kttkpm_nhom15_be.reviews.application.interfaces.OrderFacade;
 import fit.iuh.kttkpm_nhom15_be.reviews.application.results.CreateReviewResult;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +58,11 @@ public class CreateReviewUseCase {
 
         // 6. Publish event
         eventPublisher.publishEvent(new ReviewCreatedEvent(this, savedReview));
+        eventPublisher.publishEvent(new ProductReviewChangedEvent(
+                savedReview.getProductId(),
+                "REVIEW_CREATED",
+                LocalDateTime.now()
+        ));
 
         // 7. Return result
         return CreateReviewResult.builder()

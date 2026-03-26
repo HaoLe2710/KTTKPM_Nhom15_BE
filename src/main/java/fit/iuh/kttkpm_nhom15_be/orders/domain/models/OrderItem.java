@@ -12,6 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class OrderItem {
     private String id;
+    private String productId;
     private String variantId;
     private String sku;
     private String name;

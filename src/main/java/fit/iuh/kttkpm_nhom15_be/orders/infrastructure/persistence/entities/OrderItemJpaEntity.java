@@ -31,6 +31,7 @@ public class OrderItemJpaEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private OrderJpaEntity order;
+    private String productId;
     private String variantId;
     private String sku;
     private String name;

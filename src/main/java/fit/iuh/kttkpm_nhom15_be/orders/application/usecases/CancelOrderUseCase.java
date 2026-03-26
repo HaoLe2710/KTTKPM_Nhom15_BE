@@ -4,6 +4,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.interfaces.CatalogFacade;
 import fit.iuh.kttkpm_nhom15_be.orders.application.commands.CancelOrderCommand;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.StockRestoreItem;
 import fit.iuh.kttkpm_nhom15_be.orders.application.events.OrderCancelledEvent;
+import fit.iuh.kttkpm_nhom15_be.orders.application.events.ProductSalesChangedEvent;
 import fit.iuh.kttkpm_nhom15_be.orders.application.results.CancelOrderResult;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.exceptions.OrderNotFoundException;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.Order;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -50,6 +52,15 @@ public class CancelOrderUseCase {
       savedOrder.getUserId(),
       savedOrder.getTotalAmount(),
       command.reason()
+    ));
+    eventPublisher.publishEvent(new ProductSalesChangedEvent(
+      savedOrder.getItems().stream()
+        .map(item -> item.getProductId())
+        .filter(productId -> productId != null && !productId.isBlank())
+        .distinct()
+        .toList(),
+      "ORDER_CANCELLED",
+      LocalDateTime.now()
     ));
 
     // 6. Trả về kết quả

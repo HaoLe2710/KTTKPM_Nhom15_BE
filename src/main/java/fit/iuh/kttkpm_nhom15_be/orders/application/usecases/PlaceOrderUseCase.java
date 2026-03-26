@@ -7,6 +7,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.interfaces.CatalogFacade;
 import fit.iuh.kttkpm_nhom15_be.orders.application.commands.PlaceOrderCommand;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.VariantSnapshot;
 import fit.iuh.kttkpm_nhom15_be.orders.application.events.OrderPlacedEvent;
+import fit.iuh.kttkpm_nhom15_be.orders.application.events.ProductSalesChangedEvent;
 import fit.iuh.kttkpm_nhom15_be.orders.application.results.PlaceOrderResult;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.Order;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.OrderItem;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -54,6 +56,7 @@ public class PlaceOrderUseCase {
       BigDecimal lineTotal = unitPrice.multiply(BigDecimal.valueOf(cartItem.getQuantity()));
 
       return OrderItem.builder()
+        .productId(snap != null ? snap.getProductId() : null)
         .variantId(cartItem.getVariantId())
         .sku(snap != null ? snap.getSku() : null)
         .name(snap != null ? snap.getProductName() : null)
@@ -112,6 +115,15 @@ public class PlaceOrderUseCase {
       savedOrder.getOrderNo(),
       savedOrder.getUserId(),
       savedOrder.getTotalAmount()
+    ));
+    eventPublisher.publishEvent(new ProductSalesChangedEvent(
+      orderItems.stream()
+        .map(OrderItem::getProductId)
+        .filter(productId -> productId != null && !productId.isBlank())
+        .distinct()
+        .toList(),
+      "ORDER_PLACED",
+      LocalDateTime.now()
     ));
 
     return PlaceOrderResult.builder()

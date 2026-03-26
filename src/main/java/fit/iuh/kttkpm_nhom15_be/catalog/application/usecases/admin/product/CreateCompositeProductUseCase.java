@@ -3,6 +3,7 @@ package fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.product;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CompositeProductRequestDTO;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CompositeProductRequestDTO.OptionAssignmentDTO;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CompositeProductRequestDTO.VariantRequestDTO;
+import fit.iuh.kttkpm_nhom15_be.catalog.application.events.CatalogProductChangedEvent;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.Product;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.Variant;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.VariantOption;
@@ -10,8 +11,10 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.ProductRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.VariantRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.VariantOptionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +23,7 @@ public class CreateCompositeProductUseCase {
     private final ProductRepository productRepository;
     private final VariantRepository variantRepository;
     private final VariantOptionRepository variantOptionRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(rollbackFor = Exception.class)
     public String execute(CompositeProductRequestDTO request) {
@@ -58,6 +62,12 @@ public class CreateCompositeProductUseCase {
                 }
             }
         }
+
+        eventPublisher.publishEvent(new CatalogProductChangedEvent(
+            savedProduct.getId(),
+            "CATALOG_PRODUCT_CREATED",
+            LocalDateTime.now()
+        ));
         
         return savedProduct.getId();
     }
