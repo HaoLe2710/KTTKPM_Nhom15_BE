@@ -7,13 +7,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ChatRepository {
-    // Room
     ChatRoom saveRoom(ChatRoom room);
+
     Optional<ChatRoom> findRoomById(String roomId);
-    List<ChatRoom> findActiveRooms(); // Lấy các phòng chưa đóng để Staff vào chat
+
+    List<ChatRoom> findActiveRooms();
+
     Optional<ChatRoom> findActiveRoomByCustomer(String customerId);
 
-    // Message
     ChatMessage saveMessage(ChatMessage message);
+
     List<ChatMessage> findMessagesByRoomId(String roomId);
 }

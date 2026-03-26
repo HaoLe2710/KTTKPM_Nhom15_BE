@@ -1,23 +1,33 @@
-package fit.iuh.kttkpm_nhom15_be.chat.domain.models;
+package fit.iuh.kttkpm_nhom15_be.chat.presentation.requests;
 
-import lombok.*;
+import fit.iuh.kttkpm_nhom15_be.chat.domain.models.ChatMessageType;
+import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
-@Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor
-public class ChatMessage {
-    private String id;
+@Getter
+@Setter
+public class SendMessageRequest {
     private String roomId;
-    private String senderId;
+
+    @NotNull(message = "Loai tin nhan khong duoc de trong.")
     private ChatMessageType type;
+
     private String content;
+
     private String imageUrl;
+
     private String linkUrl;
+
     private String productId;
+
     private String variantId;
+
     private String productName;
+
     private String productImageUrl;
+
     private BigDecimal productPrice;
-    private LocalDateTime sentAt;
 }

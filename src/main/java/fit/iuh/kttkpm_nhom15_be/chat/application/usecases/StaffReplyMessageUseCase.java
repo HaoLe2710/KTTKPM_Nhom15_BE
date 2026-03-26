@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class SendMessageUseCase {
+public class StaffReplyMessageUseCase {
 
     private final ChatRepository chatRepository;
     private final UserFacade userFacade;
@@ -32,22 +32,6 @@ public class SendMessageUseCase {
             throw new InactiveChatUserException(command.senderId());
         }
 
-        ChatRoom room = resolveRoom(command);
-        ChatMessage savedMessage = chatRepository.saveMessage(payloadSupport.buildMessage(room.getId(), command));
-        MessageDTO response = MessageDTO.from(savedMessage);
-        eventPublisher.publishEvent(new ChatMessageSentEvent(room.getId(), response));
-        return response;
-    }
-
-    private ChatRoom resolveRoom(SendMessageCommand command) {
-        if (command.roomId() == null || command.roomId().isBlank()) {
-            return chatRepository.findActiveRoomByCustomer(command.senderId())
-                    .orElseGet(() -> chatRepository.saveRoom(ChatRoom.builder()
-                            .customerId(command.senderId())
-                            .isClosed(false)
-                            .build()));
-        }
-
         ChatRoom room = chatRepository.findRoomById(command.roomId())
                 .orElseThrow(() -> new ChatRoomNotFoundException(command.roomId()));
 
@@ -55,10 +39,16 @@ public class SendMessageUseCase {
             throw new ChatRoomClosedException(command.roomId());
         }
 
-        if (!command.senderId().equals(room.getCustomerId())) {
+        if (room.getStaffId() == null) {
+            room.setStaffId(command.senderId());
+            room = chatRepository.saveRoom(room);
+        } else if (!command.senderId().equals(room.getStaffId())) {
             throw new UnauthorizedChatAccessException(command.roomId(), command.senderId());
         }
 
-        return room;
+        ChatMessage savedMessage = chatRepository.saveMessage(payloadSupport.buildMessage(room.getId(), command));
+        MessageDTO response = MessageDTO.from(savedMessage);
+        eventPublisher.publishEvent(new ChatMessageSentEvent(room.getId(), response));
+        return response;
     }
 }

@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class SendMessageUseCase {
+public class CustomerSendMessageUseCase {
 
     private final ChatRepository chatRepository;
     private final UserFacade userFacade;
@@ -32,14 +32,14 @@ public class SendMessageUseCase {
             throw new InactiveChatUserException(command.senderId());
         }
 
-        ChatRoom room = resolveRoom(command);
+        ChatRoom room = resolveCustomerRoom(command);
         ChatMessage savedMessage = chatRepository.saveMessage(payloadSupport.buildMessage(room.getId(), command));
         MessageDTO response = MessageDTO.from(savedMessage);
         eventPublisher.publishEvent(new ChatMessageSentEvent(room.getId(), response));
         return response;
     }
 
-    private ChatRoom resolveRoom(SendMessageCommand command) {
+    private ChatRoom resolveCustomerRoom(SendMessageCommand command) {
         if (command.roomId() == null || command.roomId().isBlank()) {
             return chatRepository.findActiveRoomByCustomer(command.senderId())
                     .orElseGet(() -> chatRepository.saveRoom(ChatRoom.builder()
