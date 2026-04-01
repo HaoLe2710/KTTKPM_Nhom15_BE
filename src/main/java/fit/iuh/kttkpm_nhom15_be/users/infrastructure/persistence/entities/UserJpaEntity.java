@@ -6,12 +6,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -19,26 +16,33 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
+// Sử dụng Soft Delete theo logic của sếp
 @SQLDelete(sql = "UPDATE users SET is_active = false WHERE id = ?")
-// 2. Tự động lọc các bản ghi is_active = true khi Select
 @SQLRestriction("is_active = true")
-public class UserJpaEntity {
-    @Id @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-    @CreationTimestamp
-    @Column(updatable = false) private LocalDateTime createdAt;
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+public class UserJpaEntity extends BaseJpaEntity { // Kế thừa từ BaseJpaEntity của Leader
 
+    // Xóa id, createdAt, updatedAt vì đã có trong BaseJpaEntity
+
+    @Column(unique = true, nullable = false)
     private String email;
+
+    @Column(unique = true)
     private String phone;
+
     private String password;
+
+    @Column(name = "full_name")
     private String fullName;
+
+    @Column(name = "avatar_url")
     private String avatarUrl;
-    @Enumerated(EnumType.STRING) private UserRole role;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    @Column(name = "is_active")
     private boolean isActive = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AddressJpaEntity> addresses;
 }
-

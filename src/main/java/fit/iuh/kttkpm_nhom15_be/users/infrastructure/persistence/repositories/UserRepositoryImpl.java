@@ -23,6 +23,8 @@ interface JpaUserRepository extends JpaRepository<UserJpaEntity, String> {
             "LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "u.phone LIKE CONCAT('%', :keyword, '%')")
     Page<UserJpaEntity> searchUsers(@Param("keyword") String keyword, Pageable pageable);
+    Optional<UserJpaEntity> findByEmail(String email);
+    Optional<UserJpaEntity> findByPhone(String phone);
 }
 
 @Repository
@@ -62,6 +64,17 @@ public class UserRepositoryImpl implements UserRepository {
     public Page<User> findAll(String keyword, Pageable pageable) {
         // Lấy Page<Entity> từ DB, sau đó dùng hàm map() biến thành Page<Domain> thông qua mapper có sẵn
         return jpaUserRepository.searchUsers(keyword, pageable)
+                .map(userDataMapper::toDomainModel);
+    }
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return jpaUserRepository.findByEmail(email)
+                .map(userDataMapper::toDomainModel); // Map từ Entity sang Domain Model
+    }
+
+    @Override
+    public Optional<User> findByPhone(String phone) {
+        return jpaUserRepository.findByPhone(phone)
                 .map(userDataMapper::toDomainModel);
     }
 }
