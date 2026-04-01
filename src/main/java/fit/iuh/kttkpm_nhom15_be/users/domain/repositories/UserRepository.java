@@ -11,4 +11,6 @@ public interface UserRepository {
     Optional<User> findById(String id);
     void deleteById(String id);
     Page<User> findAll(String keyword, Pageable pageable);
+    Optional<User> findByEmail(String email);
+    Optional<User> findByPhone(String phone);
 }
