@@ -3,12 +3,12 @@ package fit.iuh.kttkpm_nhom15_be.shared.infrastructure.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy; // Sửa lỗi đỏ SessionCreationPolicy
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter; // Sửa lỗi đỏ Filter
 
 @Configuration
 @EnableWebSecurity
@@ -16,32 +16,27 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 public class SecurityConfig {
 
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Tắt CSRF để Postman có thể POST dữ liệu
                 .csrf(AbstractHttpConfigurer::disable)
-
-                // 2. Tắt Form Login và Http Basic (nguyên nhân gây ra file HTML)
-                .formLogin(AbstractHttpConfigurer::disable)
-                .httpBasic(AbstractHttpConfigurer::disable)
-
-                // 3. Cấu hình quyền truy cập
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**", "/oauth2/**", "/login/**").permitAll()
+                        // Cho phép truy cập các endpoint auth và oauth2 mà không cần token
+                        .requestMatchers("/api/v1/auth/**", "/login/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
-
-                // 4. Xử lý lỗi: Trả về 401 Unauthorized thay vì chuyển hướng sang trang HTML
-                .exceptionHandling(e -> e
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                )
-
-                // 5. Cấu hình OAuth2 Google
-                .oauth2Login(oauth2 -> oauth2
+                // Cấu hình Login bằng Google
+                .oauth2Login(oauth -> oauth
                         .successHandler(oAuth2SuccessHandler)
-                );
+                )
+                // Vì mình dùng JWT nên không dùng Session (Stateless)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                // Ép Spring check JWT trước khi check Username/Password
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

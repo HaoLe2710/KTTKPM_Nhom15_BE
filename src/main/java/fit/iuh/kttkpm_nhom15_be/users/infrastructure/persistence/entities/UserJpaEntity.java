@@ -16,12 +16,9 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-// Sử dụng Soft Delete theo logic của sếp
 @SQLDelete(sql = "UPDATE users SET is_active = false WHERE id = ?")
 @SQLRestriction("is_active = true")
-public class UserJpaEntity extends BaseJpaEntity { // Kế thừa từ BaseJpaEntity của Leader
-
-    // Xóa id, createdAt, updatedAt vì đã có trong BaseJpaEntity
+public class UserJpaEntity extends BaseJpaEntity {
 
     @Column(unique = true, nullable = false)
     private String email;
