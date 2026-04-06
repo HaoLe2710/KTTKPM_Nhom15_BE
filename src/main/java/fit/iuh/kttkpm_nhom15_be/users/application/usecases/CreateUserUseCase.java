@@ -19,7 +19,7 @@ public class CreateUserUseCase {
 
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final PasswordEncoder passwordEncoder; // MỞ RA LẠI ĐỂ SỬ DỤNG
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public String execute(CreateUserCommand command) {
