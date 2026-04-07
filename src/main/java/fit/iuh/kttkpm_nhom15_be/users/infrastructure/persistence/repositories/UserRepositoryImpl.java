@@ -15,8 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-
 interface JpaUserRepository extends JpaRepository<UserJpaEntity, String> {
+
+    // Dùng Native Query để bỏ qua mọi filter @Where(is_active=true) nếu có
+    @Query(value = "SELECT * FROM users WHERE email = :email LIMIT 1", nativeQuery = true)
+    Optional<UserJpaEntity> findByEmailRaw(@Param("email") String email);
+
+    Optional<UserJpaEntity> findByEmail(String email);
+    Optional<UserJpaEntity> findByPhone(String phone);
+
     boolean existsByEmailOrPhone(String email, String phone);
 
     @Query("SELECT COUNT(u) > 0 FROM UserJpaEntity u WHERE (u.email = :email OR u.phone = :phone) AND u.id <> :id")
@@ -27,9 +34,6 @@ interface JpaUserRepository extends JpaRepository<UserJpaEntity, String> {
             "LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "u.phone LIKE CONCAT('%', :keyword, '%')")
     Page<UserJpaEntity> searchUsers(@Param("keyword") String keyword, Pageable pageable);
-
-    Optional<UserJpaEntity> findByEmail(String email);
-    Optional<UserJpaEntity> findByPhone(String phone);
 }
 
 @Repository
@@ -38,6 +42,38 @@ public class UserRepositoryImpl implements UserRepository {
 
     private final JpaUserRepository jpaUserRepository;
     private final UserDataMapper userDataMapper;
+
+    @Override
+    @Transactional
+    public User save(User user) {
+        UserJpaEntity entity = userDataMapper.toJpaEntity(user);
+        UserJpaEntity savedEntity = jpaUserRepository.save(entity);
+        return userDataMapper.toDomainModel(savedEntity);
+    }
+
+    @Override
+    public Optional<User> findByEmailIgnoreActive(String email) {
+        return jpaUserRepository.findByEmailRaw(email)
+                .map(userDataMapper::toDomainModel);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return jpaUserRepository.findByEmail(email)
+                .map(userDataMapper::toDomainModel);
+    }
+
+    @Override
+    public Optional<User> findById(String id) {
+        return jpaUserRepository.findById(id)
+                .map(userDataMapper::toDomainModel);
+    }
+
+    @Override
+    public Optional<User> findByPhone(String phone) {
+        return jpaUserRepository.findByPhone(phone)
+                .map(userDataMapper::toDomainModel);
+    }
 
     @Override
     public boolean existsByEmailOrPhone(String email, String phone) {
@@ -50,19 +86,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public User save(User user) {
-        UserJpaEntity entity = userDataMapper.toJpaEntity(user);
-        UserJpaEntity savedEntity = jpaUserRepository.save(entity);
-        return userDataMapper.toDomainModel(savedEntity);
-    }
-
-    @Override
-    public Optional<User> findById(String id) {
-        return jpaUserRepository.findById(id)
-                .map(userDataMapper::toDomainModel);
-    }
-
-    @Override
     public void deleteById(String id) {
         jpaUserRepository.deleteById(id);
     }
@@ -70,19 +93,6 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Page<User> findAll(String keyword, Pageable pageable) {
         return jpaUserRepository.searchUsers(keyword, pageable)
-                .map(userDataMapper::toDomainModel);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<User> findByEmail(String email) {
-        return jpaUserRepository.findByEmail(email)
-                .map(userDataMapper::toDomainModel);
-    }
-
-    @Override
-    public Optional<User> findByPhone(String phone) {
-        return jpaUserRepository.findByPhone(phone)
                 .map(userDataMapper::toDomainModel);
     }
 }

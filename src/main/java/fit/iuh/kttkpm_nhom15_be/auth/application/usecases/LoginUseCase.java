@@ -24,6 +24,6 @@ public class LoginUseCase {
 
         if (!user.isActive()) throw new RuntimeException("Tài khoản đã bị khóa");
 
-        return jwtProvider.generateToken(user.getEmail());
+        return jwtProvider.generateToken(user.getEmail(), user.getId());
     }
 }
