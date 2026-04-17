@@ -1,8 +1,9 @@
 package fit.iuh.kttkpm_nhom15_be.auth.application.usecases;
 
-import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.security.JwtProvider;
 import fit.iuh.kttkpm_nhom15_be.users.application.interfaces.UserFacade;
+import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.ActionNotAllowedException;
 import fit.iuh.kttkpm_nhom15_be.users.domain.models.User;
+import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,14 +17,16 @@ public class LoginUseCase {
 
     public String execute(String identifier, String password) {
         User user = userFacade.findByIdentifier(identifier)
-                .orElseThrow(() -> new RuntimeException("Tài khoản hoặc mật khẩu không chính xác"));
+                .orElseThrow(() -> new ActionNotAllowedException("Tai khoan hoac mat khau khong chinh xac"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Tài khoản hoặc mật khẩu không chính xác");
+            throw new ActionNotAllowedException("Tai khoan hoac mat khau khong chinh xac");
         }
 
-        if (!user.isActive()) throw new RuntimeException("Tài khoản đã bị khóa");
+        if (!user.isActive()) {
+            throw new ActionNotAllowedException("Tai khoan da bi khoa");
+        }
 
-        return jwtProvider.generateToken(user.getEmail(), user.getId());
+        return jwtProvider.generateToken(user.getEmail(), user.getId(), user.getRole().name());
     }
 }

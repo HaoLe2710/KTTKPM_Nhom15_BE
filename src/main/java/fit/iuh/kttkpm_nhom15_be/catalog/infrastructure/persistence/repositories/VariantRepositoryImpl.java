@@ -18,6 +18,7 @@ import java.util.List;
 
 // 1. Interface Spring Data JPA thông thường
 interface JpaVariantRepository extends JpaRepository<VariantJpaEntity, String> {
+    boolean existsBySkuIgnoreCase(String sku);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE VariantJpaEntity v SET v.stockQuantity = v.stockQuantity + :addedStock, v.price = :price WHERE v.id = :id")
@@ -39,6 +40,11 @@ public class VariantRepositoryImpl implements VariantRepository {
   public Optional<Variant> findById(String id) {
     return jpaVariantRepository.findById(id)
       .map(catalogDataMapper::toDomainModel);
+  }
+
+  @Override
+  public boolean existsBySku(String sku) {
+      return jpaVariantRepository.existsBySkuIgnoreCase(sku);
   }
 
   @Override

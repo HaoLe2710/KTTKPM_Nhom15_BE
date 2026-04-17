@@ -7,5 +7,8 @@ import java.util.Optional;
 public interface ProductTypeRepository {
     ProductType save(ProductType productType);
     Optional<ProductType> findById(String id);
+    Optional<ProductType> findByCode(String code);
+    boolean existsByCode(String code);
+    void deleteById(String id);
     List<ProductType> findAll();
 }

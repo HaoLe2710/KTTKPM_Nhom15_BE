@@ -14,9 +14,13 @@ public class CreateProductTypeUseCase {
     private final ProductTypeRepository repository;
 
     public ProductTypeResponse execute(ProductTypeRequest request) {
+        if (repository.existsByCode(request.getCode().trim())) {
+            throw new IllegalArgumentException("Product type code da ton tai: " + request.getCode());
+        }
+
         ProductType newType = ProductType.builder()
-                .code(request.getCode())
-                .name(request.getName())
+                .code(request.getCode().trim())
+                .name(request.getName().trim())
                 .build();
                 
         ProductType saved = repository.save(newType);

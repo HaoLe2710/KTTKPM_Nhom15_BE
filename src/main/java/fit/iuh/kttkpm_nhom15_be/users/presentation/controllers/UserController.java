@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class UserController {
     private final GetUsersUseCase getUsersUseCase;
     private final GetUserByIdUseCase getUserByIdUseCase;
     private final UpdateProfileUseCase updateProfileUseCase;
+    private final ConfirmOldEmailChangeUseCase confirmOldEmailChangeUseCase;
     private final VerifyUpdateEmailUseCase verifyUpdateEmailUseCase;
 
     @PutMapping("/profile")
@@ -38,6 +41,19 @@ public class UserController {
                 req.getAvatar()
         ));
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/confirm/email-change/old")
+    public ResponseEntity<Map<String, String>> confirmOldEmail(
+            @AuthenticationPrincipal String userId,
+            @RequestParam String newEmail,
+            @RequestParam("otp") String oldEmailOtp
+    ) {
+        confirmOldEmailChangeUseCase.execute(userId, newEmail, oldEmailOtp);
+        return ResponseEntity.ok(Map.of(
+                "message",
+                "Xac thuc email cu thanh cong. OTP da duoc gui den email moi: " + newEmail
+        ));
     }
 
     @PostMapping("/confirm/email-change")

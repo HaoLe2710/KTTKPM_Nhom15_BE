@@ -5,11 +5,14 @@ import fit.iuh.kttkpm_nhom15_be.auth.application.usecases.RegisterUseCase;
 import fit.iuh.kttkpm_nhom15_be.auth.application.services.OtpService;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.RegisterRequest;
 import fit.iuh.kttkpm_nhom15_be.users.application.interfaces.UserFacade;
-
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Duration;
 import java.util.Map;
 
 @RestController
@@ -20,6 +23,7 @@ public class AuthController {
     private final RegisterUseCase registerUseCase;
     private final OtpService otpService;
     private final UserFacade userFacade;
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         registerUseCase.execute(request);
@@ -27,7 +31,7 @@ public class AuthController {
         otpService.sendOtp(null, request.email(), "REGISTER");
 
         return ResponseEntity.ok(Map.of(
-                "message", "Đăng ký thành công. Vui lòng kiểm tra mã OTP trong email của bạn."
+                "message", "Dang ky thanh cong. Vui long kiem tra ma OTP trong email cua ban."
         ));
     }
 
@@ -37,12 +41,11 @@ public class AuthController {
         boolean isValid = otpService.verifyOtp(email, otp, "REGISTER");
 
         if (isValid) {
-            // 2. Kích hoạt tài khoản
             userFacade.activateUser(email);
-            return ResponseEntity.ok(Map.of("message", "Tài khoản đã được kích hoạt thành công!"));
+            return ResponseEntity.ok(Map.of("message", "Tai khoan da duoc kich hoat thanh cong!"));
         }
 
-        return ResponseEntity.badRequest().body(Map.of("message", "Mã OTP không đúng hoặc đã hết hạn."));
+        return ResponseEntity.badRequest().body(Map.of("message", "Ma OTP khong dung hoac da het han."));
     }
 
     @PostMapping("/login")
@@ -56,5 +59,25 @@ public class AuthController {
                 "accessToken", token,
                 "tokenType", "Bearer"
         ));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        ResponseCookie clearAuthTokenCookie = ResponseCookie.from("AUTH-TOKEN", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(Duration.ZERO)
+                .build();
+
+        ResponseCookie clearAccessTokenCookie = ResponseCookie.from("accessToken", "")
+                .httpOnly(true)
+                .path("/")
+                .maxAge(Duration.ZERO)
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, clearAuthTokenCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, clearAccessTokenCookie.toString());
+
+        return ResponseEntity.ok(Map.of("message", "Dang xuat thanh cong"));
     }
 }

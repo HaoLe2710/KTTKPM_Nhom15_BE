@@ -4,12 +4,14 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.media.UploadM
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.Media;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class ProductMediaController {
 
     private final UploadMediaUseCase uploadMediaUseCase;

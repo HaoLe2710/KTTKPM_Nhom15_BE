@@ -9,6 +9,7 @@ import java.util.Optional;
 
 public interface ProductRepository {
   Optional<Product> findById(String id);
+  boolean existsByTypeId(String typeId);
   Product save(Product product);
   Page<ProductSummaryDTO> findProductsSummary(String typeId, BigDecimal minPrice, BigDecimal maxPrice, int page, int size);
 }

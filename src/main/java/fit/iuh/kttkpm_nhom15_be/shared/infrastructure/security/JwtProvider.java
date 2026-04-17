@@ -43,6 +43,10 @@ public class JwtProvider {
         return extractClaim(token, claims -> claims.get("userId", String.class));
     }
 
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
+    }
+
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
@@ -66,14 +70,21 @@ public class JwtProvider {
     }
 
     public String generateToken(String email, String userId) {
+        return generateToken(email, userId, null);
+    }
+
+    public String generateToken(String email, String userId, String role) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("userId", userId); // Lưu ID vào đây
+        claims.put("userId", userId);
+        if (role != null && !role.isBlank()) {
+            claims.put("role", role);
+        }
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(email) // Subject vẫn để Email cho tiện
+                .setSubject(email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24h
+                .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * 60 * 24))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

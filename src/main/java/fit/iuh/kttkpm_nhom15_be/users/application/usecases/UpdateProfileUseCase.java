@@ -21,23 +21,26 @@ public class UpdateProfileUseCase {
 
     @Transactional
     public UserResponse execute(UpdateProfileCommand command) {
-
-        // 1. Tìm User (Domain Model)
         User user = userRepository.findById(command.userId())
-                .orElseThrow(() -> new UserNotFoundException("User không tồn tại"));
+                .orElseThrow(() -> new UserNotFoundException("User khong ton tai"));
 
-        // 2. Kiểm tra nếu có ý định thay đổi Email
         if (!user.getEmail().equals(command.email())) {
-            otpService.sendOtp(user.getId(), command.email(), "UPDATE_EMAIL");
+            User existingUser = userRepository.findByEmail(command.email()).orElse(null);
+            if (existingUser != null && !existingUser.getId().equals(command.userId())) {
+                throw new DuplicateUserException("Email nay da duoc su dung boi tai khoan khac!");
+            }
 
-            throw new ActionNotAllowedException("Yêu cầu đổi email đã được ghi nhận. Vui lòng kiểm tra mã OTP gửi đến " + command.email());
+            // Step 1: verify current (old) email first.
+            otpService.sendOtp(user.getId(), user.getEmail(), "UPDATE_EMAIL_OLD");
+
+            throw new ActionNotAllowedException(
+                    "Yeu cau doi email da duoc ghi nhan. Vui long xac thuc OTP gui den email cu: " + user.getEmail()
+            );
         }
 
-        // 3. Kiểm tra trùng SĐT (nếu phone thay đổi)
-        if (!user.getPhone().equals(command.phone())) {
-            if (userRepository.existsByEmailOrPhoneExcludingId(command.email(), command.phone(), command.userId())) {
-                throw new DuplicateUserException("Số điện thoại này đã được sử dụng bởi tài khoản khác!");
-            }
+        if (!user.getPhone().equals(command.phone())
+                && userRepository.existsByEmailOrPhoneExcludingId(command.email(), command.phone(), command.userId())) {
+            throw new DuplicateUserException("So dien thoai nay da duoc su dung boi tai khoan khac!");
         }
 
         user.setAvatarUrl(command.avatarUrl());

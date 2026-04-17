@@ -34,7 +34,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         );
 
         // 2. Tạo JWT token
-        String token = jwtProvider.generateToken(user.getEmail());
+        String token = jwtProvider.generateToken(user.getEmail(), user.getId(), user.getRole().name());
 
         // 3. Tạo HttpOnly Cookie để giấu Token
         Cookie authCookie = new Cookie("AUTH-TOKEN", token);
