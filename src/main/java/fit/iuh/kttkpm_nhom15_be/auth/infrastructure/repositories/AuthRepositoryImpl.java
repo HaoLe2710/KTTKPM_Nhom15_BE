@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public class AuthRepositoryImpl implements AuthRepository {
-    // Triển khai các hàm của AuthRepository nếu có
+
 }

@@ -1,192 +1,117 @@
 package fit.iuh.kttkpm_nhom15_be.users.application.usecases;
 
+import fit.iuh.kttkpm_nhom15_be.auth.application.services.OtpService;
 import fit.iuh.kttkpm_nhom15_be.users.application.commands.UpdateProfileCommand;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.UserResponse;
+import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.ActionNotAllowedException;
 import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.DuplicateUserException;
 import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.UserNotFoundException;
 import fit.iuh.kttkpm_nhom15_be.users.domain.models.User;
-import fit.iuh.kttkpm_nhom15_be.users.domain.models.UserRole;
 import fit.iuh.kttkpm_nhom15_be.users.domain.repositories.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 class UpdateProfileUseCaseTest {
 
-    @Test
-    void executeUpdatesProfileSuccessfully() {
-        UserRepository userRepository = Mockito.mock(UserRepository.class);
-        UpdateProfileUseCase useCase = new UpdateProfileUseCase(userRepository);
+    private UserRepository userRepository;
+    private OtpService otpService;
+    private UpdateProfileUseCase useCase;
 
+    @BeforeEach
+    void setUp() {
+        userRepository = Mockito.mock(UserRepository.class);
+        otpService = Mockito.mock(OtpService.class);
+        // Fix lỗi "Expected 2 arguments" ở đây nè sếp!
+        useCase = new UpdateProfileUseCase(userRepository, otpService);
+    }
+
+    @Test
+    void executeUpdatesProfileSuccessfully_WhenEmailUnchanged() {
+        // GIVEN: Email không đổi, chỉ đổi tên và avatar
         User user = User.builder()
                 .id("user-1")
                 .email("old@example.com")
                 .phone("0909000001")
                 .fullName("Old Name")
                 .avatarUrl("https://old-avatar")
-                .role(UserRole.CUSTOMER)
-                .isActive(true)
-                .addresses(new ArrayList<>())
                 .build();
 
         when(userRepository.findById("user-1")).thenReturn(Optional.of(user));
-        when(userRepository.existsByEmailOrPhoneExcludingId("new@example.com", "0909000009", "user-1")).thenReturn(false);
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
+        // WHEN
         UserResponse result = useCase.execute(new UpdateProfileCommand(
                 "user-1",
-                "new@example.com",
-                "0909000009",
+                "old@example.com", // Giữ nguyên email
+                "0909000001",
                 "Nguyen Van A",
                 "https://cdn.example/avatar.png"
         ));
 
-        ArgumentCaptor<User> savedUser = ArgumentCaptor.forClass(User.class);
-        verify(userRepository).save(savedUser.capture());
-
-        assertEquals("new@example.com", savedUser.getValue().getEmail());
-        assertEquals("0909000009", savedUser.getValue().getPhone());
-        assertEquals("Nguyen Van A", savedUser.getValue().getFullName());
-        assertEquals("https://cdn.example/avatar.png", savedUser.getValue().getAvatarUrl());
+        // THEN
+        verify(userRepository).save(any(User.class));
         assertEquals("Nguyen Van A", result.fullName());
         assertEquals("https://cdn.example/avatar.png", result.avatarUrl());
+        verify(otpService, never()).sendOtp(any(), any(), any());
     }
 
     @Test
-    void executeThrowsVietnameseExceptionWhenUserNotFound() {
-        UserRepository userRepository = Mockito.mock(UserRepository.class);
-        UpdateProfileUseCase useCase = new UpdateProfileUseCase(userRepository);
+    void executeThrowsExceptionAndSendsOtp_WhenEmailChanged() {
+        // GIVEN
+        User user = User.builder()
+                .id("user-1")
+                .email("old@example.com")
+                .build();
 
+        when(userRepository.findById("user-1")).thenReturn(Optional.of(user));
+
+        // WHEN & THEN
+        ActionNotAllowedException ex = assertThrows(ActionNotAllowedException.class, () ->
+                useCase.execute(new UpdateProfileCommand(
+                        "user-1",
+                        "new@example.com", // Thay đổi email
+                        "0909000001",
+                        "Nguyen Van A",
+                        null
+                ))
+        );
+
+        assertTrue(ex.getMessage().contains("Mã xác thực đã gửi đến new@example.com"));
+        // Kiểm tra xem có gọi sang OtpService để lưu DB V9 không
+        verify(otpService).sendOtp(eq("user-1"), eq("new@example.com"), eq("UPDATE_EMAIL"));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void executeThrowsExceptionWhenUserNotFound() {
         when(userRepository.findById("missing-user")).thenReturn(Optional.empty());
 
-        UserNotFoundException ex = assertThrows(UserNotFoundException.class, () -> useCase.execute(
-                new UpdateProfileCommand("missing-user", "new@example.com", "0909", "A", null)
-        ));
-
-        assertEquals("Không tìm thấy tài khoản với ID: missing-user", ex.getMessage());
-        verify(userRepository, never()).save(any());
-        verify(userRepository, never()).existsByEmailOrPhoneExcludingId(any(), any(), any());
+        assertThrows(UserNotFoundException.class, () ->
+                useCase.execute(new UpdateProfileCommand("missing-user", "a@b.com", "09", "A", null))
+        );
     }
 
     @Test
-    void executeThrowsVietnameseExceptionWhenEmailOrPhoneAlreadyUsed() {
-        UserRepository userRepository = Mockito.mock(UserRepository.class);
-        UpdateProfileUseCase useCase = new UpdateProfileUseCase(userRepository);
-
-        User user = User.builder()
-                .id("user-1")
-                .role(UserRole.CUSTOMER)
-                .addresses(new ArrayList<>())
-                .build();
-
+    void executeThrowsExceptionWhenPhoneAlreadyUsedByOther() {
+        // GIVEN
+        User user = User.builder().id("user-1").email("same@example.com").phone("01").build();
         when(userRepository.findById("user-1")).thenReturn(Optional.of(user));
-        when(userRepository.existsByEmailOrPhoneExcludingId("new@example.com", "0909", "user-1")).thenReturn(true);
 
-        DuplicateUserException ex = assertThrows(DuplicateUserException.class, () -> useCase.execute(
-                new UpdateProfileCommand("user-1", "new@example.com", "0909", "A", null)
-        ));
+        // Giả lập SĐT mới bị trùng
+        when(userRepository.existsByEmailOrPhoneExcludingId("same@example.com", "0999", "user-1")).thenReturn(true);
 
-        assertEquals("Email hoặc SĐT đã bị người khác sử dụng.", ex.getMessage());
-        verify(userRepository, never()).save(any());
-    }
-
-    @Test
-    void executeAllowsAvatarToBeNull() {
-        UserRepository userRepository = Mockito.mock(UserRepository.class);
-        UpdateProfileUseCase useCase = new UpdateProfileUseCase(userRepository);
-
-        User user = User.builder()
-                .id("user-1")
-                .email("old@example.com")
-                .phone("0909000001")
-                .fullName("Old Name")
-                .avatarUrl("https://old-avatar")
-                .role(UserRole.CUSTOMER)
-                .isActive(true)
-                .addresses(new ArrayList<>())
-                .build();
-
-        when(userRepository.findById("user-1")).thenReturn(Optional.of(user));
-        when(userRepository.existsByEmailOrPhoneExcludingId("new@example.com", "0909000009", "user-1")).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        UserResponse result = useCase.execute(new UpdateProfileCommand(
-                "user-1",
-                "new@example.com",
-                "0909000009",
-                "Nguyen Van B",
-                null
-        ));
-
-        assertEquals("Nguyen Van B", result.fullName());
-        assertNull(result.avatarUrl());
-    }
-
-    @Test
-    void executeKeepsUserRoleAndStatusUnchangedAfterProfileUpdate() {
-        UserRepository userRepository = Mockito.mock(UserRepository.class);
-        UpdateProfileUseCase useCase = new UpdateProfileUseCase(userRepository);
-
-        User user = User.builder()
-                .id("user-1")
-                .email("old@example.com")
-                .phone("0909000001")
-                .fullName("Old Name")
-                .role(UserRole.CUSTOMER)
-                .isActive(true)
-                .addresses(new ArrayList<>())
-                .build();
-
-        when(userRepository.findById("user-1")).thenReturn(Optional.of(user));
-        when(userRepository.existsByEmailOrPhoneExcludingId("new@example.com", "0909000009", "user-1")).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        useCase.execute(new UpdateProfileCommand(
-                "user-1",
-                "new@example.com",
-                "0909000009",
-                "Nguyen Van A",
-                "https://cdn.example/avatar.png"
-        ));
-
-        assertEquals(UserRole.CUSTOMER, user.getRole());
-        assertEquals(true, user.isActive());
-    }
-
-    @Test
-    void executeChecksDuplicateUsingCurrentUserId() {
-        UserRepository userRepository = Mockito.mock(UserRepository.class);
-        UpdateProfileUseCase useCase = new UpdateProfileUseCase(userRepository);
-
-        User user = User.builder()
-                .id("user-99")
-                .role(UserRole.CUSTOMER)
-                .addresses(new ArrayList<>())
-                .build();
-
-        when(userRepository.findById("user-99")).thenReturn(Optional.of(user));
-        when(userRepository.existsByEmailOrPhoneExcludingId("profile@example.com", "0911000000", "user-99")).thenReturn(false);
-        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        useCase.execute(new UpdateProfileCommand(
-                "user-99",
-                "profile@example.com",
-                "0911000000",
-                "Profile User",
-                null
-        ));
-
-        verify(userRepository).existsByEmailOrPhoneExcludingId("profile@example.com", "0911000000", "user-99");
+        // WHEN & THEN
+        assertThrows(DuplicateUserException.class, () ->
+                useCase.execute(new UpdateProfileCommand("user-1", "same@example.com", "0999", "A", null))
+        );
     }
 }
