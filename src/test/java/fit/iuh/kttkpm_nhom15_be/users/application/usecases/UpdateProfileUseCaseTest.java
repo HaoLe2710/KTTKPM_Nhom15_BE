@@ -10,8 +10,6 @@ import fit.iuh.kttkpm_nhom15_be.users.domain.models.User;
 import fit.iuh.kttkpm_nhom15_be.users.domain.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
 import java.util.Optional;
 
@@ -28,15 +26,13 @@ class UpdateProfileUseCaseTest {
 
     @BeforeEach
     void setUp() {
-        userRepository = Mockito.mock(UserRepository.class);
-        otpService = Mockito.mock(OtpService.class);
-        // Fix lỗi "Expected 2 arguments" ở đây nè sếp!
+        userRepository = mock(UserRepository.class);
+        otpService = mock(OtpService.class);
         useCase = new UpdateProfileUseCase(userRepository, otpService);
     }
 
     @Test
-    void executeUpdatesProfileSuccessfully_WhenEmailUnchanged() {
-        // GIVEN: Email không đổi, chỉ đổi tên và avatar
+    void executeUpdatesProfileSuccessfullyWhenEmailUnchanged() {
         User user = User.builder()
                 .id("user-1")
                 .email("old@example.com")
@@ -48,16 +44,14 @@ class UpdateProfileUseCaseTest {
         when(userRepository.findById("user-1")).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // WHEN
         UserResponse result = useCase.execute(new UpdateProfileCommand(
                 "user-1",
-                "old@example.com", // Giữ nguyên email
+                "old@example.com",
                 "0909000001",
                 "Nguyen Van A",
                 "https://cdn.example/avatar.png"
         ));
 
-        // THEN
         verify(userRepository).save(any(User.class));
         assertEquals("Nguyen Van A", result.fullName());
         assertEquals("https://cdn.example/avatar.png", result.avatarUrl());
@@ -65,29 +59,44 @@ class UpdateProfileUseCaseTest {
     }
 
     @Test
-    void executeThrowsExceptionAndSendsOtp_WhenEmailChanged() {
-        // GIVEN
+    void executeThrowsAndSendsOtpToOldEmailWhenEmailChanged() {
         User user = User.builder()
                 .id("user-1")
                 .email("old@example.com")
+                .phone("0909000001")
                 .build();
 
         when(userRepository.findById("user-1")).thenReturn(Optional.of(user));
+        when(userRepository.findByEmail("new@example.com")).thenReturn(Optional.empty());
 
-        // WHEN & THEN
         ActionNotAllowedException ex = assertThrows(ActionNotAllowedException.class, () ->
                 useCase.execute(new UpdateProfileCommand(
                         "user-1",
-                        "new@example.com", // Thay đổi email
+                        "new@example.com",
                         "0909000001",
                         "Nguyen Van A",
                         null
                 ))
         );
 
-        assertTrue(ex.getMessage().contains("Mã xác thực đã gửi đến new@example.com"));
-        // Kiểm tra xem có gọi sang OtpService để lưu DB V9 không
-        verify(otpService).sendOtp(eq("user-1"), eq("new@example.com"), eq("UPDATE_EMAIL"));
+        assertTrue(ex.getMessage().contains("old@example.com"));
+        verify(otpService).sendOtp(eq("user-1"), eq("old@example.com"), eq("UPDATE_EMAIL_OLD"));
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void executeThrowsExceptionWhenNewEmailAlreadyUsed() {
+        User currentUser = User.builder().id("user-1").email("old@example.com").phone("01").build();
+        User otherUser = User.builder().id("user-2").email("new@example.com").phone("02").build();
+
+        when(userRepository.findById("user-1")).thenReturn(Optional.of(currentUser));
+        when(userRepository.findByEmail("new@example.com")).thenReturn(Optional.of(otherUser));
+
+        assertThrows(DuplicateUserException.class, () ->
+                useCase.execute(new UpdateProfileCommand("user-1", "new@example.com", "01", "A", null))
+        );
+
+        verify(otpService, never()).sendOtp(any(), any(), any());
         verify(userRepository, never()).save(any());
     }
 
@@ -102,14 +111,10 @@ class UpdateProfileUseCaseTest {
 
     @Test
     void executeThrowsExceptionWhenPhoneAlreadyUsedByOther() {
-        // GIVEN
         User user = User.builder().id("user-1").email("same@example.com").phone("01").build();
         when(userRepository.findById("user-1")).thenReturn(Optional.of(user));
-
-        // Giả lập SĐT mới bị trùng
         when(userRepository.existsByEmailOrPhoneExcludingId("same@example.com", "0999", "user-1")).thenReturn(true);
 
-        // WHEN & THEN
         assertThrows(DuplicateUserException.class, () ->
                 useCase.execute(new UpdateProfileCommand("user-1", "same@example.com", "0999", "A", null))
         );
