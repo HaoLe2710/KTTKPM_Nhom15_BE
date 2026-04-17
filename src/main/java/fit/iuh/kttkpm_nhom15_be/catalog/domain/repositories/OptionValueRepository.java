@@ -7,5 +7,7 @@ import java.util.Optional;
 public interface OptionValueRepository {
   OptionValue save(OptionValue optionValue);
   Optional<OptionValue> findById(String id);
+  List<OptionValue> findByOptionId(String optionId);
+  void deleteByOptionId(String optionId);
   List<OptionValue> findAll();
 }

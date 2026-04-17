@@ -13,6 +13,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 interface JpaProductTypeRepository extends JpaRepository<ProductTypeJpaEntity, String> {
+    boolean existsByCodeIgnoreCase(String code);
+    Optional<ProductTypeJpaEntity> findByCodeIgnoreCase(String code);
 }
 
 @Repository
@@ -31,6 +33,21 @@ public class ProductTypeRepositoryImpl implements ProductTypeRepository {
     @Override
     public Optional<ProductType> findById(String id) {
         return jpaRepository.findById(id).map(dataMapper::toDomainModel);
+    }
+
+    @Override
+    public Optional<ProductType> findByCode(String code) {
+        return jpaRepository.findByCodeIgnoreCase(code).map(dataMapper::toDomainModel);
+    }
+
+    @Override
+    public boolean existsByCode(String code) {
+        return jpaRepository.existsByCodeIgnoreCase(code);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        jpaRepository.deleteById(id);
     }
 
     @Override

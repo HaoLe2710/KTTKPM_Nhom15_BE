@@ -9,15 +9,19 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.product.Updat
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.Product;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class ProductController {
 
     private final CreateCompositeProductUseCase createCompositeProductUseCase;
@@ -53,5 +57,10 @@ public class ProductController {
                                              @Valid @RequestBody UpdateVariantPricingUseCase.PatchVariantRequest request) {
         updateVariantPricingUseCase.execute(productId, variantId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, String>> handleBadRequest(IllegalArgumentException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", ex.getMessage()));
     }
 }
