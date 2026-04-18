@@ -15,9 +15,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-// 1. Spring Data JPA Interfaces
 interface JpaChatRoomRepository extends JpaRepository<ChatRoomJpaEntity, String> {
-    Optional<ChatRoomJpaEntity> findByUserId(String userId);
+    Optional<ChatRoomJpaEntity> findFirstByUserIdAndIsClosedFalseOrderByCreatedAtDesc(String userId);
+
+    List<ChatRoomJpaEntity> findByIsClosedFalseOrderByCreatedAtAsc();
 }
 
 interface JpaChatMessageRepository extends JpaRepository<ChatMessageJpaEntity, String> {
@@ -25,8 +26,7 @@ interface JpaChatMessageRepository extends JpaRepository<ChatMessageJpaEntity, S
     List<ChatMessageJpaEntity> findByRoomIdOrderByCreatedAtAsc(@Param("roomId") String roomId);
 }
 
-// 2. Lớp Implement của Domain
-@Repository // <-- Báo cho Spring biết đây là Bean Repository
+@Repository
 @RequiredArgsConstructor
 public class ChatRepositoryImpl implements ChatRepository {
 
@@ -47,45 +47,30 @@ public class ChatRepositoryImpl implements ChatRepository {
 
     @Override
     public List<ChatRoom> findActiveRooms() {
-        return roomRepo.findAll().stream().map(mapper::toDomainModel).toList();
+        return roomRepo.findByIsClosedFalseOrderByCreatedAtAsc().stream()
+                .map(mapper::toDomainModel)
+                .toList();
     }
 
     @Override
     public Optional<ChatRoom> findActiveRoomByCustomer(String customerId) {
-        return roomRepo.findByUserId(customerId).map(mapper::toDomainModel);
+        return roomRepo.findFirstByUserIdAndIsClosedFalseOrderByCreatedAtDesc(customerId)
+                .map(mapper::toDomainModel);
     }
 
     @Override
     public ChatMessage saveMessage(ChatMessage message) {
-        ChatMessageJpaEntity entity = new ChatMessageJpaEntity();
-        entity.setId(message.getId());
-        entity.setContent(message.getContent());
-        entity.setSenderId(message.getSenderId());
-
-        // Gắn quan hệ với Room
+        ChatMessageJpaEntity entity = mapper.toJpaEntity(message);
         roomRepo.findById(message.getRoomId()).ifPresent(entity::setRoom);
 
         ChatMessageJpaEntity saved = messageRepo.save(entity);
-
-        // Map ngược lại Domain Model
-        ChatMessage result = new ChatMessage();
-        result.setId(saved.getId());
-        result.setRoomId(saved.getRoom().getId());
-        result.setSenderId(saved.getSenderId());
-        result.setContent(saved.getContent());
-        return result;
+        return mapper.toDomainModel(saved);
     }
 
     @Override
     public List<ChatMessage> findMessagesByRoomId(String roomId) {
         return messageRepo.findByRoomIdOrderByCreatedAtAsc(roomId).stream()
-                .map(saved -> {
-                    ChatMessage result = new ChatMessage();
-                    result.setId(saved.getId());
-                    result.setRoomId(saved.getRoom().getId());
-                    result.setSenderId(saved.getSenderId());
-                    result.setContent(saved.getContent());
-                    return result;
-                }).toList();
+                .map(mapper::toDomainModel)
+                .toList();
     }
 }

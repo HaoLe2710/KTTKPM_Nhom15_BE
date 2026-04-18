@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface VariantRepository {
   Optional<Variant> findById(String id);
+  boolean existsBySku(String sku);
   Variant save(Variant variant);
   void patchPriceAndStock(String id, BigDecimal price, int addedStock);
   long countExistingByIds(List<String> ids);
