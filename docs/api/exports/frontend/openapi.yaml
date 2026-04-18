@@ -1,0 +1,3951 @@
+openapi: 3.1.0
+info:
+  title: KTTKPM_Nhom15_BE API
+  description: Frontend OpenAPI handoff for the KTTKPM_Nhom15_BE backend, including the admin dashboard APIs used to manage catalog and search data. Admin endpoints are under /api/v1/admin/** and require X-User-Role with ADMIN or STAFF; X-User-Id should also be sent for audit context.
+  contact:
+    name: Backend Team
+    email: backend-team@example.local
+  license:
+    name: Internal Use
+    url: https://example.local/internal-use
+  version: v1
+externalDocs:
+  description: Generated API artifacts for frontend and QA
+  url: /docs/api/exports/frontend/openapi.yaml
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+tags:
+- name: Admin Catalog
+  description: Admin dashboard endpoints for catalog health, products, variants, options, and media management.
+- name: Admin Search
+  description: Admin dashboard endpoints for search analytics, projection operations, suggestions, and synonym management.
+- name: Analytics
+  description: Reporting and operational metrics endpoints.
+- name: Cart
+  description: Shopping cart and cart line management.
+- name: Catalog
+  description: "Catalog, product, media, and master-data endpoints."
+- name: Chat
+  description: Chat room and conversation endpoints.
+- name: Orders
+  description: Order placement and order lifecycle endpoints.
+- name: Promotions
+  description: Promotion management endpoints.
+- name: Reviews
+  description: Product review creation and moderation endpoints.
+- name: Search
+  description: "Search, suggestions, and search projection administration endpoints."
+- name: Users
+  description: User management endpoints.
+paths:
+  /api/v1/users/{id}:
+    get:
+      tags:
+      - Users
+      operationId: getUserById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserResponse"
+    put:
+      tags:
+      - Users
+      operationId: updateUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+    delete:
+      tags:
+      - Users
+      operationId: deleteUser
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/v1/promotions/{promotionId}:
+    put:
+      tags:
+      - Promotions
+      operationId: updatePromotion
+      parameters:
+      - name: promotionId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePromotionRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PromotionResponseDTO"
+    delete:
+      tags:
+      - Promotions
+      operationId: deletePromotion
+      parameters:
+      - name: promotionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/v1/users:
+    get:
+      tags:
+      - Users
+      operationId: getUsers
+      parameters:
+      - name: keyword
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PageUserResponse"
+    post:
+      tags:
+      - Users
+      operationId: createUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /api/v1/search/projections/rebuild-all:
+    post:
+      tags:
+      - Search
+      operationId: rebuildAllProducts
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TriggerFullSearchProjectionRebuildResult"
+  /api/v1/reviews:
+    post:
+      tags:
+      - Reviews
+      operationId: createReview
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReviewRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CreateReviewResult"
+  /api/v1/promotions:
+    post:
+      tags:
+      - Promotions
+      operationId: createPromotion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePromotionRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PromotionResponseDTO"
+  /api/v1/promotions/{promotionId}/deactivate:
+    post:
+      tags:
+      - Promotions
+      operationId: deactivatePromotion
+      parameters:
+      - name: promotionId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PromotionResponseDTO"
+  /api/v1/products:
+    get:
+      tags:
+      - Catalog
+      operationId: getProducts
+      parameters:
+      - name: typeId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: minPrice
+        in: query
+        required: false
+        schema:
+          type: number
+      - name: maxPrice
+        in: query
+        required: false
+        schema:
+          type: number
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PageProductSummaryDTO"
+    post:
+      tags:
+      - Catalog
+      operationId: createProduct
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompositeProductRequestDTO"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/v1/products/{productId}/variants/{variantId}/media:
+    post:
+      tags:
+      - Catalog
+      operationId: uploadVariantMedia
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+              - file
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Media"
+  /api/v1/products/{productId}/media:
+    post:
+      tags:
+      - Catalog
+      operationId: uploadProductMedia
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+              - file
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Media"
+  /api/v1/product-types:
+    get:
+      tags:
+      - Catalog
+      operationId: getProductTypes
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductTypeResponse"
+    post:
+      tags:
+      - Catalog
+      operationId: createProductType
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductTypeRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductTypeResponse"
+  /api/v1/orders:
+    post:
+      tags:
+      - Orders
+      operationId: placeOrder
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlaceOrderRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PlaceOrderResult"
+  /api/v1/orders/{orderId}/cancel:
+    post:
+      tags:
+      - Orders
+      operationId: cancelOrder
+      parameters:
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelOrderRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CancelOrderResult"
+  /api/v1/options:
+    get:
+      tags:
+      - Catalog
+      operationId: getOptions
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OptionResponse"
+    post:
+      tags:
+      - Catalog
+      operationId: createOption
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/OptionResponse"
+  /api/v1/chat/rooms/{roomId}/messages:
+    get:
+      tags:
+      - Chat
+      operationId: getChatHistory
+      parameters:
+      - name: roomId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+    post:
+      tags:
+      - Chat
+      operationId: sendMessage
+      parameters:
+      - name: roomId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: X-User-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties:
+                type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+  /api/v1/carts/items:
+    post:
+      tags:
+      - Cart
+      operationId: addToCart
+      parameters:
+      - name: X-User-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddToCartRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/CartSummaryDTO"
+  /api/v1/users/{targetId}/toggle-status:
+    patch:
+      tags:
+      - Users
+      operationId: toggleStatus
+      parameters:
+      - name: X-User-Id
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: targetId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+  /api/v1/products/{productId}/variants/{variantId}:
+    patch:
+      tags:
+      - Catalog
+      operationId: patchVariant
+      parameters:
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PatchVariantRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/v1/search/suggestions:
+    get:
+      tags:
+      - Search
+      operationId: getSuggestions
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SearchSuggestionDTO"
+  /api/v1/products/{id}:
+    get:
+      tags:
+      - Catalog
+      operationId: getProduct
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Product"
+  /api/v1/products/search:
+    get:
+      tags:
+      - Search
+      operationId: searchProducts
+      parameters:
+      - name: q
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: typeIds
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+      - name: minPrice
+        in: query
+        required: false
+        schema:
+          type: number
+      - name: maxPrice
+        in: query
+        required: false
+        schema:
+          type: number
+      - name: inStock
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          default: relevance
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SearchResponseDTO"
+  /api/v1/analytics/report/pdf:
+    get:
+      tags:
+      - Analytics
+      operationId: downloadPdfReport
+      parameters:
+      - name: startDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: endDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: byte
+  /api/v1/analytics/dashboard:
+    get:
+      tags:
+      - Analytics
+      operationId: getDashboardReport
+      parameters:
+      - name: startDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      - name: endDate
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DashboardReportResponse"
+  /api/v1/reviews/{reviewId}:
+    delete:
+      tags:
+      - Reviews
+      operationId: deleteReview
+      parameters:
+      - name: reviewId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DeleteReviewResult"
+  /api/v1/admin/catalog/health:
+    get:
+      tags:
+      - Admin Catalog
+      summary: Get catalog health summary
+      description: Returns issue counters that drive the admin dashboard health widgets for catalog quality and readiness.
+      operationId: getAdminCatalogHealth
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      responses:
+        "200":
+          description: Catalog health summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogHealthResponse"
+  /api/v1/admin/products:
+    get:
+      tags:
+      - Admin Catalog
+      summary: List admin products
+      description: Returns paginated products for the admin product table with search, type, activity, and sort filters.
+      operationId: getAdminProducts
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: q
+        in: query
+        required: false
+        description: Full-text match against product name and related admin product search fields.
+        schema:
+          type: string
+      - name: typeId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: active
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 1
+          maximum: 100
+      - name: sort
+        in: query
+        required: false
+        description: Supports updatedAt,desc by default. Allowed fields are name, slug, updatedAt, projectionUpdatedAt.
+        schema:
+          type: string
+          default: updatedAt,desc
+      responses:
+        "200":
+          description: Admin product page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageProductListItemResponse"
+    post:
+      tags:
+      - Admin Catalog
+      summary: Create product
+      description: Creates a product together with its initial variants for the admin catalog flow.
+      operationId: createAdminProduct
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductCreateRequest"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatedResourceResponse"
+  /api/v1/admin/products/{id}:
+    get:
+      tags:
+      - Admin Catalog
+      summary: Get admin product detail
+      operationId: getAdminProduct
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Product detail with search and variant data for the admin edit screen
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetailResponse"
+    put:
+      tags:
+      - Admin Catalog
+      summary: Update product
+      operationId: updateAdminProduct
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdateRequest"
+      responses:
+        "200":
+          description: Updated product detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDetailResponse"
+  /api/v1/admin/products/{id}/active:
+    patch:
+      tags:
+      - Admin Catalog
+      summary: Toggle product active state
+      operationId: toggleAdminProductActive
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleActiveRequest"
+      responses:
+        "204":
+          description: Product active state updated
+  /api/v1/admin/products/{id}/search-status:
+    get:
+      tags:
+      - Admin Catalog
+      summary: Get product search projection status
+      operationId: getAdminProductSearchStatus
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Search indexing status for the product
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchStatusResponse"
+  /api/v1/admin/products/{id}/search-preview:
+    get:
+      tags:
+      - Admin Search
+      summary: Preview indexed search document for a product
+      operationId: getAdminProductSearchPreview
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Search preview used by the admin search-debug UI
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchPreviewResponse"
+  /api/v1/admin/variants:
+    post:
+      tags:
+      - Admin Catalog
+      summary: Create variant
+      operationId: createAdminVariant
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VariantCreateRequest"
+      responses:
+        "201":
+          description: Variant created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VariantSummaryResponse"
+  /api/v1/admin/variants/{id}:
+    put:
+      tags:
+      - Admin Catalog
+      summary: Update variant
+      operationId: updateAdminVariant
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VariantUpdateRequest"
+      responses:
+        "200":
+          description: Updated variant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VariantSummaryResponse"
+  /api/v1/admin/variants/{id}/stock:
+    patch:
+      tags:
+      - Admin Catalog
+      summary: Patch variant stock
+      operationId: patchAdminVariantStock
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VariantStockPatchRequest"
+      responses:
+        "204":
+          description: Variant stock updated
+  /api/v1/admin/variants/{id}/active:
+    patch:
+      tags:
+      - Admin Catalog
+      summary: Toggle variant active state
+      operationId: toggleAdminVariantActive
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleActiveRequest"
+      responses:
+        "204":
+          description: Variant active state updated
+  /api/v1/admin/options:
+    get:
+      tags:
+      - Admin Catalog
+      summary: List options
+      operationId: getAdminOptions
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: active
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 1
+          maximum: 100
+      - name: sort
+        in: query
+        required: false
+        description: Allowed fields are name, code, usageCount.
+        schema:
+          type: string
+          default: name,asc
+      responses:
+        "200":
+          description: Option page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageOptionListItemResponse"
+    post:
+      tags:
+      - Admin Catalog
+      summary: Create option
+      operationId: createAdminOption
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionWriteRequest"
+      responses:
+        "201":
+          description: Option created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatedResourceResponse"
+  /api/v1/admin/options/{id}:
+    put:
+      tags:
+      - Admin Catalog
+      summary: Update option
+      operationId: updateAdminOption
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionWriteRequest"
+      responses:
+        "204":
+          description: Option updated
+  /api/v1/admin/option-values:
+    get:
+      tags:
+      - Admin Catalog
+      summary: List option values
+      operationId: getAdminOptionValues
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: optionId
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: active
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 1
+          maximum: 100
+      - name: sort
+        in: query
+        required: false
+        description: Allowed fields are value, sortOrder, usageCount.
+        schema:
+          type: string
+          default: sortOrder,asc
+      responses:
+        "200":
+          description: Option value page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageOptionValueListItemResponse"
+  /api/v1/admin/options/{optionId}/values:
+    post:
+      tags:
+      - Admin Catalog
+      summary: Create option value
+      operationId: createAdminOptionValue
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: optionId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionValueWriteRequest"
+      responses:
+        "201":
+          description: Option value created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatedResourceResponse"
+  /api/v1/admin/option-values/{id}:
+    put:
+      tags:
+      - Admin Catalog
+      summary: Update option value
+      operationId: updateAdminOptionValue
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptionValueWriteRequest"
+      responses:
+        "204":
+          description: Option value updated
+  /api/v1/admin/option-values/{id}/active:
+    patch:
+      tags:
+      - Admin Catalog
+      summary: Toggle option value active state
+      operationId: toggleAdminOptionValueActive
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ToggleActiveRequest"
+      responses:
+        "204":
+          description: Option value active state updated
+  /api/v1/admin/products/{productId}/media:
+    get:
+      tags:
+      - Admin Catalog
+      summary: List product media
+      operationId: getAdminProductMedia
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Product media list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminMediaResponse"
+    post:
+      tags:
+      - Admin Catalog
+      summary: Upload product media
+      operationId: createAdminProductMedia
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AdminMediaUploadRequest"
+      responses:
+        "201":
+          description: Product media created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMediaResponse"
+  /api/v1/admin/products/{productId}/media/{mediaId}:
+    get:
+      tags:
+      - Admin Catalog
+      summary: Get product media
+      operationId: getAdminProductMediaById
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: mediaId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Product media detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMediaResponse"
+    put:
+      tags:
+      - Admin Catalog
+      summary: Replace product media asset
+      operationId: updateAdminProductMedia
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: mediaId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AdminMediaUploadRequest"
+      responses:
+        "200":
+          description: Updated product media
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMediaResponse"
+    delete:
+      tags:
+      - Admin Catalog
+      summary: Delete product media
+      operationId: deleteAdminProductMedia
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: mediaId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Product media deleted
+  /api/v1/admin/products/{productId}/media/{mediaId}/primary:
+    patch:
+      tags:
+      - Admin Catalog
+      summary: Mark product media as primary
+      operationId: setAdminProductMediaPrimary
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: mediaId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Updated primary product media
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMediaResponse"
+  /api/v1/admin/variants/{variantId}/media:
+    get:
+      tags:
+      - Admin Catalog
+      summary: List variant media
+      operationId: getAdminVariantMedia
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Variant media list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminMediaResponse"
+    post:
+      tags:
+      - Admin Catalog
+      summary: Upload variant media
+      operationId: createAdminVariantMedia
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AdminMediaUploadRequest"
+      responses:
+        "201":
+          description: Variant media created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMediaResponse"
+  /api/v1/admin/variants/{variantId}/media/{mediaId}:
+    get:
+      tags:
+      - Admin Catalog
+      summary: Get variant media
+      operationId: getAdminVariantMediaById
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: mediaId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Variant media detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMediaResponse"
+    put:
+      tags:
+      - Admin Catalog
+      summary: Replace variant media asset
+      operationId: updateAdminVariantMedia
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: mediaId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AdminMediaUploadRequest"
+      responses:
+        "200":
+          description: Updated variant media
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMediaResponse"
+    delete:
+      tags:
+      - Admin Catalog
+      summary: Delete variant media
+      operationId: deleteAdminVariantMedia
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: mediaId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Variant media deleted
+  /api/v1/admin/variants/{variantId}/media/{mediaId}/primary:
+    patch:
+      tags:
+      - Admin Catalog
+      summary: Mark variant media as primary
+      operationId: setAdminVariantMediaPrimary
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: variantId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: mediaId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Updated primary variant media
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminMediaResponse"
+  /api/v1/admin/search/top-queries:
+    get:
+      tags:
+      - Admin Search
+      summary: Get top search queries
+      operationId: getAdminTopQueries
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        "200":
+          description: Top query list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopQueryResponse"
+  /api/v1/admin/search/zero-result-queries:
+    get:
+      tags:
+      - Admin Search
+      summary: Get zero-result search queries
+      operationId: getAdminZeroResultQueries
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 1
+          maximum: 100
+      - name: sort
+        in: query
+        required: false
+        description: Allowed fields are occurrenceCount and lastSeenAt.
+        schema:
+          type: string
+          default: occurrenceCount,desc
+      responses:
+        "200":
+          description: Zero-result query page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageZeroResultQueryResponse"
+  /api/v1/admin/search/top-clicked-products:
+    get:
+      tags:
+      - Admin Search
+      summary: Get top clicked products from search
+      operationId: getAdminTopClickedProducts
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date-time
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      responses:
+        "200":
+          description: Top clicked products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TopClickedProductResponse"
+  /api/v1/admin/search/summary:
+    get:
+      tags:
+      - Admin Search
+      summary: Get search projection health summary
+      operationId: getAdminSearchSummary
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      responses:
+        "200":
+          description: Summary counters for the search admin dashboard
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectionHealthSummaryResponse"
+  /api/v1/admin/search/projections/rebuild/{productId}:
+    post:
+      tags:
+      - Admin Search
+      summary: Enqueue rebuild for one product
+      operationId: rebuildAdminSearchProjectionForProduct
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Rebuild task accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectionEnqueueResponse"
+  /api/v1/admin/search/projections/rebuild-all:
+    post:
+      tags:
+      - Admin Search
+      summary: Enqueue full search rebuild
+      operationId: rebuildAdminSearchProjectionForAllProducts
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      responses:
+        "202":
+          description: Full rebuild accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TriggerFullSearchProjectionRebuildResult"
+  /api/v1/admin/search/projection-tasks:
+    get:
+      tags:
+      - Admin Search
+      summary: List projection tasks
+      operationId: getAdminSearchProjectionTasks
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 1
+          maximum: 100
+      - name: sort
+        in: query
+        required: false
+        description: Allowed fields are nextAttemptAt, updatedAt, productId, status.
+        schema:
+          type: string
+          default: nextAttemptAt,asc
+      responses:
+        "200":
+          description: Projection task page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageProjectionTaskResponse"
+  /api/v1/admin/search/projection-failures:
+    get:
+      tags:
+      - Admin Search
+      summary: List projection failures
+      operationId: getAdminSearchProjectionFailures
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: state
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 1
+          maximum: 100
+      - name: sort
+        in: query
+        required: false
+        description: Allowed fields are failedAt, retryCount, productId.
+        schema:
+          type: string
+          default: failedAt,desc
+      responses:
+        "200":
+          description: Projection failure page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageProjectionFailureResponse"
+  /api/v1/admin/search/projection-runs:
+    get:
+      tags:
+      - Admin Search
+      summary: List projection runs
+      operationId: getAdminSearchProjectionRuns
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 1
+          maximum: 100
+      - name: sort
+        in: query
+        required: false
+        description: Allowed fields are startedAt, finishedAt, processedCount.
+        schema:
+          type: string
+          default: startedAt,desc
+      responses:
+        "200":
+          description: Projection run page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageProjectionRunResponse"
+  /api/v1/admin/search/projection-failures/{productId}/retry:
+    post:
+      tags:
+      - Admin Search
+      summary: Retry one projection failure
+      operationId: retryAdminSearchProjectionFailure
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Retry accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectionEnqueueResponse"
+  /api/v1/admin/search/projection-failures/{productId}/resolve:
+    post:
+      tags:
+      - Admin Search
+      summary: Resolve a projection failure
+      operationId: resolveAdminSearchProjectionFailure
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: productId
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FailureResolveRequest"
+      responses:
+        "204":
+          description: Failure resolved
+  /api/v1/admin/search/suggestions:
+    get:
+      tags:
+      - Admin Search
+      summary: List search suggestions
+      operationId: getAdminSearchSuggestions
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: active
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 1
+          maximum: 100
+      - name: sort
+        in: query
+        required: false
+        description: Allowed fields are weight, keyword, updatedAt.
+        schema:
+          type: string
+          default: weight,desc
+      responses:
+        "200":
+          description: Suggestion page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageSuggestionResponse"
+    post:
+      tags:
+      - Admin Search
+      summary: Create search suggestion
+      operationId: createAdminSearchSuggestion
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuggestionWriteRequest"
+      responses:
+        "201":
+          description: Suggestion created and projection task enqueued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectionEnqueueResponse"
+  /api/v1/admin/search/suggestions/{id}:
+    put:
+      tags:
+      - Admin Search
+      summary: Update search suggestion
+      operationId: updateAdminSearchSuggestion
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuggestionWriteRequest"
+      responses:
+        "204":
+          description: Suggestion updated
+  /api/v1/admin/search/suggestions/{id}/active:
+    patch:
+      tags:
+      - Admin Search
+      summary: Toggle suggestion active state
+      operationId: toggleAdminSearchSuggestionActive
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: active
+        in: query
+        required: true
+        schema:
+          type: boolean
+      responses:
+        "204":
+          description: Suggestion active state updated
+  /api/v1/admin/search/synonym-groups:
+    get:
+      tags:
+      - Admin Search
+      summary: List synonym groups
+      operationId: getAdminSynonymGroups
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: active
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+          minimum: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 20
+          minimum: 1
+          maximum: 100
+      - name: sort
+        in: query
+        required: false
+        description: Allowed fields are updatedAt, code, locale.
+        schema:
+          type: string
+          default: updatedAt,desc
+      responses:
+        "200":
+          description: Synonym group page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PageSynonymGroupResponse"
+    post:
+      tags:
+      - Admin Search
+      summary: Create synonym group
+      operationId: createAdminSynonymGroup
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SynonymGroupWriteRequest"
+      responses:
+        "201":
+          description: Synonym group created and projection task enqueued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectionEnqueueResponse"
+  /api/v1/admin/search/synonym-groups/{id}:
+    put:
+      tags:
+      - Admin Search
+      summary: Update synonym group
+      operationId: updateAdminSynonymGroup
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SynonymGroupWriteRequest"
+      responses:
+        "204":
+          description: Synonym group updated
+  /api/v1/admin/search/synonym-groups/{id}/terms:
+    post:
+      tags:
+      - Admin Search
+      summary: Add synonym term
+      operationId: addAdminSynonymTerm
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SynonymTermWriteRequest"
+      responses:
+        "201":
+          description: Synonym term added and projection task enqueued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProjectionEnqueueResponse"
+  /api/v1/admin/search/synonym-terms/{termId}:
+    delete:
+      tags:
+      - Admin Search
+      summary: Delete synonym term
+      operationId: deleteAdminSynonymTerm
+      parameters:
+      - $ref: "#/components/parameters/AdminUserRoleHeader"
+      - $ref: "#/components/parameters/AdminUserIdHeader"
+      - name: termId
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "204":
+          description: Synonym term deleted
+components:
+  parameters:
+    AdminUserRoleHeader:
+      name: X-User-Role
+      in: header
+      required: true
+      description: Required admin role header. Use ADMIN for full access or STAFF for staff dashboard access.
+      schema:
+        type: string
+        enum:
+        - ADMIN
+        - STAFF
+    AdminUserIdHeader:
+      name: X-User-Id
+      in: header
+      required: false
+      description: Optional admin user identifier forwarded by FE for audit attribution and tracing.
+      schema:
+        type: string
+  schemas:
+    ToggleActiveRequest:
+      type: object
+      properties:
+        active:
+          type: boolean
+      required:
+      - active
+    VariantOptionAssignmentRequest:
+      type: object
+      properties:
+        optionId:
+          type: string
+          minLength: 1
+        valueId:
+          type: string
+          minLength: 1
+      required:
+      - optionId
+      - valueId
+    ProductVariantCreateRequest:
+      type: object
+      properties:
+        sku:
+          type: string
+          minLength: 1
+        price:
+          type: number
+          minimum: 0
+        stockQuantity:
+          type: integer
+          format: int32
+          minimum: 0
+        isActive:
+          type: boolean
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/VariantOptionAssignmentRequest"
+      required:
+      - isActive
+      - price
+      - sku
+      - stockQuantity
+    ProductCreateRequest:
+      type: object
+      properties:
+        typeId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        slug:
+          type: string
+        descriptionMd:
+          type: string
+        isCustomizable:
+          type: boolean
+        isActive:
+          type: boolean
+        variants:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/ProductVariantCreateRequest"
+      required:
+      - isActive
+      - isCustomizable
+      - name
+      - typeId
+      - variants
+    ProductUpdateRequest:
+      type: object
+      properties:
+        typeId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        slug:
+          type: string
+        descriptionMd:
+          type: string
+        isCustomizable:
+          type: boolean
+        isActive:
+          type: boolean
+      required:
+      - isActive
+      - isCustomizable
+      - name
+      - typeId
+    VariantCreateRequest:
+      type: object
+      properties:
+        productId:
+          type: string
+          minLength: 1
+        sku:
+          type: string
+          minLength: 1
+        price:
+          type: number
+          minimum: 0
+        stockQuantity:
+          type: integer
+          format: int32
+          minimum: 0
+        isActive:
+          type: boolean
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/VariantOptionAssignmentRequest"
+      required:
+      - isActive
+      - price
+      - productId
+      - sku
+      - stockQuantity
+    VariantUpdateRequest:
+      type: object
+      properties:
+        sku:
+          type: string
+          minLength: 1
+        price:
+          type: number
+          minimum: 0
+        stockQuantity:
+          type: integer
+          format: int32
+          minimum: 0
+        isActive:
+          type: boolean
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/VariantOptionAssignmentRequest"
+      required:
+      - isActive
+      - price
+      - sku
+      - stockQuantity
+    VariantStockPatchRequest:
+      type: object
+      properties:
+        stockQuantity:
+          type: integer
+          format: int32
+          minimum: 0
+      required:
+      - stockQuantity
+    ProductListItemResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        typeId:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        active:
+          type: boolean
+        minPrice:
+          type: number
+        maxPrice:
+          type: number
+        totalStock:
+          type: integer
+          format: int64
+        activeVariantCount:
+          type: integer
+          format: int64
+        projectionStaleness:
+          type: string
+        projectionUpdatedAt:
+          type: string
+          format: date-time
+    PageProductListItemResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductListItemResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    OptionAssignmentResponse:
+      type: object
+      properties:
+        optionId:
+          type: string
+        optionValueId:
+          type: string
+        optionValueLabel:
+          type: string
+    VariantSummaryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        sku:
+          type: string
+        normalizedSku:
+          type: string
+        price:
+          type: number
+        stockQuantity:
+          type: integer
+          format: int32
+        active:
+          type: boolean
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionAssignmentResponse"
+    SearchStatusResponse:
+      type: object
+      properties:
+        projectionExists:
+          type: boolean
+        projectionUpdatedAt:
+          type: string
+          format: date-time
+        sourceUpdatedAt:
+          type: string
+          format: date-time
+        projectionVersion:
+          type: integer
+          format: int64
+        staleness:
+          type: string
+    ProductDetailResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        typeId:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        descriptionMd:
+          type: string
+        customizable:
+          type: boolean
+        active:
+          type: boolean
+        minPrice:
+          type: number
+        maxPrice:
+          type: number
+        totalStock:
+          type: integer
+          format: int64
+        activeVariantCount:
+          type: integer
+          format: int64
+        reviewCount:
+          type: integer
+          format: int64
+        averageRating:
+          type: number
+        soldCount:
+          type: integer
+          format: int64
+        searchStatus:
+          $ref: "#/components/schemas/SearchStatusResponse"
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/VariantSummaryResponse"
+    CreatedResourceResponse:
+      type: object
+      properties:
+        id:
+          type: string
+    OptionValueWriteRequest:
+      type: object
+      properties:
+        value:
+          type: string
+          minLength: 1
+        sortOrder:
+          type: integer
+          format: int32
+        isActive:
+          type: boolean
+      required:
+      - value
+    OptionWriteRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        isActive:
+          type: boolean
+        values:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionValueWriteRequest"
+      required:
+      - code
+      - name
+    OptionListItemResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        active:
+          type: boolean
+        valueCount:
+          type: integer
+          format: int64
+        usageCount:
+          type: integer
+          format: int64
+    PageOptionListItemResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionListItemResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    OptionValueListItemResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        optionId:
+          type: string
+        value:
+          type: string
+        sortOrder:
+          type: integer
+          format: int32
+        active:
+          type: boolean
+        usageCount:
+          type: integer
+          format: int64
+    PageOptionValueListItemResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionValueListItemResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    CatalogHealthIssueCountResponse:
+      type: object
+      properties:
+        issueCode:
+          type: string
+        count:
+          type: integer
+          format: int64
+    CatalogHealthResponse:
+      type: object
+      properties:
+        issues:
+          type: array
+          items:
+            $ref: "#/components/schemas/CatalogHealthIssueCountResponse"
+    MediaType:
+      type: string
+      enum:
+      - IMAGE
+      - VIDEO
+    AdminMediaUploadRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+        type:
+          $ref: "#/components/schemas/MediaType"
+        primary:
+          type: boolean
+          default: false
+      required:
+      - file
+    AdminMediaResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        variantId:
+          type: string
+        url:
+          type: string
+        publicId:
+          type: string
+        type:
+          $ref: "#/components/schemas/MediaType"
+        primary:
+          type: boolean
+    ProjectionEnqueueResponse:
+      type: object
+      properties:
+        productId:
+          type: string
+        status:
+          type: string
+    ProjectionTaskResponse:
+      type: object
+      properties:
+        productId:
+          type: string
+        reason:
+          type: string
+        status:
+          type: string
+        attemptCount:
+          type: integer
+          format: int32
+        nextAttemptAt:
+          type: string
+          format: date-time
+        lastError:
+          type: string
+        lastAttemptAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    PageProjectionTaskResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectionTaskResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    ProjectionFailureResponse:
+      type: object
+      properties:
+        productId:
+          type: string
+        eventType:
+          type: string
+        errorMessage:
+          type: string
+        retryCount:
+          type: integer
+          format: int32
+        failedAt:
+          type: string
+          format: date-time
+        lastRetriedAt:
+          type: string
+          format: date-time
+        state:
+          type: string
+        resolutionType:
+          type: string
+        resolutionNote:
+          type: string
+        resolvedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    PageProjectionFailureResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectionFailureResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    ProjectionRunResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        runType:
+          type: string
+        status:
+          type: string
+        cursorProductId:
+          type: string
+        processedCount:
+          type: integer
+          format: int32
+        failedCount:
+          type: integer
+          format: int32
+        startedAt:
+          type: string
+          format: date-time
+        finishedAt:
+          type: string
+          format: date-time
+    PageProjectionRunResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProjectionRunResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    FailureResolveRequest:
+      type: object
+      properties:
+        resolutionNote:
+          type: string
+    SuggestionWriteRequest:
+      type: object
+      properties:
+        keyword:
+          type: string
+          minLength: 1
+        locale:
+          type: string
+          minLength: 1
+        weight:
+          type: integer
+          format: int32
+          minimum: -1000
+          maximum: 1000
+        isActive:
+          type: boolean
+      required:
+      - isActive
+      - keyword
+      - locale
+      - weight
+    SuggestionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        keyword:
+          type: string
+        keywordNormalized:
+          type: string
+        locale:
+          type: string
+        weight:
+          type: integer
+          format: int32
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    PageSuggestionResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/SuggestionResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    SynonymGroupWriteRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        locale:
+          type: string
+          minLength: 1
+        isActive:
+          type: boolean
+      required:
+      - code
+      - isActive
+      - locale
+    SynonymTermWriteRequest:
+      type: object
+      properties:
+        term:
+          type: string
+          minLength: 1
+      required:
+      - term
+    SynonymTermResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        term:
+          type: string
+        termNormalized:
+          type: string
+    SynonymGroupResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        locale:
+          type: string
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        terms:
+          type: array
+          items:
+            $ref: "#/components/schemas/SynonymTermResponse"
+    PageSynonymGroupResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/SynonymGroupResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    TopQueryResponse:
+      type: object
+      properties:
+        queryText:
+          type: string
+        queryNormalized:
+          type: string
+        totalCount:
+          type: integer
+          format: int64
+    ZeroResultQueryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        queryText:
+          type: string
+        queryNormalized:
+          type: string
+        locale:
+          type: string
+        occurrenceCount:
+          type: integer
+          format: int64
+        lastSeenAt:
+          type: string
+          format: date-time
+    PageZeroResultQueryResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ZeroResultQueryResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    TopClickedProductResponse:
+      type: object
+      properties:
+        productId:
+          type: string
+        productName:
+          type: string
+        clickCount:
+          type: integer
+          format: int64
+    ProjectionHealthSummaryResponse:
+      type: object
+      properties:
+        activeProducts:
+          type: integer
+          format: int64
+        projectedProducts:
+          type: integer
+          format: int64
+        missingProjectionProducts:
+          type: integer
+          format: int64
+        staleProjectionProducts:
+          type: integer
+          format: int64
+        queuedTasks:
+          type: integer
+          format: int64
+        openFailures:
+          type: integer
+          format: int64
+    IndexedFacetValueResponse:
+      type: object
+      properties:
+        facetKey:
+          type: string
+        facetValue:
+          type: string
+        facetLabel:
+          type: string
+    SearchPreviewResponse:
+      type: object
+      properties:
+        normalizedProductName:
+          type: string
+        searchableTextSummary:
+          type: string
+        indexedSkus:
+          type: array
+          items:
+            type: string
+        indexedFacetValues:
+          type: array
+          items:
+            $ref: "#/components/schemas/IndexedFacetValueResponse"
+        manualBoost:
+          type: integer
+          format: int32
+        averageRating:
+          type: number
+        reviewCount:
+          type: integer
+          format: int64
+        soldCount:
+          type: integer
+          format: int64
+    UpdateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        phone:
+          type: string
+          minLength: 1
+        fullName:
+          type: string
+          minLength: 1
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - CUSTOMER
+          - STAFF
+      required:
+      - email
+      - fullName
+      - phone
+      - role
+    UpdatePromotionRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        type:
+          type: string
+          enum:
+          - ORDER_DISCOUNT
+          - PRODUCT_DISCOUNT
+          - BUY_X_GET_Y
+        config:
+          type: object
+          additionalProperties: {}
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        usageLimit:
+          type: integer
+          format: int32
+        active:
+          type: boolean
+      required:
+      - code
+      - config
+      - endDate
+      - name
+      - startDate
+      - type
+    PromotionResponseDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+          - ORDER_DISCOUNT
+          - PRODUCT_DISCOUNT
+          - BUY_X_GET_Y
+        config:
+          type: object
+          additionalProperties: {}
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        usageLimit:
+          type: integer
+          format: int32
+        usedCount:
+          type: integer
+          format: int32
+        active:
+          type: boolean
+    CreateUserRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        phone:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 1
+        fullName:
+          type: string
+          minLength: 1
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - CUSTOMER
+          - STAFF
+      required:
+      - email
+      - fullName
+      - password
+      - phone
+      - role
+    TriggerFullSearchProjectionRebuildResult:
+      type: object
+      properties:
+        runId:
+          type: string
+        status:
+          type: string
+        queuedProducts:
+          type: integer
+          format: int32
+    CreateReviewRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          minLength: 1
+        productId:
+          type: string
+          minLength: 1
+        orderId:
+          type: string
+          minLength: 1
+        rating:
+          type: integer
+          format: int32
+          maximum: 5
+          minimum: 1
+        content:
+          type: string
+      required:
+      - orderId
+      - productId
+      - userId
+    CreateReviewResult:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        productId:
+          type: string
+        orderId:
+          type: string
+        rating:
+          type: integer
+          format: int32
+        content:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+    CreatePromotionRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        type:
+          type: string
+          enum:
+          - ORDER_DISCOUNT
+          - PRODUCT_DISCOUNT
+          - BUY_X_GET_Y
+        config:
+          type: object
+          additionalProperties: {}
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+        usageLimit:
+          type: integer
+          format: int32
+        active:
+          type: boolean
+      required:
+      - code
+      - config
+      - endDate
+      - name
+      - startDate
+      - type
+    CompositeProductRequestDTO:
+      type: object
+      properties:
+        typeId:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        descriptionMd:
+          type: string
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/VariantRequestDTO"
+        customizable:
+          type: boolean
+      required:
+      - name
+      - typeId
+      - variants
+    OptionAssignmentDTO:
+      type: object
+      properties:
+        optionId:
+          type: string
+          minLength: 1
+        valueId:
+          type: string
+          minLength: 1
+      required:
+      - optionId
+      - valueId
+    VariantRequestDTO:
+      type: object
+      properties:
+        sku:
+          type: string
+          minLength: 1
+        price:
+          type: number
+          minimum: 0
+        stockQuantity:
+          type: integer
+          format: int32
+          minimum: 0
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionAssignmentDTO"
+      required:
+      - price
+      - sku
+    Media:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        variantId:
+          type: string
+        url:
+          type: string
+        publicId:
+          type: string
+        type:
+          type: string
+          enum:
+          - IMAGE
+          - VIDEO
+        primary:
+          type: boolean
+    ProductTypeRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+      required:
+      - code
+      - name
+    ProductTypeResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+    PlaceOrderRequest:
+      type: object
+      properties:
+        userId:
+          type: string
+          minLength: 1
+        promotionCode:
+          type: string
+        shipFullName:
+          type: string
+          minLength: 1
+        shipPhone:
+          type: string
+          minLength: 1
+        shipAddress:
+          type: string
+          minLength: 1
+        shipCity:
+          type: string
+          minLength: 1
+        shipDistrict:
+          type: string
+          minLength: 1
+        shipWard:
+          type: string
+          minLength: 1
+        shippingMode:
+          type: string
+          enum:
+          - HCM_FLAT
+          - PROVIDER_API
+          - STANDARD
+          - EXPRESS
+        shippingProvider:
+          type: string
+          enum:
+          - GHTK
+        shippingFee:
+          type: number
+        paymentMethod:
+          type: string
+          enum:
+          - COD
+          - VNPAY
+          - SEPAY
+      required:
+      - paymentMethod
+      - shipAddress
+      - shipCity
+      - shipDistrict
+      - shipFullName
+      - shipPhone
+      - shipWard
+      - shippingFee
+      - shippingMode
+      - userId
+    PlaceOrderResult:
+      type: object
+      properties:
+        orderId:
+          type: string
+        orderNo:
+          type: string
+        paymentRedirectUrl:
+          type: string
+    CancelOrderRequest:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+      required:
+      - reason
+    CancelOrderResult:
+      type: object
+      properties:
+        orderId:
+          type: string
+        orderNo:
+          type: string
+        status:
+          type: string
+    OptionRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 1
+        name:
+          type: string
+          minLength: 1
+        values:
+          type: array
+          items:
+            type: string
+      required:
+      - code
+      - name
+    OptionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name:
+          type: string
+        values:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionValueResponse"
+    OptionValueResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        value:
+          type: string
+    AddToCartRequest:
+      type: object
+      properties:
+        variantId:
+          type: string
+          minLength: 1
+        quantity:
+          type: integer
+          format: int32
+      required:
+      - variantId
+    CartSummaryDTO:
+      type: object
+      properties:
+        totalItems:
+          type: integer
+          format: int32
+        subtotal:
+          type: number
+    PatchVariantRequest:
+      type: object
+      properties:
+        price:
+          type: number
+        addedStock:
+          type: integer
+          format: int32
+    PageUserResponse:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/UserResponse"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: "#/components/schemas/SortObject"
+    SortObject:
+      type: object
+      properties:
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+        empty:
+          type: boolean
+    UserResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        fullName:
+          type: string
+        avatarUrl:
+          type: string
+        role:
+          type: string
+          enum:
+          - ADMIN
+          - CUSTOMER
+          - STAFF
+        isActive:
+          type: boolean
+    SearchSuggestionDTO:
+      type: object
+      properties:
+        text:
+          type: string
+        source:
+          type: string
+        weight:
+          type: integer
+          format: int32
+    PageProductSummaryDTO:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductSummaryDTO"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    ProductSummaryDTO:
+      type: object
+      properties:
+        id:
+          type: string
+        typeId:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        lowestPrice:
+          type: number
+        totalInitialStock:
+          type: integer
+          format: int64
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+        typeId:
+          type: string
+        name:
+          type: string
+        slug:
+          type: string
+        descriptionMd:
+          type: string
+        variants:
+          type: array
+          items:
+            $ref: "#/components/schemas/Variant"
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/Media"
+        active:
+          type: boolean
+        customizable:
+          type: boolean
+    Variant:
+      type: object
+      properties:
+        id:
+          type: string
+        productId:
+          type: string
+        sku:
+          type: string
+        price:
+          type: number
+        stockQuantity:
+          type: integer
+          format: int32
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/VariantOption"
+        media:
+          type: array
+          items:
+            $ref: "#/components/schemas/Media"
+        active:
+          type: boolean
+    VariantOption:
+      type: object
+      properties:
+        id:
+          type: string
+        variantId:
+          type: string
+        optionValueId:
+          type: string
+    SearchFacetBucketDTO:
+      type: object
+      properties:
+        value:
+          type: string
+        label:
+          type: string
+        count:
+          type: integer
+          format: int64
+    SearchFacetDTO:
+      type: object
+      properties:
+        key:
+          type: string
+        buckets:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchFacetBucketDTO"
+    SearchProductItemDTO:
+      type: object
+      properties:
+        productId:
+          type: string
+        slug:
+          type: string
+        productName:
+          type: string
+        typeId:
+          type: string
+        typeName:
+          type: string
+        minPrice:
+          type: number
+        maxPrice:
+          type: number
+        inStock:
+          type: boolean
+        activeVariantCount:
+          type: integer
+          format: int32
+        averageRating:
+          type: number
+        reviewCount:
+          type: integer
+          format: int32
+        soldCount:
+          type: integer
+          format: int32
+        totalScore:
+          type: number
+          format: double
+    SearchRedirectDTO:
+      type: object
+      properties:
+        type:
+          type: string
+        target:
+          type: string
+    SearchResponseDTO:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchProductItemDTO"
+        facets:
+          type: array
+          items:
+            $ref: "#/components/schemas/SearchFacetDTO"
+        page:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        total:
+          type: integer
+          format: int64
+        query:
+          type: string
+        normalizedQuery:
+          type: string
+        redirect:
+          $ref: "#/components/schemas/SearchRedirectDTO"
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: string
+        roomId:
+          type: string
+        senderId:
+          type: string
+        content:
+          type: string
+        sentAt:
+          type: string
+          format: date-time
+    DailyMetric:
+      type: object
+      properties:
+        date:
+          type: string
+        totalOrders:
+          type: integer
+          format: int64
+        revenue:
+          type: number
+        completedOrders:
+          type: integer
+          format: int64
+    DashboardReportResponse:
+      type: object
+      properties:
+        netRevenue:
+          type: number
+        successRate:
+          type: number
+          format: double
+        chartData:
+          type: array
+          items:
+            $ref: "#/components/schemas/DailyMetric"
+    DeleteReviewResult:
+      type: object
+      properties:
+        reviewId:
+          type: string
+        message:
+          type: string
