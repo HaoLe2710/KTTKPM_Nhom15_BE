@@ -55,7 +55,7 @@ class UpdateProfileUseCaseTest {
         verify(userRepository).save(any(User.class));
         assertEquals("Nguyen Van A", result.fullName());
         assertEquals("https://cdn.example/avatar.png", result.avatarUrl());
-        verify(otpService, never()).sendOtp(any(), any(), any());
+        verify(otpService, never()).sendOtp(any(), any());
     }
 
     @Test
@@ -80,7 +80,7 @@ class UpdateProfileUseCaseTest {
         );
 
         assertTrue(ex.getMessage().contains("old@example.com"));
-        verify(otpService).sendOtp(eq("user-1"), eq("old@example.com"), eq("UPDATE_EMAIL_OLD"));
+        verify(otpService).sendOtp(eq("old@example.com"), eq("UPDATE_EMAIL_OLD"));
         verify(userRepository, never()).save(any());
     }
 
@@ -96,7 +96,7 @@ class UpdateProfileUseCaseTest {
                 useCase.execute(new UpdateProfileCommand("user-1", "new@example.com", "01", "A", null))
         );
 
-        verify(otpService, never()).sendOtp(any(), any(), any());
+        verify(otpService, never()).sendOtp(any(), any());
         verify(userRepository, never()).save(any());
     }
 
