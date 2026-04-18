@@ -34,6 +34,8 @@ public class OpenApiDocumentationConfig {
         .description("Generated API artifacts for frontend and QA")
         .url("/docs/api/openapi.yaml"))
       .tags(List.of(
+        tag("Admin Catalog", "Admin catalog management endpoints."),
+        tag("Admin Search", "Admin search operations, metadata, and analytics endpoints."),
         tag("Analytics", "Reporting and operational metrics endpoints."),
         tag("Cart", "Shopping cart and cart line management."),
         tag("Catalog", "Catalog, product, media, and master-data endpoints."),
@@ -127,6 +129,12 @@ public class OpenApiDocumentationConfig {
   }
 
   private String resolveTag(String path) {
+    if (path.startsWith("/api/v1/admin/search")) {
+      return "Admin Search";
+    }
+    if (path.startsWith("/api/v1/admin")) {
+      return "Admin Catalog";
+    }
     if (path.startsWith("/api/v1/analytics")) {
       return "Analytics";
     }
