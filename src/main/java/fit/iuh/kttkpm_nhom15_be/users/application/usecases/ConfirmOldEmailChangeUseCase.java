@@ -34,6 +34,6 @@ public class ConfirmOldEmailChangeUseCase {
             throw new ActionNotAllowedException("OTP xac thuc email cu khong dung hoac da het han!");
         }
 
-        otpService.sendOtp(userId, newEmail, "UPDATE_EMAIL_NEW");
+        otpService.sendOtp(newEmail, "UPDATE_EMAIL_NEW");
     }
 }

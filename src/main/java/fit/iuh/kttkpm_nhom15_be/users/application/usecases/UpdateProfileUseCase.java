@@ -31,7 +31,7 @@ public class UpdateProfileUseCase {
             }
 
             // Step 1: verify current (old) email first.
-            otpService.sendOtp(user.getId(), user.getEmail(), "UPDATE_EMAIL_OLD");
+            otpService.sendOtp(user.getEmail(), "UPDATE_EMAIL_OLD");
 
             throw new ActionNotAllowedException(
                     "Yeu cau doi email da duoc ghi nhan. Vui long xac thuc OTP gui den email cu: " + user.getEmail()

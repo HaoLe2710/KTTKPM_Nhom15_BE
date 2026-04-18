@@ -28,7 +28,7 @@ public class AuthController {
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         registerUseCase.execute(request);
 
-        otpService.sendOtp(null, request.email(), "REGISTER");
+        otpService.sendOtp(request.email(), "REGISTER");
 
         return ResponseEntity.ok(Map.of(
                 "message", "Dang ky thanh cong. Vui long kiem tra ma OTP trong email cua ban."

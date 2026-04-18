@@ -20,7 +20,6 @@ public class SqlOtpRepository implements OtpRepository {
     public void save(Otp otp) {
         OtpEntity entity = OtpEntity.builder()
                 .id(otp.getId())
-                .userId(otp.getUserId())
                 .email(otp.getEmail())
                 .otpCode(otp.getOtpCode())
                 .expiryTime(otp.getExpiryTime())
@@ -39,7 +38,6 @@ public class SqlOtpRepository implements OtpRepository {
     private Otp toDomain(OtpEntity entity) {
         return Otp.builder()
                 .id(entity.getId())
-                .userId(entity.getUserId())
                 .otpCode(entity.getOtpCode())
                 .expiryTime(entity.getExpiryTime())
                 .isUsed(entity.isUsed())

@@ -11,7 +11,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Otp {
     private UUID id;
-    private String userId;
     private String email;
     private String otpCode;
     private LocalDateTime expiryTime;

@@ -18,12 +18,11 @@ public class OtpService {
     private final EmailService emailService;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void sendOtp(String userId, String email, String type) {
+    public void sendOtp(String email, String type) {
         String code = String.format("%06d", new Random().nextInt(1000000));
 
         Otp otp = Otp.builder()
                 .id(UUID.randomUUID())
-                .userId(userId)
                 .email(email)
                 .otpCode(code)
                 .expiryTime(LocalDateTime.now().plusMinutes(5))

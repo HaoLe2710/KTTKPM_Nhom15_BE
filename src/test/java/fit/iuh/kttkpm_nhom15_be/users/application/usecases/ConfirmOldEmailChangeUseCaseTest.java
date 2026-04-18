@@ -37,7 +37,7 @@ class ConfirmOldEmailChangeUseCaseTest {
 
         useCase.execute("user-1", "new@example.com", "123456");
 
-        verify(otpService).sendOtp(eq("user-1"), eq("new@example.com"), eq("UPDATE_EMAIL_NEW"));
+        verify(otpService).sendOtp(eq("new@example.com"), eq("UPDATE_EMAIL_NEW"));
     }
 
     @Test
@@ -51,7 +51,7 @@ class ConfirmOldEmailChangeUseCaseTest {
                 useCase.execute("user-1", "new@example.com", "999999")
         );
 
-        verify(otpService, never()).sendOtp(any(), any(), any());
+        verify(otpService, never()).sendOtp(any(), any());
     }
 
     @Test
@@ -67,6 +67,6 @@ class ConfirmOldEmailChangeUseCaseTest {
         );
 
         verify(otpService, never()).verifyOtp(any(), any(), any());
-        verify(otpService, never()).sendOtp(any(), any(), any());
+        verify(otpService, never()).sendOtp(any(), any());
     }
 }
