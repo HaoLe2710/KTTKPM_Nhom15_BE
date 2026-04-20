@@ -8,11 +8,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 interface JpaUserRepository extends JpaRepository<UserJpaEntity, String> {
@@ -34,6 +36,14 @@ interface JpaUserRepository extends JpaRepository<UserJpaEntity, String> {
             "LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "u.phone LIKE CONCAT('%', :keyword, '%')")
     Page<UserJpaEntity> searchUsers(@Param("keyword") String keyword, Pageable pageable);
+
+    @Modifying
+    @Query(value = """
+            DELETE FROM users
+            WHERE is_active = false
+              AND created_at < :cutoff
+            """, nativeQuery = true)
+    int deleteInactiveUsersCreatedBefore(@Param("cutoff") LocalDateTime cutoff);
 }
 
 @Repository
@@ -94,5 +104,11 @@ public class UserRepositoryImpl implements UserRepository {
     public Page<User> findAll(String keyword, Pageable pageable) {
         return jpaUserRepository.searchUsers(keyword, pageable)
                 .map(userDataMapper::toDomainModel);
+    }
+
+    @Override
+    @Transactional
+    public int deleteInactiveUsersCreatedBefore(LocalDateTime cutoff) {
+        return jpaUserRepository.deleteInactiveUsersCreatedBefore(cutoff);
     }
 }
