@@ -7,16 +7,21 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.MediaType;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.CatalogAdminRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.MediaRepository;
 import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiNotFoundException;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.FileStoragePort;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.StoredFile;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.UploadFileCommand;
 import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.audit.AdminAuditService;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CatalogMediaAdminService {
@@ -25,6 +30,7 @@ public class CatalogMediaAdminService {
   private final MediaRepository mediaRepository;
   private final ApplicationEventPublisher eventPublisher;
   private final AdminAuditService adminAuditService;
+  private final FileStoragePort fileStoragePort;
 
   public List<MediaResponse> getProductMedia(String productId) {
     ensureProductExists(productId);
@@ -56,8 +62,9 @@ public class CatalogMediaAdminService {
 
   @Transactional
   public void deleteProductMedia(String productId, String mediaId) {
-    requireProductMedia(productId, mediaId);
+    Media media = requireProductMedia(productId, mediaId);
     mediaRepository.deleteById(mediaId);
+    removeStoredObject(media.getPublicId());
     publishCatalogChanged(productId, "ADMIN_PRODUCT_MEDIA_DELETED");
     adminAuditService.log("PRODUCT_MEDIA_DELETED", "MEDIA", mediaId, "{\"productId\":\"" + productId + "\"}");
   }
@@ -105,8 +112,9 @@ public class CatalogMediaAdminService {
   @Transactional
   public void deleteVariantMedia(String variantId, String mediaId) {
     String productId = ensureVariantExists(variantId);
-    requireVariantMedia(variantId, mediaId);
+    Media media = requireVariantMedia(variantId, mediaId);
     mediaRepository.deleteById(mediaId);
+    removeStoredObject(media.getPublicId());
     publishCatalogChanged(productId, "ADMIN_VARIANT_MEDIA_DELETED");
     adminAuditService.log("VARIANT_MEDIA_DELETED", "MEDIA", mediaId, "{\"variantId\":\"" + variantId + "\"}");
   }
@@ -128,11 +136,12 @@ public class CatalogMediaAdminService {
     if (primary) {
       clearScopePrimary(productId, variantId);
     }
+    StoredFile storedFile = uploadFile(file, buildScope(productId, variantId));
     return mediaRepository.save(Media.builder()
       .productId(productId)
       .variantId(variantId)
-      .url(buildUrl(file))
-      .publicId(buildPublicId())
+      .url(storedFile.url())
+      .publicId(storedFile.objectKey())
       .type(type == null ? MediaType.IMAGE : type)
       .isPrimary(primary)
       .build());
@@ -143,11 +152,15 @@ public class CatalogMediaAdminService {
     if (primary) {
       clearScopePrimary(existing.getProductId(), existing.getVariantId());
     }
-    existing.setUrl(buildUrl(file));
-    existing.setPublicId(buildPublicId());
+    String previousObjectKey = existing.getPublicId();
+    StoredFile storedFile = uploadFile(file, buildScope(existing.getProductId(), existing.getVariantId()));
+    existing.setUrl(storedFile.url());
+    existing.setPublicId(storedFile.objectKey());
     existing.setType(type == null ? existing.getType() : type);
     existing.setPrimary(primary);
-    return mediaRepository.save(existing);
+    Media saved = mediaRepository.save(existing);
+    removeStoredObject(previousObjectKey);
+    return saved;
   }
 
   private void clearScopePrimary(String productId, String variantId) {
@@ -195,12 +208,32 @@ public class CatalogMediaAdminService {
     }
   }
 
-  private String buildUrl(MultipartFile file) {
-    return "https://mock-image-server.com/uploads/" + UUID.randomUUID() + "-" + file.getOriginalFilename();
+  private StoredFile uploadFile(MultipartFile file, String scope) {
+    try {
+      return fileStoragePort.upload(new UploadFileCommand(
+        scope,
+        file.getOriginalFilename(),
+        file.getContentType(),
+        file.getBytes()
+      ));
+    } catch (IOException ex) {
+      throw new IllegalStateException("Cannot read uploaded file bytes", ex);
+    }
   }
 
-  private String buildPublicId() {
-    return "mock-" + System.currentTimeMillis();
+  private String buildScope(String productId, String variantId) {
+    if (variantId == null || variantId.isBlank()) {
+      return "catalog/products/" + productId;
+    }
+    return "catalog/products/" + productId + "/variants/" + variantId;
+  }
+
+  private void removeStoredObject(String objectKey) {
+    try {
+      fileStoragePort.delete(objectKey);
+    } catch (Exception ex) {
+      log.warn("Cannot remove stored object '{}': {}", objectKey, ex.getMessage());
+    }
   }
 
   private void publishCatalogChanged(String productId, String reason) {

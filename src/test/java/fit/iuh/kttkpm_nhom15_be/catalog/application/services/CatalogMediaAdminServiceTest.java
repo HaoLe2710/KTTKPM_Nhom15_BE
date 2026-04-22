@@ -12,6 +12,8 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.MediaType;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.CatalogAdminRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.MediaRepository;
 import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiNotFoundException;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.FileStoragePort;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.StoredFile;
 import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.audit.AdminAuditService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -27,12 +29,15 @@ class CatalogMediaAdminServiceTest {
     MediaRepository mediaRepository = Mockito.mock(MediaRepository.class);
     ApplicationEventPublisher publisher = Mockito.mock(ApplicationEventPublisher.class);
     AdminAuditService auditService = Mockito.mock(AdminAuditService.class);
+    FileStoragePort fileStoragePort = Mockito.mock(FileStoragePort.class);
     MultipartFile file = Mockito.mock(MultipartFile.class);
-    CatalogMediaAdminService service = new CatalogMediaAdminService(catalogAdminRepository, mediaRepository, publisher, auditService);
+    CatalogMediaAdminService service = new CatalogMediaAdminService(catalogAdminRepository, mediaRepository, publisher, auditService, fileStoragePort);
 
     when(catalogAdminRepository.existsProduct("product-1")).thenReturn(true);
     when(file.isEmpty()).thenReturn(false);
     when(file.getOriginalFilename()).thenReturn("image.png");
+    when(file.getContentType()).thenReturn("image/png");
+    when(fileStoragePort.upload(any())).thenReturn(new StoredFile("s3/key-1", "https://cdn.example.com/s3/key-1"));
     when(mediaRepository.save(any(Media.class))).thenAnswer(invocation -> {
       Media media = invocation.getArgument(0);
       media.setId("media-1");
@@ -56,7 +61,8 @@ class CatalogMediaAdminServiceTest {
     MediaRepository mediaRepository = Mockito.mock(MediaRepository.class);
     ApplicationEventPublisher publisher = Mockito.mock(ApplicationEventPublisher.class);
     AdminAuditService auditService = Mockito.mock(AdminAuditService.class);
-    CatalogMediaAdminService service = new CatalogMediaAdminService(catalogAdminRepository, mediaRepository, publisher, auditService);
+    FileStoragePort fileStoragePort = Mockito.mock(FileStoragePort.class);
+    CatalogMediaAdminService service = new CatalogMediaAdminService(catalogAdminRepository, mediaRepository, publisher, auditService, fileStoragePort);
 
     when(catalogAdminRepository.existsVariant("variant-1")).thenReturn(true);
     when(catalogAdminRepository.findProductIdByVariantId("variant-1")).thenReturn("product-1");
@@ -84,7 +90,8 @@ class CatalogMediaAdminServiceTest {
     MediaRepository mediaRepository = Mockito.mock(MediaRepository.class);
     ApplicationEventPublisher publisher = Mockito.mock(ApplicationEventPublisher.class);
     AdminAuditService auditService = Mockito.mock(AdminAuditService.class);
-    CatalogMediaAdminService service = new CatalogMediaAdminService(catalogAdminRepository, mediaRepository, publisher, auditService);
+    FileStoragePort fileStoragePort = Mockito.mock(FileStoragePort.class);
+    CatalogMediaAdminService service = new CatalogMediaAdminService(catalogAdminRepository, mediaRepository, publisher, auditService, fileStoragePort);
 
     when(catalogAdminRepository.existsProduct("missing-product")).thenReturn(false);
 
