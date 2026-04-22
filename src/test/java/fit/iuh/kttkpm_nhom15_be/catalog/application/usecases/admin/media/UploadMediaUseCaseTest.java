@@ -3,6 +3,8 @@ package fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.media;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.Media;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.MediaType;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.MediaRepository;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.FileStoragePort;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.StoredFile;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -12,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -23,8 +24,9 @@ class UploadMediaUseCaseTest {
     @Test
     void executeRejectsEmptyFiles() {
         MediaRepository mediaRepository = Mockito.mock(MediaRepository.class);
+        FileStoragePort fileStoragePort = Mockito.mock(FileStoragePort.class);
         MultipartFile file = Mockito.mock(MultipartFile.class);
-        UploadMediaUseCase useCase = new UploadMediaUseCase(mediaRepository);
+        UploadMediaUseCase useCase = new UploadMediaUseCase(mediaRepository, fileStoragePort);
 
         when(file.isEmpty()).thenReturn(true);
 
@@ -35,11 +37,14 @@ class UploadMediaUseCaseTest {
     @Test
     void executeBuildsAndPersistsMediaMetadata() {
         MediaRepository mediaRepository = Mockito.mock(MediaRepository.class);
+        FileStoragePort fileStoragePort = Mockito.mock(FileStoragePort.class);
         MultipartFile file = Mockito.mock(MultipartFile.class);
-        UploadMediaUseCase useCase = new UploadMediaUseCase(mediaRepository);
+        UploadMediaUseCase useCase = new UploadMediaUseCase(mediaRepository, fileStoragePort);
 
         when(file.isEmpty()).thenReturn(false);
         when(file.getOriginalFilename()).thenReturn("shoe.png");
+        when(file.getContentType()).thenReturn("image/png");
+        when(fileStoragePort.upload(any())).thenReturn(new StoredFile("s3/object-key", "https://cdn.example.com/s3/object-key"));
         when(mediaRepository.save(any(Media.class))).thenAnswer(invocation -> {
             Media media = invocation.getArgument(0);
             media.setId("media-1");
@@ -55,8 +60,8 @@ class UploadMediaUseCaseTest {
         assertEquals("variant-1", savedMedia.getValue().getVariantId());
         assertEquals(MediaType.IMAGE, savedMedia.getValue().getType());
         assertFalse(savedMedia.getValue().isPrimary());
-        assertTrue(savedMedia.getValue().getUrl().contains("shoe.png"));
-        assertTrue(savedMedia.getValue().getPublicId().startsWith("mock-"));
+        assertEquals("https://cdn.example.com/s3/object-key", savedMedia.getValue().getUrl());
+        assertEquals("s3/object-key", savedMedia.getValue().getPublicId());
         assertNotNull(savedMedia.getValue().getUrl());
     }
 }
