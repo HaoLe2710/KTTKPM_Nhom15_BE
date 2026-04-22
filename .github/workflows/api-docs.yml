@@ -36,6 +36,9 @@ jobs:
           java-version: 21
           cache: maven
 
+      - name: Ensure Maven wrapper is executable
+        run: chmod +x ./mvnw
+
       - name: Generate OpenAPI artifacts
         run: ./mvnw -q -Papi-docs verify
 
