@@ -1,11 +1,18 @@
 package fit.iuh.kttkpm_nhom15_be.auth.presentation.controllers;
 
+import fit.iuh.kttkpm_nhom15_be.auth.application.dto.AuthResponse;
 import fit.iuh.kttkpm_nhom15_be.auth.application.usecases.LoginUseCase;
 import fit.iuh.kttkpm_nhom15_be.auth.application.usecases.RegisterUseCase;
 import fit.iuh.kttkpm_nhom15_be.auth.application.services.OtpService;
+import fit.iuh.kttkpm_nhom15_be.auth.domain.exceptions.InvalidOtpException;
+import fit.iuh.kttkpm_nhom15_be.auth.presentation.requests.LoginRequest;
+import fit.iuh.kttkpm_nhom15_be.auth.presentation.requests.VerifyOtpRequest;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.advice.ApiSuccessMessage;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.RegisterRequest;
 import fit.iuh.kttkpm_nhom15_be.users.application.interfaces.UserFacade;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -13,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Duration;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -25,44 +31,39 @@ public class AuthController {
     private final UserFacade userFacade;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<MessageResponse> register(@Valid @RequestBody RegisterRequest request) {
         registerUseCase.execute(request);
 
         otpService.sendOtp(request.email(), "REGISTER");
 
-        return ResponseEntity.ok(Map.of(
-                "message", "Dang ky thanh cong. Vui long kiem tra ma OTP trong email cua ban."
+        return ResponseEntity.ok(new MessageResponse(
+                "Dang ky thanh cong. Vui long kiem tra ma OTP trong email cua ban."
         ));
     }
 
     @PostMapping("/verify-otp")
-    public ResponseEntity<?> verify(@RequestParam String email, @RequestParam String otp) {
+    public ResponseEntity<MessageResponse> verify(@Valid @RequestBody VerifyOtpRequest request) {
 
-        boolean isValid = otpService.verifyOtp(email, otp, "REGISTER");
+        boolean isValid = otpService.verifyOtp(request.email(), request.otp(), "REGISTER");
 
         if (isValid) {
-            userFacade.activateUser(email);
-            return ResponseEntity.ok(Map.of("message", "Tai khoan da duoc kich hoat thanh cong!"));
+            userFacade.activateUser(request.email());
+            return ResponseEntity.ok(new MessageResponse("Tai khoan da duoc kich hoat thanh cong!"));
         }
 
-        return ResponseEntity.badRequest().body(Map.of("message", "Ma OTP khong dung hoac da het han."));
+        throw new InvalidOtpException("Ma OTP khong dung hoac da het han.");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
-        String token = loginUseCase.execute(
-                request.get("identifier"),
-                request.get("password")
-        );
+    @ApiSuccessMessage("Dang nhap thanh cong")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+        String token = loginUseCase.execute(request.identifier(), request.password());
 
-        return ResponseEntity.ok(Map.of(
-                "accessToken", token,
-                "tokenType", "Bearer"
-        ));
+        return ResponseEntity.ok(new AuthResponse(token, "Bearer"));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
+    public ResponseEntity<MessageResponse> logout(HttpServletResponse response) {
         ResponseCookie clearAuthTokenCookie = ResponseCookie.from("AUTH-TOKEN", "")
                 .httpOnly(true)
                 .path("/")
@@ -78,6 +79,6 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, clearAuthTokenCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, clearAccessTokenCookie.toString());
 
-        return ResponseEntity.ok(Map.of("message", "Dang xuat thanh cong"));
+        return ResponseEntity.ok(new MessageResponse("Dang xuat thanh cong"));
     }
 }

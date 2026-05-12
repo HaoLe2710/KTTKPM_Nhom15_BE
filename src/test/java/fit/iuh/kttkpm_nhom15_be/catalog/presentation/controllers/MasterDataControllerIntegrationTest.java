@@ -6,6 +6,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.MasterDataDTOs.Opt
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.MasterDataDTOs.OptionValueResponse;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.MasterDataDTOs.ProductTypeRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.MasterDataDTOs.ProductTypeResponse;
+import fit.iuh.kttkpm_nhom15_be.catalog.application.services.CatalogAdminService;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.masterdata.CreateOptionUseCase;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.masterdata.CreateProductTypeUseCase;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.masterdata.DeleteOptionUseCase;
@@ -69,6 +70,8 @@ class MasterDataControllerIntegrationTest {
     private DeleteOptionUseCase deleteOptionUseCase;
     @MockBean
     private GetOptionsUseCase getOptionsUseCase;
+    @MockBean
+    private CatalogAdminService catalogAdminService;
 
     @MockBean
     private OAuth2SuccessHandler oAuth2SuccessHandler;
@@ -104,8 +107,9 @@ class MasterDataControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("type-1"))
-                .andExpect(jsonPath("$.code").value("SKINCARE"));
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.id").value("type-1"))
+                .andExpect(jsonPath("$.data.code").value("SKINCARE"));
     }
 
     @Test
@@ -124,11 +128,13 @@ class MasterDataControllerIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void deleteProductTypeReturns204ForAdmin() throws Exception {
+    void deleteProductTypeReturns200ForAdmin() throws Exception {
         doNothing().when(deleteProductTypeUseCase).execute("type-1");
 
         mockMvc.perform(delete("/api/v1/product-types/type-1"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Loai san pham da duoc xoa thanh cong"));
 
         verify(deleteProductTypeUseCase).execute("type-1");
     }
@@ -163,8 +169,9 @@ class MasterDataControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("opt-1"))
-                .andExpect(jsonPath("$.values.length()").value(2));
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.data.id").value("opt-1"))
+                .andExpect(jsonPath("$.data.values.length()").value(2));
     }
 
     @Test
@@ -184,11 +191,13 @@ class MasterDataControllerIntegrationTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void deleteOptionReturns204ForAdmin() throws Exception {
+    void deleteOptionReturns200ForAdmin() throws Exception {
         doNothing().when(deleteOptionUseCase).execute("opt-1");
 
         mockMvc.perform(delete("/api/v1/options/opt-1"))
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true))
+                .andExpect(jsonPath("$.message").value("Tuy chon da duoc xoa thanh cong"));
 
         verify(deleteOptionUseCase).execute("opt-1");
     }

@@ -3,6 +3,7 @@ package fit.iuh.kttkpm_nhom15_be.analytics.presentation.controllers;
 import fit.iuh.kttkpm_nhom15_be.analytics.application.dto.DashboardReportResponse;
 import fit.iuh.kttkpm_nhom15_be.analytics.application.usecases.ExportPdfUseCase;
 import fit.iuh.kttkpm_nhom15_be.analytics.application.usecases.GenerateReportUseCase;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.advice.SkipSuccessEnvelope;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -34,6 +35,7 @@ public class AnalyticsController {
     }
 
     @GetMapping("/report/pdf")
+    @SkipSuccessEnvelope
     public ResponseEntity<byte[]> downloadPdfReport(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {

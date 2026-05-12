@@ -3,6 +3,7 @@ package fit.iuh.kttkpm_nhom15_be.users.presentation.controllers;
 import fit.iuh.kttkpm_nhom15_be.users.application.commands.UpdateProfileCommand;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.UserResponse;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.*;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.UpdateProfileRequest;
 import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.UpdateUserRequest;
 import jakarta.validation.Valid;
@@ -80,13 +81,13 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
+    public ResponseEntity<MessageResponse> deleteUser(@PathVariable String id) {
         deleteUserUseCase.execute(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new MessageResponse("Nguoi dung da duoc xoa thanh cong"));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUser(
+    public ResponseEntity<MessageResponse> updateUser(
             @PathVariable String id,
             @Valid @RequestBody UpdateUserRequest req
     ) {
@@ -97,15 +98,15 @@ public class UserController {
                 req.getFullName(),
                 req.getRole()
         ));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new MessageResponse("Thong tin nguoi dung da duoc cap nhat thanh cong"));
     }
 
     @PatchMapping("/{id}/toggle-status")
-    public ResponseEntity<Void> toggleUserStatus(
+    public ResponseEntity<MessageResponse> toggleUserStatus(
             @AuthenticationPrincipal String adminId,
             @PathVariable("id") String targetUserId
     ) {
         toggleUserStatusUseCase.execute(adminId, targetUserId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new MessageResponse("Trang thai nguoi dung da duoc cap nhat thanh cong"));
     }
 }

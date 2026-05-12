@@ -8,6 +8,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.S
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.ToggleActiveRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.services.CatalogAdminService;
 import fit.iuh.kttkpm_nhom15_be.shared.application.admin.AdminPageRequest.SortDirection;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.support.AdminPageRequestFactory;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -54,15 +55,15 @@ public class AdminCatalogSemanticController {
   }
 
   @PutMapping("/brands/{id}")
-  public ResponseEntity<Void> updateBrand(@PathVariable String id, @Valid @RequestBody BrandWriteRequest request) {
+  public ResponseEntity<MessageResponse> updateBrand(@PathVariable String id, @Valid @RequestBody BrandWriteRequest request) {
     catalogAdminService.updateBrand(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Thuong hieu da duoc cap nhat thanh cong"));
   }
 
   @PatchMapping("/brands/{id}/active")
-  public ResponseEntity<Void> toggleBrandActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
+  public ResponseEntity<MessageResponse> toggleBrandActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleBrandActive(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Trang thai thuong hieu da duoc cap nhat thanh cong"));
   }
 
   @GetMapping("/ingredients")
@@ -82,15 +83,15 @@ public class AdminCatalogSemanticController {
   }
 
   @PutMapping("/ingredients/{id}")
-  public ResponseEntity<Void> updateIngredient(@PathVariable String id, @Valid @RequestBody IngredientWriteRequest request) {
+  public ResponseEntity<MessageResponse> updateIngredient(@PathVariable String id, @Valid @RequestBody IngredientWriteRequest request) {
     catalogAdminService.updateIngredient(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Thanh phan da duoc cap nhat thanh cong"));
   }
 
   @PatchMapping("/ingredients/{id}/active")
-  public ResponseEntity<Void> toggleIngredientActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
+  public ResponseEntity<MessageResponse> toggleIngredientActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleIngredientActive(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Trang thai thanh phan da duoc cap nhat thanh cong"));
   }
 
   @GetMapping("/skin-types")
@@ -110,15 +111,15 @@ public class AdminCatalogSemanticController {
   }
 
   @PutMapping("/skin-types/{id}")
-  public ResponseEntity<Void> updateSkinType(@PathVariable String id, @Valid @RequestBody SemanticMasterWriteRequest request) {
+  public ResponseEntity<MessageResponse> updateSkinType(@PathVariable String id, @Valid @RequestBody SemanticMasterWriteRequest request) {
     catalogAdminService.updateSkinType(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Loai da da duoc cap nhat thanh cong"));
   }
 
   @PatchMapping("/skin-types/{id}/active")
-  public ResponseEntity<Void> toggleSkinTypeActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
+  public ResponseEntity<MessageResponse> toggleSkinTypeActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleSkinTypeActive(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Trang thai loai da da duoc cap nhat thanh cong"));
   }
 
   @GetMapping("/concerns")
@@ -138,15 +139,15 @@ public class AdminCatalogSemanticController {
   }
 
   @PutMapping("/concerns/{id}")
-  public ResponseEntity<Void> updateConcern(@PathVariable String id, @Valid @RequestBody SemanticMasterWriteRequest request) {
+  public ResponseEntity<MessageResponse> updateConcern(@PathVariable String id, @Valid @RequestBody SemanticMasterWriteRequest request) {
     catalogAdminService.updateConcern(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Concern da duoc cap nhat thanh cong"));
   }
 
   @PatchMapping("/concerns/{id}/active")
-  public ResponseEntity<Void> toggleConcernActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
+  public ResponseEntity<MessageResponse> toggleConcernActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleConcernActive(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Trang thai concern da duoc cap nhat thanh cong"));
   }
 
   @GetMapping("/tags")
@@ -166,14 +167,14 @@ public class AdminCatalogSemanticController {
   }
 
   @PutMapping("/tags/{id}")
-  public ResponseEntity<Void> updateTag(@PathVariable String id, @Valid @RequestBody SemanticMasterWriteRequest request) {
+  public ResponseEntity<MessageResponse> updateTag(@PathVariable String id, @Valid @RequestBody SemanticMasterWriteRequest request) {
     catalogAdminService.updateTag(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Tag da duoc cap nhat thanh cong"));
   }
 
   @PatchMapping("/tags/{id}/active")
-  public ResponseEntity<Void> toggleTagActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
+  public ResponseEntity<MessageResponse> toggleTagActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleTagActive(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Trang thai tag da duoc cap nhat thanh cong"));
   }
 }

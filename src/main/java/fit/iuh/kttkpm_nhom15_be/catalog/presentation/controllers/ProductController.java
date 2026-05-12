@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.catalog.presentation.controllers;
 
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CompositeProductRequestDTO;
+import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.CreatedResourceResponse;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.ProductCreateRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.ProductVariantCreateRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.VariantOptionAssignmentRequest;
@@ -12,6 +13,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.product.ListP
 import fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.product.UpdateVariantPricingUseCase;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.Product;
 import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiNotFoundException;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -28,7 +30,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('ADMIN')")
 public class ProductController {
 
     private final ListProductsSummaryUseCase listProductsSummaryUseCase;
@@ -37,7 +38,8 @@ public class ProductController {
 
     @Operation(deprecated = true)
     @PostMapping
-    public ResponseEntity<String> createProduct(@Valid @RequestBody CompositeProductRequestDTO request) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<CreatedResourceResponse> createProduct(@Valid @RequestBody CompositeProductRequestDTO request) {
         ProductCreateRequest adminRequest = new ProductCreateRequest(
                 request.getTypeId(),
                 request.getName(),
@@ -61,11 +63,13 @@ public class ProductController {
                         ))
                         .toList()
         );
-        return ResponseEntity.ok(catalogAdminService.createProduct(adminRequest).id());
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new CreatedResourceResponse(catalogAdminService.createProduct(adminRequest).id()));
     }
 
     @Operation(deprecated = true)
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<ProductSummaryDTO>> getProducts(
             @RequestParam(required = false) String typeId,
             @RequestParam(required = false) BigDecimal minPrice,
@@ -78,16 +82,17 @@ public class ProductController {
     @Operation(deprecated = true)
     @GetMapping("/{id}")
     public ResponseEntity<Product> getProduct(@PathVariable String id) {
-        return getProductDetailsUseCase.execute(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Product product = getProductDetailsUseCase.execute(id)
+                .orElseThrow(() -> new ApiNotFoundException("Khong tim thay san pham voi id: " + id));
+        return ResponseEntity.ok(product);
     }
 
     @Operation(deprecated = true)
     @PatchMapping("/{productId}/variants/{variantId}")
-    public ResponseEntity<Void> patchVariant(@PathVariable String productId,
-                                             @PathVariable String variantId,
-                                             @Valid @RequestBody UpdateVariantPricingUseCase.PatchVariantRequest request) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<MessageResponse> patchVariant(@PathVariable String productId,
+                                                        @PathVariable String variantId,
+                                                        @Valid @RequestBody UpdateVariantPricingUseCase.PatchVariantRequest request) {
         var product = catalogAdminService.getProductDetail(productId);
         var variant = product.variants().stream()
                 .filter(item -> item.id().equals(variantId))
@@ -102,7 +107,7 @@ public class ProductController {
                         .map(option -> new VariantOptionAssignmentRequest(option.optionId(), option.optionValueId()))
                         .toList()
         ));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new MessageResponse("Bien the san pham da duoc cap nhat thanh cong"));
     }
 
     private List<VariantOptionAssignmentRequest> mapOptions(List<CompositeProductRequestDTO.OptionAssignmentDTO> options) {

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ChatMessagePayloadSupport {
 
     public ChatMessage buildMessage(String roomId, SendMessageCommand command) {
-        validate(command);
+        validateCommand(command);
 
         return ChatMessage.builder()
                 .roomId(roomId)
@@ -30,7 +30,7 @@ public class ChatMessagePayloadSupport {
                 .build();
     }
 
-    private void validate(SendMessageCommand command) {
+    public void validateCommand(SendMessageCommand command) {
         if (command.type() == null) {
             throw new ChatMessageValidationException("Loai tin nhan khong duoc de trong.");
         }

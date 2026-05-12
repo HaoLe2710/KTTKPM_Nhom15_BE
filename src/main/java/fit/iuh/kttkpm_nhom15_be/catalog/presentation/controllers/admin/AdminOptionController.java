@@ -8,6 +8,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.O
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.ToggleActiveRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.services.CatalogAdminService;
 import fit.iuh.kttkpm_nhom15_be.shared.application.admin.AdminPageRequest.SortDirection;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.support.AdminPageRequestFactory;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -55,10 +56,10 @@ public class AdminOptionController {
   }
 
   @PutMapping("/options/{id}")
-  public ResponseEntity<Void> updateOption(@PathVariable String id,
-                                           @Valid @RequestBody OptionWriteRequest request) {
+  public ResponseEntity<MessageResponse> updateOption(@PathVariable String id,
+                                                      @Valid @RequestBody OptionWriteRequest request) {
     catalogAdminService.updateOption(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Tuy chon da duoc cap nhat thanh cong"));
   }
 
   @GetMapping("/option-values")
@@ -81,16 +82,16 @@ public class AdminOptionController {
   }
 
   @PutMapping("/option-values/{id}")
-  public ResponseEntity<Void> updateOptionValue(@PathVariable String id,
-                                                @Valid @RequestBody OptionValueWriteRequest request) {
+  public ResponseEntity<MessageResponse> updateOptionValue(@PathVariable String id,
+                                                           @Valid @RequestBody OptionValueWriteRequest request) {
     catalogAdminService.updateOptionValue(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Gia tri tuy chon da duoc cap nhat thanh cong"));
   }
 
   @PatchMapping("/option-values/{id}/active")
-  public ResponseEntity<Void> toggleOptionValueActive(@PathVariable String id,
-                                                      @Valid @RequestBody ToggleActiveRequest request) {
+  public ResponseEntity<MessageResponse> toggleOptionValueActive(@PathVariable String id,
+                                                                 @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleOptionValueActive(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Trang thai gia tri tuy chon da duoc cap nhat thanh cong"));
   }
 }

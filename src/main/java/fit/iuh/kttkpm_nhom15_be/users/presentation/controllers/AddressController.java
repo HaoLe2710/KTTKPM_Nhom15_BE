@@ -6,6 +6,7 @@ import fit.iuh.kttkpm_nhom15_be.users.application.dto.AddressDTO;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.AddAddressUseCase;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.DeleteAddressUseCase;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.UpdateAddressUseCase;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.AddAddressRequest;
 import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.UpdateAddressRequest;
 import jakarta.validation.Valid;
@@ -66,12 +67,12 @@ public class AddressController {
 
     // 3. Xóa địa chỉ
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAddress(
+    public ResponseEntity<MessageResponse> deleteAddress(
             @PathVariable String id,
             @AuthenticationPrincipal String userEmail
     ) {
         deleteAddressUseCase.execute(id, userEmail);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new MessageResponse("Dia chi da duoc xoa thanh cong"));
     }
 
 }

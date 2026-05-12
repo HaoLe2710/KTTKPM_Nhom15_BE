@@ -3,6 +3,7 @@ package fit.iuh.kttkpm_nhom15_be.catalog.presentation.controllers.admin;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogMediaAdminDtos.MediaResponse;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.services.CatalogMediaAdminService;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.MediaType;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -56,10 +57,10 @@ public class AdminMediaController {
   }
 
   @DeleteMapping("/products/{productId}/media/{mediaId}")
-  public ResponseEntity<Void> deleteProductMedia(@PathVariable String productId,
-                                                 @PathVariable String mediaId) {
+  public ResponseEntity<MessageResponse> deleteProductMedia(@PathVariable String productId,
+                                                            @PathVariable String mediaId) {
     catalogMediaAdminService.deleteProductMedia(productId, mediaId);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Media cua san pham da duoc xoa thanh cong"));
   }
 
   @PatchMapping("/products/{productId}/media/{mediaId}/primary")
@@ -97,10 +98,10 @@ public class AdminMediaController {
   }
 
   @DeleteMapping("/variants/{variantId}/media/{mediaId}")
-  public ResponseEntity<Void> deleteVariantMedia(@PathVariable String variantId,
-                                                 @PathVariable String mediaId) {
+  public ResponseEntity<MessageResponse> deleteVariantMedia(@PathVariable String variantId,
+                                                            @PathVariable String mediaId) {
     catalogMediaAdminService.deleteVariantMedia(variantId, mediaId);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Media cua bien the da duoc xoa thanh cong"));
   }
 
   @PatchMapping("/variants/{variantId}/media/{mediaId}/primary")

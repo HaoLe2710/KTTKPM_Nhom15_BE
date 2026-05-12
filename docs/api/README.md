@@ -17,6 +17,7 @@
 - `/v3/api-docs/catalog`
 - `/v3/api-docs/chat`
 - `/v3/api-docs/orders`
+- `/v3/api-docs/payments`
 - `/v3/api-docs/promotions`
 - `/v3/api-docs/reviews`
 - `/v3/api-docs/search`

@@ -10,6 +10,8 @@ public interface VariantRepository {
   Optional<Variant> findById(String id);
   boolean existsBySku(String sku);
   Variant save(Variant variant);
+  boolean deductStock(String id, int quantity);
+  boolean restoreStock(String id, int quantity);
   void patchPriceAndStock(String id, BigDecimal price, int addedStock);
   long countExistingByIds(List<String> ids);
 }
