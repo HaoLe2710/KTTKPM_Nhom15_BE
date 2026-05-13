@@ -116,7 +116,10 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
       rs.getInt("processed_count"),
       rs.getInt("failed_count"),
       toLocalDateTime(rs.getTimestamp("started_at")),
-      toLocalDateTime(rs.getTimestamp("finished_at"))
+      toLocalDateTime(rs.getTimestamp("finished_at")),
+      toLocalDateTime(rs.getTimestamp("finished_at")),
+      computeDurationMs(rs.getTimestamp("started_at"), rs.getTimestamp("finished_at")),
+      null
     ));
     return new PageImpl<>(content, PageRequest.of(pageRequest.page(), pageRequest.size()), count("SELECT COUNT(*) FROM search_projection_runs"));
   }
@@ -517,7 +520,8 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
     return jdbcTemplate.query(sql.toString(), params, (rs, rowNum) -> new TopQueryResponse(
       rs.getString("query_text"),
       rs.getString("query_normalized"),
-      rs.getLong("total_count")
+      rs.getLong("total_count"),
+      null
     ));
   }
 
@@ -546,7 +550,9 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
       rs.getString("query_normalized"),
       rs.getString("locale"),
       rs.getLong("occurrence_count"),
-      toLocalDateTime(rs.getTimestamp("last_seen_at"))
+      toLocalDateTime(rs.getTimestamp("last_seen_at")),
+      "NO_MATCH",
+      false
     ));
 
     long total = count("SELECT COUNT(*) FROM search_zero_result_queries" + where, params);
@@ -558,6 +564,14 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
     StringBuilder sql = new StringBuilder("""
       SELECT c.product_id,
              COALESCE(MAX(d.product_name), MAX(p.name)) AS product_name,
+             MIN(d.min_price) AS min_price,
+             (
+               SELECT m.url
+               FROM media m
+               WHERE m.product_id = c.product_id
+               ORDER BY m.is_primary DESC, m.created_at ASC
+               LIMIT 1
+             ) AS thumbnail_url,
              COUNT(*) AS click_count
       FROM search_click_logs c
       JOIN search_query_logs q ON q.id = c.query_log_id
@@ -582,7 +596,9 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
     return jdbcTemplate.query(sql.toString(), params, (rs, rowNum) -> new TopClickedProductResponse(
       rs.getString("product_id"),
       rs.getString("product_name"),
-      rs.getLong("click_count")
+      rs.getLong("click_count"),
+      rs.getBigDecimal("min_price"),
+      rs.getString("thumbnail_url")
     ));
   }
 
@@ -622,14 +638,42 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
       FROM search_projection_failures
       WHERE state IN ('OPEN', 'RETRY_QUEUED')
       """);
+    Double avgLatencyMs = findAverageSearchLatencyMs(LocalDateTime.now().minusDays(7), LocalDateTime.now());
+    LocalDateTime lastSyncAt = findLatestProjectionSyncAt();
+    double cacheEfficiency = activeProducts == 0 ? 0.0 : (projectedProducts * 100.0) / activeProducts;
     return new ProjectionHealthSummaryResponse(
       activeProducts,
       projectedProducts,
       missingProjectionProducts,
       staleProjectionProducts,
       queuedTasks,
-      openFailures
+      openFailures,
+      avgLatencyMs,
+      BigDecimal.valueOf(cacheEfficiency).setScale(2, java.math.RoundingMode.HALF_UP).doubleValue(),
+      lastSyncAt
     );
+  }
+
+  @Override
+  public Double findAverageSearchLatencyMs(LocalDateTime from, LocalDateTime to) {
+    BigDecimal value = jdbcTemplate.queryForObject("""
+      SELECT AVG(total_latency_ms)::numeric
+      FROM search_query_logs
+      WHERE created_at BETWEEN :from AND :to
+        AND total_latency_ms IS NOT NULL
+      """, new MapSqlParameterSource()
+      .addValue("from", Timestamp.valueOf(from))
+      .addValue("to", Timestamp.valueOf(to)), BigDecimal.class);
+    return value == null ? null : value.doubleValue();
+  }
+
+  @Override
+  public LocalDateTime findLatestProjectionSyncAt() {
+    Timestamp ts = jdbcTemplate.queryForObject("""
+      SELECT MAX(projection_updated_at)
+      FROM product_search_documents
+      """, new MapSqlParameterSource(), Timestamp.class);
+    return ts == null ? null : ts.toLocalDateTime();
   }
 
   @Override
@@ -788,5 +832,12 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
       return "";
     }
     return text.length() <= 500 ? text : text.substring(0, 500);
+  }
+
+  private Long computeDurationMs(Timestamp startedAt, Timestamp finishedAt) {
+    if (startedAt == null || finishedAt == null) {
+      return null;
+    }
+    return finishedAt.getTime() - startedAt.getTime();
   }
 }

@@ -7,6 +7,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.S
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.SemanticMasterWriteRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.ToggleActiveRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.services.CatalogAdminService;
+import fit.iuh.kttkpm_nhom15_be.catalog.presentation.requests.admin.BrandMultipartWriteRequest;
 import fit.iuh.kttkpm_nhom15_be.shared.application.admin.AdminPageRequest.SortDirection;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.support.AdminPageRequestFactory;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,10 +56,21 @@ public class AdminCatalogSemanticController {
     return ResponseEntity.status(HttpStatus.CREATED).body(catalogAdminService.createBrand(request));
   }
 
+  @PostMapping(path = "/brands", consumes = "multipart/form-data")
+  public ResponseEntity<CreatedResourceResponse> createBrandMultipart(@Valid @ModelAttribute BrandMultipartWriteRequest request) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(catalogAdminService.createBrandWithLogo(request));
+  }
+
   @PutMapping("/brands/{id}")
   public ResponseEntity<MessageResponse> updateBrand(@PathVariable String id, @Valid @RequestBody BrandWriteRequest request) {
     catalogAdminService.updateBrand(id, request);
     return ResponseEntity.ok(new MessageResponse("Thuong hieu da duoc cap nhat thanh cong"));
+  }
+
+  @PutMapping(path = "/brands/{id}", consumes = "multipart/form-data")
+  public ResponseEntity<Void> updateBrandMultipart(@PathVariable String id, @Valid @ModelAttribute BrandMultipartWriteRequest request) {
+    catalogAdminService.updateBrandWithLogo(id, request);
+    return ResponseEntity.noContent().build();
   }
 
   @PatchMapping("/brands/{id}/active")

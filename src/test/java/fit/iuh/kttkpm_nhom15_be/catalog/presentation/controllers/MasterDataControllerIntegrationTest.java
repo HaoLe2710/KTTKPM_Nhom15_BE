@@ -21,6 +21,7 @@ import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.security.SecurityConfig;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +32,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -40,6 +39,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -101,9 +101,9 @@ class MasterDataControllerIntegrationTest {
                 .code("SKINCARE")
                 .name("Skincare")
                 .build();
-        when(updateProductTypeUseCase.execute(eq("type-1"), any(ProductTypeRequest.class))).thenReturn(response);
+        when(createProductTypeUseCase.execute(any(ProductTypeRequest.class))).thenReturn(response);
 
-        mockMvc.perform(put("/api/v1/product-types/type-1")
+        mockMvc.perform(post("/api/v1/product-types")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
@@ -120,7 +120,7 @@ class MasterDataControllerIntegrationTest {
                 .name("Skincare")
                 .build();
 
-        mockMvc.perform(put("/api/v1/product-types/type-1")
+        mockMvc.perform(post("/api/v1/product-types")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());

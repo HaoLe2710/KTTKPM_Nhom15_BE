@@ -31,10 +31,30 @@ interface JpaUserRepository extends JpaRepository<UserJpaEntity, String> {
     @Query("SELECT COUNT(u) > 0 FROM UserJpaEntity u WHERE (u.email = :email OR u.phone = :phone) AND u.id <> :id")
     boolean existsByEmailOrPhoneExcludingId(@Param("email") String email, @Param("phone") String phone, @Param("id") String id);
 
-    @Query("SELECT u FROM UserJpaEntity u WHERE :keyword IS NULL OR " +
-            "LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "u.phone LIKE CONCAT('%', :keyword, '%')")
+    @Query(value = """
+            SELECT *
+            FROM users u
+            WHERE u.is_active = true
+              AND (
+                CAST(:keyword AS text) IS NULL
+                OR lower(u.full_name) LIKE lower(concat('%', CAST(:keyword AS text), '%'))
+                OR lower(u.email) LIKE lower(concat('%', CAST(:keyword AS text), '%'))
+                OR u.phone LIKE concat('%', CAST(:keyword AS text), '%')
+              )
+            ORDER BY u.created_at DESC
+            """,
+            countQuery = """
+            SELECT COUNT(1)
+            FROM users u
+            WHERE u.is_active = true
+              AND (
+                CAST(:keyword AS text) IS NULL
+                OR lower(u.full_name) LIKE lower(concat('%', CAST(:keyword AS text), '%'))
+                OR lower(u.email) LIKE lower(concat('%', CAST(:keyword AS text), '%'))
+                OR u.phone LIKE concat('%', CAST(:keyword AS text), '%')
+              )
+            """,
+            nativeQuery = true)
     Page<UserJpaEntity> searchUsers(@Param("keyword") String keyword, Pageable pageable);
 
     @Modifying

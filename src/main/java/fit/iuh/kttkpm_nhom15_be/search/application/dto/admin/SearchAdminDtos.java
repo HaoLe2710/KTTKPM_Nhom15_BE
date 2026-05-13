@@ -55,7 +55,10 @@ public final class SearchAdminDtos {
     int processedCount,
     int failedCount,
     LocalDateTime startedAt,
-    LocalDateTime finishedAt
+    LocalDateTime finishedAt,
+    LocalDateTime endedAt,
+    Long durationMs,
+    String errorMessage
   ) {
   }
 
@@ -117,7 +120,8 @@ public final class SearchAdminDtos {
   public record TopQueryResponse(
     String queryText,
     String queryNormalized,
-    long totalCount
+    long totalCount,
+    String trend
   ) {
   }
 
@@ -127,14 +131,18 @@ public final class SearchAdminDtos {
     String queryNormalized,
     String locale,
     long occurrenceCount,
-    LocalDateTime lastSeenAt
+    LocalDateTime lastSeenAt,
+    String reasonCode,
+    Boolean resolved
   ) {
   }
 
   public record TopClickedProductResponse(
     String productId,
     String productName,
-    long clickCount
+    long clickCount,
+    BigDecimal price,
+    String thumbnailUrl
   ) {
   }
 
@@ -144,7 +152,18 @@ public final class SearchAdminDtos {
     long missingProjectionProducts,
     long staleProjectionProducts,
     long queuedTasks,
-    long openFailures
+    long openFailures,
+    Double avgLatencyMs,
+    Double cacheEfficiency,
+    LocalDateTime lastSyncAt
+  ) {
+  }
+
+  public record SynonymRecommendationResponse(
+    String keyword,
+    String locale,
+    String suggestedCode,
+    int confidence
   ) {
   }
 

@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,8 +34,18 @@ public class UserFacadeImpl implements UserFacade {
 
     @Override
     public Optional<User> findByIdentifier(String identifier) {
-        return userRepository.findByEmail(identifier)
-                .or(() -> userRepository.findByPhone(identifier));
+        if (identifier == null || identifier.isBlank()) {
+            return Optional.empty();
+        }
+
+        String normalized = identifier.trim();
+        if (normalized.contains("@")) {
+            normalized = normalized.toLowerCase(Locale.ROOT);
+        }
+
+        final String lookup = normalized;
+        return userRepository.findByEmail(lookup)
+                .or(() -> userRepository.findByPhone(lookup));
     }
 
     @Override

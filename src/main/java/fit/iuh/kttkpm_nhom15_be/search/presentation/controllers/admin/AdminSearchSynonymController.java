@@ -2,6 +2,7 @@ package fit.iuh.kttkpm_nhom15_be.search.presentation.controllers.admin;
 
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.ProjectionEnqueueResponse;
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SynonymGroupResponse;
+import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SynonymRecommendationResponse;
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SynonymGroupWriteRequest;
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SynonymTermWriteRequest;
 import fit.iuh.kttkpm_nhom15_be.search.application.services.SearchAdminService;
@@ -10,6 +11,7 @@ import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.support.AdminPageRequestFactory;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -71,5 +73,11 @@ public class AdminSearchSynonymController {
   public ResponseEntity<MessageResponse> deleteSynonymTerm(@PathVariable String termId) {
     searchAdminService.deleteSynonymTerm(termId);
     return ResponseEntity.ok(new MessageResponse("Synonym term da duoc xoa thanh cong"));
+  }
+
+  @PostMapping("/synonyms/recommendations")
+  public ResponseEntity<List<SynonymRecommendationResponse>> recommendSynonyms(@RequestParam(required = false) String locale,
+                                                                                @RequestParam(defaultValue = "10") int limit) {
+    return ResponseEntity.ok(searchAdminService.recommendSynonyms(locale, limit));
   }
 }

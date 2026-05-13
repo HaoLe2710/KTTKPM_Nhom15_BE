@@ -29,6 +29,7 @@ public class CreateProductTypeUseCase {
                 .id(saved.getId())
                 .code(saved.getCode())
                 .name(saved.getName())
+                .isActive(true)
                 .build();
     }
 }

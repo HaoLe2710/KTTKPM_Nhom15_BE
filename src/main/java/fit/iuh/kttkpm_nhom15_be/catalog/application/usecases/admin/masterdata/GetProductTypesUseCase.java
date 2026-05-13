@@ -20,6 +20,7 @@ public class GetProductTypesUseCase {
                         .id(pt.getId())
                         .code(pt.getCode())
                         .name(pt.getName())
+                        .isActive(true)
                         .build())
                 .collect(Collectors.toList());
     }
