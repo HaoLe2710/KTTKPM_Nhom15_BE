@@ -7,25 +7,20 @@ import fit.iuh.kttkpm_nhom15_be.promotions.application.usecases.CreatePromotionU
 import fit.iuh.kttkpm_nhom15_be.promotions.application.usecases.DeactivatePromotionUseCase;
 import fit.iuh.kttkpm_nhom15_be.promotions.application.usecases.DeletePromotionUseCase;
 import fit.iuh.kttkpm_nhom15_be.promotions.application.usecases.UpdatePromotionUseCase;
-import fit.iuh.kttkpm_nhom15_be.promotions.domain.exceptions.PromotionNotApplicableException;
-import fit.iuh.kttkpm_nhom15_be.promotions.domain.exceptions.PromotionNotFoundException;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.promotions.presentation.requests.CreatePromotionRequest;
 import fit.iuh.kttkpm_nhom15_be.promotions.presentation.requests.UpdatePromotionRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/promotions")
@@ -76,23 +71,8 @@ public class PromotionController {
     }
 
     @DeleteMapping("/{promotionId}")
-    public ResponseEntity<Void> deletePromotion(@PathVariable String promotionId) {
+    public ResponseEntity<MessageResponse> deletePromotion(@PathVariable String promotionId) {
         deletePromotionUseCase.execute(promotionId);
-        return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler(PromotionNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleNotFound(PromotionNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
-    }
-
-    @ExceptionHandler({PromotionNotApplicableException.class, IllegalArgumentException.class})
-    public ResponseEntity<Map<String, String>> handleBadRequest(RuntimeException ex) {
-        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
-    }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Map<String, String>> handleConflict(DataIntegrityViolationException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+        return ResponseEntity.ok(new MessageResponse("Khuyen mai da duoc xoa thanh cong"));
     }
 }

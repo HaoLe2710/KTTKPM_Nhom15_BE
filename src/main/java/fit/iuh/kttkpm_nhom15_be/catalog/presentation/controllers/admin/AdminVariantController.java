@@ -6,6 +6,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.V
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.VariantSummaryResponse;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.VariantUpdateRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.services.CatalogAdminService;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,16 +40,16 @@ public class AdminVariantController {
   }
 
   @PatchMapping("/{id}/stock")
-  public ResponseEntity<Void> patchStock(@PathVariable String id,
-                                         @Valid @RequestBody VariantStockPatchRequest request) {
+  public ResponseEntity<MessageResponse> patchStock(@PathVariable String id,
+                                                    @Valid @RequestBody VariantStockPatchRequest request) {
     catalogAdminService.patchVariantStock(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Ton kho bien the da duoc cap nhat thanh cong"));
   }
 
   @PatchMapping("/{id}/active")
-  public ResponseEntity<Void> toggleActive(@PathVariable String id,
-                                           @Valid @RequestBody ToggleActiveRequest request) {
+  public ResponseEntity<MessageResponse> toggleActive(@PathVariable String id,
+                                                      @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleVariantActive(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Trang thai bien the da duoc cap nhat thanh cong"));
   }
 }

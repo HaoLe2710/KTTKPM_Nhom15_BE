@@ -6,7 +6,6 @@ import fit.iuh.kttkpm_nhom15_be.orders.domain.models.ShippingProvider;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -16,6 +15,7 @@ import java.util.Map;
 public class PlaceOrderCommand {
     private String userId;
     private String promotionCode;
+    private String clientIp;
     
     // Thông tin giao nhận
     private String shipFullName;

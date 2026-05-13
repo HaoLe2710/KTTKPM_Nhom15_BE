@@ -5,6 +5,7 @@ import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.Sug
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SuggestionWriteRequest;
 import fit.iuh.kttkpm_nhom15_be.search.application.services.SearchAdminService;
 import fit.iuh.kttkpm_nhom15_be.shared.application.admin.AdminPageRequest.SortDirection;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.support.AdminPageRequestFactory;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -53,16 +54,16 @@ public class AdminSearchSuggestionController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Void> updateSuggestion(@PathVariable String id,
-                                               @Valid @RequestBody SuggestionWriteRequest request) {
+  public ResponseEntity<MessageResponse> updateSuggestion(@PathVariable String id,
+                                                          @Valid @RequestBody SuggestionWriteRequest request) {
     searchAdminService.updateSuggestion(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Suggestion da duoc cap nhat thanh cong"));
   }
 
   @PatchMapping("/{id}/active")
-  public ResponseEntity<Void> toggleSuggestionActive(@PathVariable String id,
-                                                     @RequestParam boolean active) {
+  public ResponseEntity<MessageResponse> toggleSuggestionActive(@PathVariable String id,
+                                                                @RequestParam boolean active) {
     searchAdminService.toggleSuggestionActive(id, active);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Trang thai suggestion da duoc cap nhat thanh cong"));
   }
 }

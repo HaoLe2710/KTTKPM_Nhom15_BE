@@ -9,6 +9,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.S
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.ToggleActiveRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.services.CatalogAdminService;
 import fit.iuh.kttkpm_nhom15_be.shared.application.admin.AdminPageRequest.SortDirection;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.support.AdminPageRequestFactory;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -70,10 +71,10 @@ public class AdminProductController {
   }
 
   @PatchMapping("/{id}/active")
-  public ResponseEntity<Void> toggleProductActive(@PathVariable String id,
-                                                  @Valid @RequestBody ToggleActiveRequest request) {
+  public ResponseEntity<MessageResponse> toggleProductActive(@PathVariable String id,
+                                                             @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleProductActive(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Trang thai san pham da duoc cap nhat thanh cong"));
   }
 
   @GetMapping("/{id}/search-status")

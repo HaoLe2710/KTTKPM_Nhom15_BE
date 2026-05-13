@@ -8,6 +8,7 @@ import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.Pro
 import fit.iuh.kttkpm_nhom15_be.search.application.results.TriggerFullSearchProjectionRebuildResult;
 import fit.iuh.kttkpm_nhom15_be.search.application.services.SearchAdminService;
 import fit.iuh.kttkpm_nhom15_be.shared.application.admin.AdminPageRequest.SortDirection;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.support.AdminPageRequestFactory;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -81,9 +82,9 @@ public class AdminSearchProjectionController {
   }
 
   @PostMapping("/projection-failures/{productId}/resolve")
-  public ResponseEntity<Void> resolveFailure(@PathVariable String productId,
-                                             @RequestBody(required = false) @Valid FailureResolveRequest request) {
+  public ResponseEntity<MessageResponse> resolveFailure(@PathVariable String productId,
+                                                        @RequestBody(required = false) @Valid FailureResolveRequest request) {
     searchAdminService.resolveFailure(productId, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Projection failure da duoc xu ly thanh cong"));
   }
 }

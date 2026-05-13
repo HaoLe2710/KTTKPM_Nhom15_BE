@@ -6,6 +6,7 @@ import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.Syn
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SynonymTermWriteRequest;
 import fit.iuh.kttkpm_nhom15_be.search.application.services.SearchAdminService;
 import fit.iuh.kttkpm_nhom15_be.shared.application.admin.AdminPageRequest.SortDirection;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.support.AdminPageRequestFactory;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -54,10 +55,10 @@ public class AdminSearchSynonymController {
   }
 
   @PutMapping("/synonym-groups/{id}")
-  public ResponseEntity<Void> updateSynonymGroup(@PathVariable String id,
-                                                 @Valid @RequestBody SynonymGroupWriteRequest request) {
+  public ResponseEntity<MessageResponse> updateSynonymGroup(@PathVariable String id,
+                                                            @Valid @RequestBody SynonymGroupWriteRequest request) {
     searchAdminService.updateSynonymGroup(id, request);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Synonym group da duoc cap nhat thanh cong"));
   }
 
   @PostMapping("/synonym-groups/{id}/terms")
@@ -67,8 +68,8 @@ public class AdminSearchSynonymController {
   }
 
   @DeleteMapping("/synonym-terms/{termId}")
-  public ResponseEntity<Void> deleteSynonymTerm(@PathVariable String termId) {
+  public ResponseEntity<MessageResponse> deleteSynonymTerm(@PathVariable String termId) {
     searchAdminService.deleteSynonymTerm(termId);
-    return ResponseEntity.noContent().build();
+    return ResponseEntity.ok(new MessageResponse("Synonym term da duoc xoa thanh cong"));
   }
 }

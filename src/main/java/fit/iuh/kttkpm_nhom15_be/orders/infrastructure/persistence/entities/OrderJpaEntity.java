@@ -41,6 +41,7 @@ public class OrderJpaEntity {
     @Enumerated(EnumType.STRING) private OrderStatus status;
     @Enumerated(EnumType.STRING) private PaymentMethod paymentMethod;
     @Enumerated(EnumType.STRING) private PaymentStatus paymentStatus;
+    private boolean stockDeducted;
 
     private String shipFullName; private String shipPhone; private String shipAddress;
     private String shipCity; private String shipDistrict; private String shipWard;

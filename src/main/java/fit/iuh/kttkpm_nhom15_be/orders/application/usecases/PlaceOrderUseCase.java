@@ -14,6 +14,8 @@ import fit.iuh.kttkpm_nhom15_be.orders.domain.models.OrderItem;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.OrderStatus;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.PaymentStatus;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.repositories.OrderRepository;
+import fit.iuh.kttkpm_nhom15_be.payments.application.dto.PaymentTransactionResponse;
+import fit.iuh.kttkpm_nhom15_be.payments.application.usecases.CreatePaymentUseCase;
 import fit.iuh.kttkpm_nhom15_be.promotions.application.dto.AppliedPromotionDTO;
 import fit.iuh.kttkpm_nhom15_be.promotions.application.dto.OrderCartDTO;
 import fit.iuh.kttkpm_nhom15_be.promotions.application.dto.OrderCartItemDTO;
@@ -38,6 +40,7 @@ public class PlaceOrderUseCase {
   private final CartFacade cartFacade;
   private final CatalogFacade catalogFacade;
   private final PromotionFacade promotionFacade;
+  private final CreatePaymentUseCase createPaymentUseCase;
   private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
@@ -46,6 +49,7 @@ public class PlaceOrderUseCase {
 
     List<CartItemDTO> cartItems = cart.getItems();
     List<VariantSnapshot> snapshots = catalogFacade.validateAndGetSnapshots(cartItems);
+    catalogFacade.deductStock(cartItems);
 
     Map<String, VariantSnapshot> snapshotMap = snapshots.stream()
       .collect(Collectors.toMap(VariantSnapshot::getVariantId, Function.identity()));
@@ -89,6 +93,7 @@ public class PlaceOrderUseCase {
       .status(OrderStatus.CREATED)
       .paymentMethod(command.getPaymentMethod())
       .paymentStatus(PaymentStatus.UNPAID)
+      .stockDeducted(true)
       .shipFullName(command.getShipFullName())
       .shipPhone(command.getShipPhone())
       .shipAddress(command.getShipAddress())
@@ -103,6 +108,7 @@ public class PlaceOrderUseCase {
     newOrder.initBehavior();
 
     Order savedOrder = orderRepository.save(newOrder);
+    PaymentTransactionResponse paymentTransactionResponse = createPaymentUseCase.execute(savedOrder, command.getClientIp());
 
     if (appliedPromotion != null) {
       promotionFacade.markPromotionUsed(appliedPromotion.promotionId());
@@ -129,6 +135,8 @@ public class PlaceOrderUseCase {
     return PlaceOrderResult.builder()
       .orderId(savedOrder.getId())
       .orderNo(savedOrder.getOrderNo())
+      .paymentRedirectUrl(paymentTransactionResponse.getPaymentRedirectUrl())
+      .paymentInfo(paymentTransactionResponse.getPaymentInfo())
       .build();
   }
 
