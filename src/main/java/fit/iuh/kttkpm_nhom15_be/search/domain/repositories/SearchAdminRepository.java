@@ -76,6 +76,10 @@ public interface SearchAdminRepository {
   List<TopClickedProductResponse> findTopClickedProducts(LocalDateTime from, LocalDateTime to, String locale, int limit);
 
   ProjectionHealthSummaryResponse getProjectionHealthSummary();
+  
+  Double findAverageSearchLatencyMs(LocalDateTime from, LocalDateTime to);
+
+  LocalDateTime findLatestProjectionSyncAt();
 
   Optional<SearchPreviewResponse> findSearchPreview(String productId);
 }

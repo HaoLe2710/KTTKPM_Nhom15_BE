@@ -4,7 +4,10 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.Media;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.MediaRepository;
 import jakarta.transaction.Transactional;
 import fit.iuh.kttkpm_nhom15_be.catalog.infrastructure.persistence.entites.MediaJpaEntity;
+import fit.iuh.kttkpm_nhom15_be.catalog.infrastructure.persistence.entites.ProductJpaEntity;
+import fit.iuh.kttkpm_nhom15_be.catalog.infrastructure.persistence.entites.VariantJpaEntity;
 import fit.iuh.kttkpm_nhom15_be.catalog.infrastructure.persistence.mappers.CatalogDataMapper;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -36,10 +39,19 @@ public class MediaRepositoryImpl implements MediaRepository {
 
     private final JpaMediaRepository jpaRepository;
     private final CatalogDataMapper dataMapper;
+    private final EntityManager entityManager;
 
     @Override
     public Media save(Media media) {
         MediaJpaEntity entity = dataMapper.toJpaEntity(media);
+        if (media.getProductId() != null && !media.getProductId().isBlank()) {
+            entity.setProduct(entityManager.getReference(ProductJpaEntity.class, media.getProductId()));
+        }
+        if (media.getVariantId() != null && !media.getVariantId().isBlank()) {
+            entity.setVariant(entityManager.getReference(VariantJpaEntity.class, media.getVariantId()));
+        } else {
+            entity.setVariant(null);
+        }
         return dataMapper.toDomainModel(jpaRepository.save(entity));
     }
 

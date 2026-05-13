@@ -24,12 +24,17 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.V
 import fit.iuh.kttkpm_nhom15_be.catalog.application.events.CatalogProductChangedEvent;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.SemanticMasterKind;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.CatalogAdminRepository;
+import fit.iuh.kttkpm_nhom15_be.catalog.presentation.requests.admin.BrandMultipartWriteRequest;
 import fit.iuh.kttkpm_nhom15_be.search.application.support.SearchNormalizer;
 import fit.iuh.kttkpm_nhom15_be.shared.application.admin.AdminPageRequest;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.FileStoragePort;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.StoredFile;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.UploadFileCommand;
 import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiConflictException;
 import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiNotFoundException;
 import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiValidationException;
 import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.audit.AdminAuditService;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -37,18 +42,25 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class CatalogAdminService {
 
   private final CatalogAdminRepository catalogAdminRepository;
   private final ApplicationEventPublisher eventPublisher;
   private final AdminAuditService adminAuditService;
+  private final FileStoragePort fileStoragePort;
 
   public Page<ProductListItemResponse> getProducts(String query, String typeId, Boolean active, AdminPageRequest pageRequest) {
     return catalogAdminRepository.findProducts(query, typeId, active, pageRequest);
@@ -230,34 +242,53 @@ public class CatalogAdminService {
   }
 
   public Page<OptionListItemResponse> getOptions(Boolean active, AdminPageRequest pageRequest) {
-    return catalogAdminRepository.findOptions(active, pageRequest);
+    try {
+      return catalogAdminRepository.findOptions(active, pageRequest);
+    } catch (DataAccessException ex) {
+      log.warn("Cannot load options (likely migration/schema not ready): {}", ex.getMessage());
+      return new PageImpl<>(List.of(), PageRequest.of(pageRequest.page(), pageRequest.size()), 0);
+    }
   }
 
   public Page<SemanticMasterListItemResponse> getBrands(Boolean active, AdminPageRequest pageRequest) {
-    return catalogAdminRepository.findSemanticMasters(SemanticMasterKind.BRAND, active, pageRequest);
+    return safeSemanticList(SemanticMasterKind.BRAND, active, pageRequest);
   }
 
   public Page<SemanticMasterListItemResponse> getIngredients(Boolean active, AdminPageRequest pageRequest) {
-    return catalogAdminRepository.findSemanticMasters(SemanticMasterKind.INGREDIENT, active, pageRequest);
+    return safeSemanticList(SemanticMasterKind.INGREDIENT, active, pageRequest);
   }
 
   public Page<SemanticMasterListItemResponse> getSkinTypes(Boolean active, AdminPageRequest pageRequest) {
-    return catalogAdminRepository.findSemanticMasters(SemanticMasterKind.SKIN_TYPE, active, pageRequest);
+    return safeSemanticList(SemanticMasterKind.SKIN_TYPE, active, pageRequest);
   }
 
   public Page<SemanticMasterListItemResponse> getConcerns(Boolean active, AdminPageRequest pageRequest) {
-    return catalogAdminRepository.findSemanticMasters(SemanticMasterKind.CONCERN, active, pageRequest);
+    return safeSemanticList(SemanticMasterKind.CONCERN, active, pageRequest);
   }
 
   public Page<SemanticMasterListItemResponse> getTags(Boolean active, AdminPageRequest pageRequest) {
-    return catalogAdminRepository.findSemanticMasters(SemanticMasterKind.TAG, active, pageRequest);
+    return safeSemanticList(SemanticMasterKind.TAG, active, pageRequest);
   }
 
   public Page<OptionValueListItemResponse> getOptionValues(String optionId, Boolean active, AdminPageRequest pageRequest) {
     if (optionId != null && !optionId.isBlank() && !catalogAdminRepository.existsOption(optionId)) {
       throw new ApiNotFoundException("Option not found");
     }
-    return catalogAdminRepository.findOptionValues(optionId, active, pageRequest);
+    try {
+      return catalogAdminRepository.findOptionValues(optionId, active, pageRequest);
+    } catch (DataAccessException ex) {
+      log.warn("Cannot load option values (likely migration/schema not ready): {}", ex.getMessage());
+      return new PageImpl<>(List.of(), PageRequest.of(pageRequest.page(), pageRequest.size()), 0);
+    }
+  }
+
+  private Page<SemanticMasterListItemResponse> safeSemanticList(SemanticMasterKind kind, Boolean active, AdminPageRequest pageRequest) {
+    try {
+      return catalogAdminRepository.findSemanticMasters(kind, active, pageRequest);
+    } catch (DataAccessException ex) {
+      log.warn("Cannot load semantic masters for {} (likely migration/schema not ready): {}", kind, ex.getMessage());
+      return new PageImpl<>(List.of(), PageRequest.of(pageRequest.page(), pageRequest.size()), 0);
+    }
   }
 
   @Transactional
@@ -346,6 +377,19 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  public CreatedResourceResponse createBrandWithLogo(BrandMultipartWriteRequest request) {
+    String logoUrl = resolveBrandLogoUrl(request.getLogoFile(), request.getLogoUrl());
+    return createBrand(new BrandWriteRequest(
+      request.getCode(),
+      request.getName(),
+      request.getSlug(),
+      request.getDescription(),
+      logoUrl,
+      request.getIsActive()
+    ));
+  }
+
+  @Transactional
   public void updateBrand(String id, BrandWriteRequest request) {
     ensureSemanticMasterExists(SemanticMasterKind.BRAND, id, "Brand not found");
     validateSemanticMasterCode(SemanticMasterKind.BRAND, request.code(), id, "Brand code already exists");
@@ -362,6 +406,19 @@ public class CatalogAdminService {
     );
     publishSemanticMasterChanged(SemanticMasterKind.BRAND, id, "ADMIN_BRAND_UPDATED");
     adminAuditService.log("BRAND_UPDATED", "BRAND", id, "{\"code\":\"" + request.code().trim() + "\"}");
+  }
+
+  @Transactional
+  public void updateBrandWithLogo(String id, BrandMultipartWriteRequest request) {
+    String logoUrl = resolveBrandLogoUrl(request.getLogoFile(), request.getLogoUrl());
+    updateBrand(id, new BrandWriteRequest(
+      request.getCode(),
+      request.getName(),
+      request.getSlug(),
+      request.getDescription(),
+      logoUrl,
+      request.getIsActive()
+    ));
   }
 
   @Transactional
@@ -720,5 +777,26 @@ public class CatalogAdminService {
     }
     String trimmed = value.trim();
     return trimmed.isEmpty() ? null : trimmed;
+  }
+
+  private String resolveBrandLogoUrl(MultipartFile logoFile, String fallbackLogoUrl) {
+    if (logoFile == null || logoFile.isEmpty()) {
+      return trimToNull(fallbackLogoUrl);
+    }
+    StoredFile storedFile = uploadBrandLogo(logoFile);
+    return storedFile.url();
+  }
+
+  private StoredFile uploadBrandLogo(MultipartFile file) {
+    try {
+      return fileStoragePort.upload(new UploadFileCommand(
+        "catalog/brands",
+        file.getOriginalFilename(),
+        file.getContentType(),
+        file.getBytes()
+      ));
+    } catch (IOException ex) {
+      throw new IllegalStateException("Cannot read uploaded brand logo bytes", ex);
+    }
   }
 }

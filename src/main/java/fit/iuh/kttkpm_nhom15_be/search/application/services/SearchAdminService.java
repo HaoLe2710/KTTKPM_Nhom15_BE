@@ -11,6 +11,7 @@ import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.Sug
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SuggestionWriteRequest;
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SynonymGroupResponse;
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SynonymGroupWriteRequest;
+import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SynonymRecommendationResponse;
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.SynonymTermWriteRequest;
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.TopClickedProductResponse;
 import fit.iuh.kttkpm_nhom15_be.search.application.dto.admin.SearchAdminDtos.TopQueryResponse;
@@ -27,12 +28,18 @@ import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiValidationExcep
 import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.audit.AdminAuditService;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class SearchAdminService {
 
@@ -64,7 +71,12 @@ public class SearchAdminService {
   }
 
   public Page<ProjectionRunResponse> getProjectionRuns(AdminPageRequest pageRequest) {
-    return searchAdminRepository.findProjectionRuns(pageRequest);
+    try {
+      return searchAdminRepository.findProjectionRuns(pageRequest);
+    } catch (DataAccessException ex) {
+      log.warn("Cannot load projection runs (likely migration/schema not ready): {}", ex.getMessage());
+      return new PageImpl<>(List.of(), PageRequest.of(pageRequest.page(), pageRequest.size()), 0);
+    }
   }
 
   @Transactional
@@ -202,6 +214,32 @@ public class SearchAdminService {
     ensureProductExists(productId);
     return searchAdminRepository.findSearchPreview(productId)
       .orElseThrow(() -> new ApiNotFoundException("Search preview not found"));
+  }
+
+  public List<SynonymRecommendationResponse> recommendSynonyms(String locale, int limit) {
+    var zeroResults = searchAdminRepository.findZeroResultQueries(
+      LocalDateTime.now().minusDays(30),
+      LocalDateTime.now(),
+      locale,
+      new AdminPageRequest(0, resolveLimit(limit), "occurrenceCount", AdminPageRequest.SortDirection.DESC)
+    );
+    return zeroResults.getContent().stream()
+      .map(item -> {
+        String code = item.queryNormalized() == null || item.queryNormalized().isBlank()
+          ? item.queryText()
+          : item.queryNormalized();
+        if (code == null) {
+          code = "unknown";
+        }
+        code = code.toLowerCase(Locale.ROOT).replace(' ', '-');
+        return new SynonymRecommendationResponse(
+          item.queryText(),
+          item.locale(),
+          "syn-" + code,
+          (int) Math.min(100, Math.max(10, item.occurrenceCount()))
+        );
+      })
+      .toList();
   }
 
   private void validateSuggestionUniqueness(String locale, String keyword, String excludeId) {

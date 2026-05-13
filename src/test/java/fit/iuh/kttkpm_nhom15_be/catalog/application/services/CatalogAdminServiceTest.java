@@ -10,6 +10,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.P
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.VariantCreateRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.VariantOptionAssignmentRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.CatalogAdminRepository;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.FileStoragePort;
 import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiConflictException;
 import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.audit.AdminAuditService;
 import java.math.BigDecimal;
@@ -25,7 +26,8 @@ class CatalogAdminServiceTest {
     CatalogAdminRepository repository = Mockito.mock(CatalogAdminRepository.class);
     ApplicationEventPublisher publisher = Mockito.mock(ApplicationEventPublisher.class);
     AdminAuditService auditService = Mockito.mock(AdminAuditService.class);
-    CatalogAdminService service = new CatalogAdminService(repository, publisher, auditService);
+    FileStoragePort fileStoragePort = Mockito.mock(FileStoragePort.class);
+    CatalogAdminService service = new CatalogAdminService(repository, publisher, auditService, fileStoragePort);
 
     when(repository.existsProductType("type-1")).thenReturn(true);
     when(repository.existsProductSlugIgnoreCase("serum-ban-dem", null)).thenReturn(true);
@@ -69,7 +71,8 @@ class CatalogAdminServiceTest {
     CatalogAdminRepository repository = Mockito.mock(CatalogAdminRepository.class);
     ApplicationEventPublisher publisher = Mockito.mock(ApplicationEventPublisher.class);
     AdminAuditService auditService = Mockito.mock(AdminAuditService.class);
-    CatalogAdminService service = new CatalogAdminService(repository, publisher, auditService);
+    FileStoragePort fileStoragePort = Mockito.mock(FileStoragePort.class);
+    CatalogAdminService service = new CatalogAdminService(repository, publisher, auditService, fileStoragePort);
 
     when(repository.existsProduct("product-1")).thenReturn(true);
     when(repository.existsNormalizedSku("SKU001", null)).thenReturn(true);

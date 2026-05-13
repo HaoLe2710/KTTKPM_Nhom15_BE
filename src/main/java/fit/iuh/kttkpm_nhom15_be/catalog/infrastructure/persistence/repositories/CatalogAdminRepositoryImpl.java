@@ -240,7 +240,7 @@ public class CatalogAdminRepositoryImpl implements CatalogAdminRepository {
         SELECT 1
         FROM products
         WHERE LOWER(slug) = LOWER(:slug)
-          AND (:excludeProductId IS NULL OR id <> :excludeProductId)
+          AND (CAST(:excludeProductId AS VARCHAR) IS NULL OR id <> CAST(:excludeProductId AS VARCHAR))
       )
       """, new MapSqlParameterSource()
       .addValue("slug", slug)
@@ -357,7 +357,7 @@ public class CatalogAdminRepositoryImpl implements CatalogAdminRepository {
         SELECT 1
         FROM variants
         WHERE REGEXP_REPLACE(UPPER(sku), '[\\s\\-_.\\/]', '', 'g') = :normalizedSku
-          AND (:excludeVariantId IS NULL OR id <> :excludeVariantId)
+          AND (CAST(:excludeVariantId AS VARCHAR) IS NULL OR id <> CAST(:excludeVariantId AS VARCHAR))
       )
       """, new MapSqlParameterSource()
       .addValue("normalizedSku", normalizedSku)
@@ -462,7 +462,7 @@ public class CatalogAdminRepositoryImpl implements CatalogAdminRepository {
         FROM variants v
         LEFT JOIN variant_options vo ON vo.variant_id = v.id
         WHERE v.product_id = :productId
-          AND (:excludeVariantId IS NULL OR v.id <> :excludeVariantId)
+          AND (CAST(:excludeVariantId AS VARCHAR) IS NULL OR v.id <> CAST(:excludeVariantId AS VARCHAR))
         GROUP BY v.id
       )
       SELECT EXISTS(SELECT 1 FROM combinations WHERE combo = :combo)
@@ -566,7 +566,7 @@ public class CatalogAdminRepositoryImpl implements CatalogAdminRepository {
         SELECT 1
         FROM options
         WHERE LOWER(code) = LOWER(:code)
-          AND (:excludeOptionId IS NULL OR id <> :excludeOptionId)
+          AND (CAST(:excludeOptionId AS VARCHAR) IS NULL OR id <> CAST(:excludeOptionId AS VARCHAR))
       )
       """, new MapSqlParameterSource()
       .addValue("code", code)
@@ -648,7 +648,7 @@ public class CatalogAdminRepositoryImpl implements CatalogAdminRepository {
         FROM option_values
         WHERE option_id = :optionId
           AND LOWER(value) = LOWER(:value)
-          AND (:excludeOptionValueId IS NULL OR id <> :excludeOptionValueId)
+          AND (CAST(:excludeOptionValueId AS VARCHAR) IS NULL OR id <> CAST(:excludeOptionValueId AS VARCHAR))
       )
       """, new MapSqlParameterSource()
       .addValue("optionId", optionId)
@@ -793,7 +793,7 @@ public class CatalogAdminRepositoryImpl implements CatalogAdminRepository {
   public boolean existsSemanticMasterCodeIgnoreCase(SemanticMasterKind kind, String code, String excludeId) {
     return Boolean.TRUE.equals(jdbcTemplate.queryForObject(
       "SELECT EXISTS(SELECT 1 FROM " + masterTable(kind)
-        + " WHERE LOWER(code) = LOWER(:code) AND (:excludeId IS NULL OR id <> :excludeId))",
+        + " WHERE LOWER(code) = LOWER(:code) AND (CAST(:excludeId AS VARCHAR) IS NULL OR id <> CAST(:excludeId AS VARCHAR)))",
       new MapSqlParameterSource().addValue("code", code).addValue("excludeId", excludeId),
       Boolean.class
     ));
@@ -806,7 +806,7 @@ public class CatalogAdminRepositoryImpl implements CatalogAdminRepository {
         SELECT 1
         FROM brands
         WHERE LOWER(slug) = LOWER(:slug)
-          AND (:excludeId IS NULL OR id <> :excludeId)
+          AND (CAST(:excludeId AS VARCHAR) IS NULL OR id <> CAST(:excludeId AS VARCHAR))
       )
       """, new MapSqlParameterSource().addValue("slug", slug).addValue("excludeId", excludeId), Boolean.class));
   }

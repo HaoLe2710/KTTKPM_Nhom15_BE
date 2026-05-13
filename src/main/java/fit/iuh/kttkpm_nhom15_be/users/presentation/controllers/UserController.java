@@ -1,19 +1,35 @@
 package fit.iuh.kttkpm_nhom15_be.users.presentation.controllers;
 
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.users.application.commands.UpdateProfileCommand;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.UserResponse;
-import fit.iuh.kttkpm_nhom15_be.users.application.usecases.*;
-import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
+import fit.iuh.kttkpm_nhom15_be.users.application.usecases.ConfirmOldEmailChangeUseCase;
+import fit.iuh.kttkpm_nhom15_be.users.application.usecases.DeleteUserUseCase;
+import fit.iuh.kttkpm_nhom15_be.users.application.usecases.GetUserByIdUseCase;
+import fit.iuh.kttkpm_nhom15_be.users.application.usecases.GetUsersUseCase;
+import fit.iuh.kttkpm_nhom15_be.users.application.usecases.ToggleUserStatusUseCase;
+import fit.iuh.kttkpm_nhom15_be.users.application.usecases.UpdateProfileUseCase;
+import fit.iuh.kttkpm_nhom15_be.users.application.usecases.UpdateUserUseCase;
+import fit.iuh.kttkpm_nhom15_be.users.application.usecases.VerifyUpdateEmailUseCase;
 import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.UpdateProfileRequest;
 import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.UpdateUserRequest;
 import jakarta.validation.Valid;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -67,6 +83,7 @@ public class UserController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserResponse>> getUsers(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
@@ -76,17 +93,20 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserResponse> getUserById(@PathVariable String id) {
         return ResponseEntity.ok(getUserByIdUseCase.execute(id));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MessageResponse> deleteUser(@PathVariable String id) {
         deleteUserUseCase.execute(id);
         return ResponseEntity.ok(new MessageResponse("Nguoi dung da duoc xoa thanh cong"));
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MessageResponse> updateUser(
             @PathVariable String id,
             @Valid @RequestBody UpdateUserRequest req
@@ -102,6 +122,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}/toggle-status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MessageResponse> toggleUserStatus(
             @AuthenticationPrincipal String adminId,
             @PathVariable("id") String targetUserId
