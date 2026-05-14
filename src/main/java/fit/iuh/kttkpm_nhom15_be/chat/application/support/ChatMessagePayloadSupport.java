@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class ChatMessagePayloadSupport {
 
     public void validate(SendMessageCommand command) {
-        validatePayload(command);
+        validateCommand(command);
     }
 
     public ChatMessage buildMessage(String roomId, SendMessageCommand command) {
