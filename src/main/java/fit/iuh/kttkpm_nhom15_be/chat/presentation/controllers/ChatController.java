@@ -6,6 +6,7 @@ import fit.iuh.kttkpm_nhom15_be.chat.application.dto.MessageDTO;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.AssignChatRoomUseCase;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.CreateOrGetChatRoomUseCase;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.CustomerSendMessageUseCase;
+import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.CloseChatRoomUseCase;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.GetActiveChatRoomsUseCase;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.GetChatHistoryUseCase;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.SendMessageUseCase;
@@ -34,6 +35,7 @@ public class ChatController {
     private final CustomerSendMessageUseCase customerSendMessageUseCase;
     private final StaffReplyMessageUseCase staffReplyMessageUseCase;
     private final CreateOrGetChatRoomUseCase createOrGetChatRoomUseCase;
+    private final CloseChatRoomUseCase closeChatRoomUseCase;
     private final GetActiveChatRoomsUseCase getActiveChatRoomsUseCase;
     private final AssignChatRoomUseCase assignChatRoomUseCase;
     private final GetChatHistoryUseCase getChatHistoryUseCase;
@@ -64,6 +66,14 @@ public class ChatController {
             @RequestHeader("X-User-Id") String staffId
     ) {
         return ResponseEntity.ok(assignChatRoomUseCase.execute(roomId, staffId));
+    }
+
+    @PatchMapping("/staff/rooms/{roomId}/close")
+    public ResponseEntity<ChatRoomDTO> closeRoom(
+            @PathVariable String roomId,
+            @RequestHeader("X-User-Id") String staffId
+    ) {
+        return ResponseEntity.ok(closeChatRoomUseCase.execute(roomId, staffId));
     }
 
     @PostMapping("/customer/messages")

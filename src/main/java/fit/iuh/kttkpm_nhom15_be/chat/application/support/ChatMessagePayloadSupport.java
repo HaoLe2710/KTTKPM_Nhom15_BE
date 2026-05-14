@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 @Component
 public class ChatMessagePayloadSupport {
 
+    public void validate(SendMessageCommand command) {
+        validatePayload(command);
+    }
+
     public ChatMessage buildMessage(String roomId, SendMessageCommand command) {
         validateCommand(command);
 

@@ -5,16 +5,29 @@ import fit.iuh.kttkpm_nhom15_be.users.application.commands.UpdateAddressCommand;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.AddressDTO;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.AddAddressUseCase;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.DeleteAddressUseCase;
+import fit.iuh.kttkpm_nhom15_be.users.application.usecases.GetAddressesUseCase;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.UpdateAddressUseCase;
-import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
+import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.ActionNotAllowedException;
+import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.AddressNotFoundException;
 import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.AddAddressRequest;
 import fit.iuh.kttkpm_nhom15_be.users.presentation.requests.UpdateAddressRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/addresses")
@@ -24,15 +37,21 @@ public class AddressController {
     private final AddAddressUseCase addAddressUseCase;
     private final UpdateAddressUseCase updateAddressUseCase;
     private final DeleteAddressUseCase deleteAddressUseCase;
+    private final GetAddressesUseCase getAddressesUseCase;
 
-    // 1. Thêm địa chỉ mới
+    @GetMapping
+    public ResponseEntity<List<AddressDTO>> getAddresses(@RequestHeader("X-User-Id") String userId) {
+        List<AddressDTO> response = getAddressesUseCase.execute(userId);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping
     public ResponseEntity<AddressDTO> addAddress(
-            @AuthenticationPrincipal String userEmail,
+            @RequestHeader("X-User-Id") String userId,
             @Valid @RequestBody AddAddressRequest request
     ) {
         AddressDTO response = addAddressUseCase.execute(new AddAddressCommand(
-                userEmail,
+                userId,
                 request.getReceiverName(),
                 request.getPhone(),
                 request.getAddress(),
@@ -44,16 +63,15 @@ public class AddressController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // 2. Cập nhật địa chỉ
     @PutMapping("/{id}")
     public ResponseEntity<AddressDTO> updateAddress(
             @PathVariable String id,
-            @AuthenticationPrincipal String userEmail,
+            @RequestHeader("X-User-Id") String userId,
             @Valid @RequestBody UpdateAddressRequest request
     ) {
         AddressDTO response = updateAddressUseCase.execute(new UpdateAddressCommand(
                 id,
-                userEmail,
+                userId,
                 request.getReceiverName(),
                 request.getPhone(),
                 request.getAddress(),
@@ -65,14 +83,22 @@ public class AddressController {
         return ResponseEntity.ok(response);
     }
 
-    // 3. Xóa địa chỉ
     @DeleteMapping("/{id}")
-    public ResponseEntity<MessageResponse> deleteAddress(
+    public ResponseEntity<Void> deleteAddress(
             @PathVariable String id,
-            @AuthenticationPrincipal String userEmail
+            @RequestHeader("X-User-Id") String userId
     ) {
-        deleteAddressUseCase.execute(id, userEmail);
-        return ResponseEntity.ok(new MessageResponse("Dia chi da duoc xoa thanh cong"));
+        deleteAddressUseCase.execute(id, userId);
+        return ResponseEntity.ok().build();
     }
 
+    @ExceptionHandler(AddressNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleAddressNotFound(AddressNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ActionNotAllowedException.class)
+    public ResponseEntity<Map<String, String>> handleActionNotAllowed(ActionNotAllowedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", ex.getMessage()));
+    }
 }

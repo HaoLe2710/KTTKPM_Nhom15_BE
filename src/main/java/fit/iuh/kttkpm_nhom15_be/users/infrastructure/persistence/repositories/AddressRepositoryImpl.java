@@ -13,9 +13,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 interface JpaAddressRepository extends JpaRepository<AddressJpaEntity, String> {
+
+    @Query("SELECT a FROM AddressJpaEntity a WHERE a.user.id = :userId ORDER BY a.isDefault DESC, a.createdAt DESC")
+    List<AddressJpaEntity> findByUserId(@Param("userId") String userId);
 
     @Query("SELECT a FROM AddressJpaEntity a WHERE a.id = :id AND a.user.id = :userId")
     Optional<AddressJpaEntity> findByIdAndUserId(@Param("id") String id, @Param("userId") String userId);
@@ -39,6 +43,13 @@ public class AddressRepositoryImpl implements AddressRepository {
         entity.setUser(entityManager.getReference(UserJpaEntity.class, address.getUserId()));
         AddressJpaEntity savedEntity = jpaAddressRepository.save(entity);
         return addressDataMapper.toDomainModel(savedEntity);
+    }
+
+    @Override
+    public List<Address> findByUserId(String userId) {
+        return jpaAddressRepository.findByUserId(userId).stream()
+                .map(addressDataMapper::toDomainModel)
+                .toList();
     }
 
     @Override
