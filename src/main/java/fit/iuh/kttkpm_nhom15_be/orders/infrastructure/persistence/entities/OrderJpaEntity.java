@@ -35,6 +35,8 @@ public class OrderJpaEntity {
     private String orderNo; private String userId;
     private BigDecimal subtotalAmount; private BigDecimal discountAmount;
     private BigDecimal shippingFee; private BigDecimal totalAmount;
+    private String promotionId;
+    private String promotionCode;
 
     @Enumerated(EnumType.STRING) private OrderStatus status;
     @Enumerated(EnumType.STRING) private PaymentMethod paymentMethod;
