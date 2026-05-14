@@ -7,6 +7,7 @@ import fit.iuh.kttkpm_nhom15_be.users.domain.models.User;
 import fit.iuh.kttkpm_nhom15_be.users.domain.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.crypto.password.PasswordEncoder; // MỞ RA LẠI
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +19,7 @@ public class CreateUserUseCase {
 
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
-    // private final PasswordEncoder passwordEncoder; // Mở ra nếu bạn dùng Spring Security
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public String execute(CreateUserCommand command) {
@@ -27,11 +28,12 @@ public class CreateUserUseCase {
             throw new DuplicateUserException("Email hoặc SĐT đã tồn tại.");
         }
 
-        // 2. Map sang Domain Model
+        // 2. Map sang Domain Model + MÃ HÓA MẬT KHẨU
         User user = User.builder()
                 .email(command.email())
                 .phone(command.phone())
-                .password(command.password()) // Nếu có Security: passwordEncoder.encode(command.password())
+                // SỬ DỤNG passwordEncoder ĐỂ BĂM MẬT KHẨU Ở ĐÂY
+                .password(passwordEncoder.encode(command.password()))
                 .fullName(command.fullName())
                 .role(command.role())
                 .isActive(true)

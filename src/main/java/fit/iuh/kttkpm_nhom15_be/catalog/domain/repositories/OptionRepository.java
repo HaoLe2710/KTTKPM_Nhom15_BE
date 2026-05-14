@@ -7,5 +7,8 @@ import java.util.Optional;
 public interface OptionRepository {
   Option save(Option option);
   Optional<Option> findById(String id);
+  Optional<Option> findByCode(String code);
+  boolean existsByCode(String code);
+  void deleteById(String id);
   List<Option> findAll();
 }

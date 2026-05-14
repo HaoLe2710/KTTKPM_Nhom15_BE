@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +23,11 @@ public class GenerateReportUseCase {
 
     public DashboardReportResponse execute(LocalDateTime startDate, LocalDateTime endDate) {
         RawOrderStatsDTO rawData = orderFacade.getOrderStatistics(startDate, endDate);
+        long periodSeconds = Math.max(1L, Duration.between(startDate, endDate).getSeconds() + 1L);
+        RawOrderStatsDTO previousData = orderFacade.getOrderStatistics(
+                startDate.minusSeconds(periodSeconds),
+                startDate.minusSeconds(1)
+        );
 
         BigDecimal netRevenue = BigDecimal.ZERO;
         long totalOrders = 0;
@@ -47,20 +52,63 @@ public class GenerateReportUseCase {
             if ("COMPLETED".equalsIgnoreCase(stat.getStatus())) {
                 metric.setRevenue(metric.getRevenue().add(stat.getRevenue()));
                 metric.setCompletedOrders(metric.getCompletedOrders() + stat.getOrderCount());
-                
+
                 netRevenue = netRevenue.add(stat.getRevenue());
                 completedOrders += stat.getOrderCount();
             }
         }
 
-        double successRate = totalOrders == 0 ? 0.0 : ((double) completedOrders / totalOrders) * 100.0;
-        // Round to 2 decimal places
-        successRate = BigDecimal.valueOf(successRate).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        BigDecimal previousNetRevenue = computeCompletedRevenue(previousData);
+        BigDecimal deltaPct = computeDeltaPct(previousNetRevenue, netRevenue);
+        String statusLabel = resolveStatusLabel(deltaPct);
+
+        double successRate = totalOrders == 0 ? 0.0 : ((double) completedOrders / totalOrders);
+        successRate = BigDecimal.valueOf(successRate).setScale(4, RoundingMode.HALF_UP).doubleValue();
+
+        List<DailyMetric> chartData = new ArrayList<>(dailyMetricsMap.values());
+        if (!chartData.isEmpty()) {
+            chartData.get(chartData.size() - 1).setIsAccent(Boolean.TRUE);
+        }
 
         return DashboardReportResponse.builder()
             .netRevenue(netRevenue)
             .successRate(successRate)
-            .chartData(new ArrayList<>(dailyMetricsMap.values()))
+            .deltaPct(deltaPct)
+            .statusLabel(statusLabel)
+            .chartData(chartData)
             .build();
+    }
+
+    private BigDecimal computeCompletedRevenue(RawOrderStatsDTO stats) {
+        BigDecimal revenue = BigDecimal.ZERO;
+        for (DailyOrderStat stat : stats.getDailyStats()) {
+            if ("COMPLETED".equalsIgnoreCase(stat.getStatus())) {
+                revenue = revenue.add(stat.getRevenue());
+            }
+        }
+        return revenue;
+    }
+
+    private BigDecimal computeDeltaPct(BigDecimal baseline, BigDecimal current) {
+        if (baseline.compareTo(BigDecimal.ZERO) == 0) {
+            if (current.compareTo(BigDecimal.ZERO) == 0) {
+                return BigDecimal.ZERO;
+            }
+            return BigDecimal.valueOf(100);
+        }
+        return current.subtract(baseline)
+                .multiply(BigDecimal.valueOf(100))
+                .divide(baseline, 2, RoundingMode.HALF_UP);
+    }
+
+    private String resolveStatusLabel(BigDecimal deltaPct) {
+        int sign = deltaPct.compareTo(BigDecimal.ZERO);
+        if (sign > 0) {
+            return "UP";
+        }
+        if (sign < 0) {
+            return "DOWN";
+        }
+        return "FLAT";
     }
 }

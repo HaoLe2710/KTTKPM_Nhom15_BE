@@ -14,6 +14,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.ProductRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.VariantRepository;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.StockRestoreItem;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.VariantSnapshot;
+import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,9 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-/**
- * Implementation of CatalogFacade interacting with the Catalog Domain via Repositories.
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -41,6 +39,10 @@ public class CatalogFacadeImpl implements CatalogFacade {
     return items.stream().map(item -> {
       Variant variant = variantRepository.findById(item.getVariantId())
         .orElseThrow(() -> new ProductUnavailableException(item.getVariantId()));
+
+      if (item.getQuantity() <= 0 || variant.getStockQuantity() < item.getQuantity()) {
+        throw new ProductUnavailableException(item.getVariantId());
+      }
 
       String productName = "Unknown Product";
       if (variant.getProductId() != null) {
@@ -60,12 +62,12 @@ public class CatalogFacadeImpl implements CatalogFacade {
 
       Map<String, Object> attributes = new HashMap<>();
       if (variant.getOptions() != null) {
-        for (VariantOption vo : variant.getOptions()) {
-          optionValueRepository.findById(vo.getOptionValueId()).ifPresent(ov -> {
-            optionRepository.findById(ov.getOptionId()).ifPresent(opt -> {
-              attributes.put(opt.getName(), ov.getValue());
-            });
-          });
+        for (VariantOption variantOption : variant.getOptions()) {
+          optionValueRepository.findById(variantOption.getOptionValueId()).ifPresent(optionValue ->
+            optionRepository.findById(optionValue.getOptionId()).ifPresent(option ->
+              attributes.put(option.getName(), optionValue.getValue())
+            )
+          );
         }
       }
 
@@ -82,28 +84,47 @@ public class CatalogFacadeImpl implements CatalogFacade {
   }
 
   @Override
+  public void deductStock(List<CartItemDTO> items) {
+    items.forEach(item -> {
+      if (item.getQuantity() <= 0) {
+        throw new ApiValidationException("Cart item quantity must be greater than 0.");
+      }
+
+      boolean deducted = variantRepository.deductStock(item.getVariantId(), item.getQuantity());
+      if (!deducted) {
+        throw new ProductUnavailableException(item.getVariantId());
+      }
+    });
+  }
+
+  @Override
   public void restoreStock(List<StockRestoreItem> items) {
-    // Stub: log và không làm gì — chờ xử lý transactional update
-    items.forEach(item ->
-      log.info("[STUB] Hoàn lại tồn kho: variantId={}, quantity={}", item.variantId(), item.quantity())
-    );
+    items.forEach(item -> {
+      if (item.quantity() <= 0) {
+        throw new ApiValidationException("Restore quantity must be greater than 0.");
+      }
+
+      boolean restored = variantRepository.restoreStock(item.variantId(), item.quantity());
+      if (!restored) {
+        throw new ApiValidationException("Unable to restore stock for variantId=" + item.variantId());
+      }
+
+      log.info("Restored stock for variantId={}, quantity={}", item.variantId(), item.quantity());
+    });
   }
 
   @Override
   public VariantInfoDTO checkAvailabilityAndPrice(String variantId, int quantity) {
     log.info("Checking availability for variantId={}, requested quantity={}", variantId, quantity);
-    
-    // 1. Phân giải Variant Domain Model
+
     Variant variant = variantRepository.findById(variantId)
       .orElseThrow(() -> new ProductUnavailableException(variantId));
 
-    // 2. Kiểm tra tồn kho từ Domain Model
     if (variant.getStockQuantity() < quantity) {
       log.warn("Not enough stock for variantId={}. Available: {}, Requested: {}", variantId, variant.getStockQuantity(), quantity);
       throw new ProductUnavailableException(variantId);
     }
 
-    // 3. Phân giải Product Domain Model để lấy tên gốc
     String productName = "Unknown Product";
     if (variant.getProductId() != null) {
       productName = productRepository.findById(variant.getProductId())
@@ -111,7 +132,6 @@ public class CatalogFacadeImpl implements CatalogFacade {
         .orElse("Unknown Product");
     }
 
-    // 4. Trả về thông tin
     return VariantInfoDTO.builder()
       .name(productName + (variant.getSku() != null ? " (" + variant.getSku() + ")" : ""))
       .price(variant.getPrice())

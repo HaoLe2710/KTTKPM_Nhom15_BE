@@ -3,11 +3,13 @@ package fit.iuh.kttkpm_nhom15_be.users.presentation.requests;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@Data
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UpdateProfileRequest {
 
     @NotBlank(message = "Email không được để trống")

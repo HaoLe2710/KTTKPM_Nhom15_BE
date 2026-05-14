@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 
 // 1. Interface Spring Data JPA thông thường
 interface JpaProductRepository extends JpaRepository<ProductJpaEntity, String> {
+    boolean existsByTypeId(String typeId);
     
     @Query("SELECT new fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.ProductSummaryDTO(" +
            "p.id, p.typeId, p.name, p.slug, MIN(v.price), SUM(v.stockQuantity)) " +
@@ -46,6 +47,11 @@ public class ProductRepositoryImpl implements ProductRepository {
   public Optional<Product> findById(String id) {
     return jpaProductRepository.findById(id)
       .map(catalogDataMapper::toDomainModel);
+  }
+
+  @Override
+  public boolean existsByTypeId(String typeId) {
+      return jpaProductRepository.existsByTypeId(typeId);
   }
 
   @Override

@@ -16,7 +16,7 @@ public class ChatMessagePayloadSupport {
     }
 
     public ChatMessage buildMessage(String roomId, SendMessageCommand command) {
-        validatePayload(command);
+        validateCommand(command);
 
         return ChatMessage.builder()
                 .roomId(roomId)
@@ -34,7 +34,7 @@ public class ChatMessagePayloadSupport {
                 .build();
     }
 
-    private void validatePayload(SendMessageCommand command) {
+    public void validateCommand(SendMessageCommand command) {
         if (command.type() == null) {
             throw new ChatMessageValidationException("Loai tin nhan khong duoc de trong.");
         }

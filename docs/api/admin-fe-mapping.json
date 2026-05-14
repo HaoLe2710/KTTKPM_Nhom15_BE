@@ -1,0 +1,159 @@
+{
+  "version": "2026-05-08",
+  "baseUrl": "/api/v1",
+  "auth": {
+    "login": {
+      "method": "POST",
+      "path": "/auth/login",
+      "requestBody": {
+        "identifier": "string (optional)",
+        "email": "string (optional)",
+        "phone": "string (optional)",
+        "password": "string (required)"
+      },
+      "response200": {
+        "accessToken": "string",
+        "tokenType": "Bearer",
+        "userId": "string",
+        "role": "ADMIN|STAFF|CUSTOMER"
+      }
+    },
+    "adminHeaders": {
+      "Authorization": "Bearer <accessToken>",
+      "X-User-Role": "ADMIN|STAFF",
+      "X-User-Id": "string"
+    }
+  },
+  "dashboard": {
+    "summary": {
+      "method": "GET",
+      "path": "/analytics/dashboard",
+      "query": {
+        "startDate": "ISO_DATE_TIME",
+        "endDate": "ISO_DATE_TIME"
+      },
+      "response200": {
+        "netRevenue": "number",
+        "successRate": "number (0..1)",
+        "deltaPct": "number",
+        "statusLabel": "UP|DOWN|FLAT",
+        "chartData": [
+          {
+            "date": "yyyy-MM-dd",
+            "revenue": "number",
+            "isAccent": "boolean",
+            "totalOrders": "number",
+            "completedOrders": "number"
+          }
+        ]
+      }
+    },
+    "projectionRuns": {
+      "method": "GET",
+      "path": "/admin/search/projection-runs",
+      "query": {
+        "page": "number (optional)",
+        "size": "number (optional)",
+        "sort": "startedAt,desc (optional)"
+      },
+      "response200": {
+        "content": [
+          {
+            "id": "string",
+            "runType": "string",
+            "status": "string",
+            "cursorProductId": "string|null",
+            "processedCount": "number",
+            "failedCount": "number",
+            "startedAt": "ISO_DATE_TIME",
+            "finishedAt": "ISO_DATE_TIME|null",
+            "endedAt": "ISO_DATE_TIME|null",
+            "durationMs": "number|null",
+            "errorMessage": "string|null"
+          }
+        ]
+      }
+    }
+  },
+  "searchMetrics": {
+    "topQueries": {
+      "method": "GET",
+      "path": "/admin/search/top-queries",
+      "responseItem": {
+        "queryText": "string",
+        "queryNormalized": "string",
+        "totalCount": "number",
+        "trend": "string|null"
+      }
+    },
+    "zeroResultQueries": {
+      "method": "GET",
+      "path": "/admin/search/zero-result-queries",
+      "responseItem": {
+        "id": "string",
+        "queryText": "string",
+        "queryNormalized": "string",
+        "locale": "string",
+        "occurrenceCount": "number",
+        "lastSeenAt": "ISO_DATE_TIME",
+        "reasonCode": "NO_MATCH",
+        "resolved": "boolean"
+      }
+    },
+    "topClickedProducts": {
+      "method": "GET",
+      "path": "/admin/search/top-clicked-products",
+      "responseItem": {
+        "productId": "string",
+        "productName": "string",
+        "clickCount": "number",
+        "price": "number|null",
+        "thumbnailUrl": "string|null"
+      }
+    },
+    "summary": {
+      "method": "GET",
+      "path": "/admin/search/summary",
+      "response200": {
+        "activeProducts": "number",
+        "projectedProducts": "number",
+        "missingProjectionProducts": "number",
+        "staleProjectionProducts": "number",
+        "queuedTasks": "number",
+        "openFailures": "number",
+        "avgLatencyMs": "number|null",
+        "cacheEfficiency": "number",
+        "lastSyncAt": "ISO_DATE_TIME|null"
+      }
+    },
+    "synonymRecommendations": {
+      "method": "POST",
+      "path": "/admin/search/synonyms/recommendations",
+      "query": {
+        "locale": "string (optional)",
+        "limit": "number (optional, default 10)"
+      },
+      "response200": [
+        {
+          "keyword": "string",
+          "locale": "string",
+          "suggestedCode": "string",
+          "confidence": "number"
+        }
+      ]
+    }
+  },
+  "catalogMetadata": {
+    "productTypes": {
+      "method": "GET",
+      "path": "/admin/product-types"
+    },
+    "brands": { "method": "GET", "path": "/admin/brands" },
+    "ingredients": { "method": "GET", "path": "/admin/ingredients" },
+    "skinTypes": { "method": "GET", "path": "/admin/skin-types" },
+    "concerns": { "method": "GET", "path": "/admin/concerns" },
+    "tags": { "method": "GET", "path": "/admin/tags" },
+    "options": { "method": "GET", "path": "/admin/options" },
+    "optionValues": { "method": "GET", "path": "/admin/option-values" }
+  }
+}

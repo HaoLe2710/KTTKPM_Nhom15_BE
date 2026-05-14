@@ -26,6 +26,7 @@ public class Order {
   private OrderStatus status;
   private PaymentMethod paymentMethod;
   private PaymentStatus paymentStatus;
+  private boolean stockDeducted;
 
   private String shipFullName;
   private String shipPhone;

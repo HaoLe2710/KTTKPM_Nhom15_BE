@@ -28,7 +28,7 @@ public class SendMessageUseCase {
 
     @Transactional
     public MessageDTO execute(SendMessageCommand command) {
-        payloadSupport.validate(command);
+        payloadSupport.validateCommand(command);
 
         if (!userFacade.isUserActive(command.senderId())) {
             throw new InactiveChatUserException(command.senderId());

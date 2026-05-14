@@ -11,18 +11,12 @@ import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.GetActiveChatRoomsUseC
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.GetChatHistoryUseCase;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.SendMessageUseCase;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.StaffReplyMessageUseCase;
-import fit.iuh.kttkpm_nhom15_be.chat.domain.exceptions.ChatMessageValidationException;
-import fit.iuh.kttkpm_nhom15_be.chat.domain.exceptions.ChatRoomClosedException;
-import fit.iuh.kttkpm_nhom15_be.chat.domain.exceptions.ChatRoomNotFoundException;
-import fit.iuh.kttkpm_nhom15_be.chat.domain.exceptions.InactiveChatUserException;
-import fit.iuh.kttkpm_nhom15_be.chat.domain.exceptions.UnauthorizedChatAccessException;
 import fit.iuh.kttkpm_nhom15_be.chat.presentation.requests.SendMessageRequest;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,9 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/chat")
@@ -152,27 +143,5 @@ public class ChatController {
                 request.getProductPrice()
         ));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @ExceptionHandler(ChatRoomNotFoundException.class)
-    public ResponseEntity<Map<String, String>> handleRoomNotFound(ChatRoomNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
-    }
-
-    @ExceptionHandler({ChatRoomClosedException.class, InactiveChatUserException.class, UnauthorizedChatAccessException.class})
-    public ResponseEntity<Map<String, String>> handleForbidden(RuntimeException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", ex.getMessage()));
-    }
-
-    @ExceptionHandler({ChatMessageValidationException.class, MethodArgumentNotValidException.class})
-    public ResponseEntity<Map<String, String>> handleBadRequest(Exception ex) {
-        if (ex instanceof MethodArgumentNotValidException validationException
-                && validationException.getBindingResult().getFieldError() != null) {
-            return ResponseEntity.badRequest().body(Map.of(
-                    "error",
-                    validationException.getBindingResult().getFieldError().getDefaultMessage()
-            ));
-        }
-        return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
     }
 }
