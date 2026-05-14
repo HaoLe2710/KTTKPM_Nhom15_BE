@@ -5,6 +5,7 @@ import fit.iuh.kttkpm_nhom15_be.users.application.commands.UpdateAddressCommand;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.AddressDTO;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.AddAddressUseCase;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.DeleteAddressUseCase;
+import fit.iuh.kttkpm_nhom15_be.users.application.usecases.GetAddressesUseCase;
 import fit.iuh.kttkpm_nhom15_be.users.application.usecases.UpdateAddressUseCase;
 import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.ActionNotAllowedException;
 import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.AddressNotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -34,6 +37,13 @@ public class AddressController {
     private final AddAddressUseCase addAddressUseCase;
     private final UpdateAddressUseCase updateAddressUseCase;
     private final DeleteAddressUseCase deleteAddressUseCase;
+    private final GetAddressesUseCase getAddressesUseCase;
+
+    @GetMapping
+    public ResponseEntity<List<AddressDTO>> getAddresses(@RequestHeader("X-User-Id") String userId) {
+        List<AddressDTO> response = getAddressesUseCase.execute(userId);
+        return ResponseEntity.ok(response);
+    }
 
     @PostMapping
     public ResponseEntity<AddressDTO> addAddress(
