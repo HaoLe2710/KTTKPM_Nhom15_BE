@@ -495,10 +495,9 @@ public class CatalogAdminRepositoryImpl implements CatalogAdminRepository {
         LEFT JOIN variant_options vo ON vo.option_value_id = ov.id
         WHERE ov.option_id = o.id
       ) value_stats ON TRUE
-      """ + where + """
-      ORDER BY """ + optionOrderBy(pageRequest) + """
-      LIMIT :limit OFFSET :offset
-      """, params, (rs, rowNum) -> new OptionListItemResponse(
+      """ + where
+      + " ORDER BY " + optionOrderBy(pageRequest)
+      + " LIMIT :limit OFFSET :offset", params, (rs, rowNum) -> new OptionListItemResponse(
       rs.getString("id"),
       rs.getString("code"),
       rs.getString("name"),
@@ -537,9 +536,9 @@ public class CatalogAdminRepositoryImpl implements CatalogAdminRepository {
       LEFT JOIN variant_options vo ON vo.option_value_id = ov.id
       """ + where + """
       GROUP BY ov.id, ov.option_id, ov.value, ov.sort_order, ov.is_active
-      ORDER BY """ + optionValueOrderBy(pageRequest) + """
-      LIMIT :limit OFFSET :offset
-      """, params, (rs, rowNum) -> new OptionValueListItemResponse(
+      """
+      + " ORDER BY " + optionValueOrderBy(pageRequest)
+      + " LIMIT :limit OFFSET :offset", params, (rs, rowNum) -> new OptionValueListItemResponse(
       rs.getString("id"),
       rs.getString("option_id"),
       rs.getString("value"),

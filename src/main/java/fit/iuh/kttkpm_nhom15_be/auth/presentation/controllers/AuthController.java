@@ -5,6 +5,7 @@ import fit.iuh.kttkpm_nhom15_be.auth.application.usecases.LoginUseCase;
 import fit.iuh.kttkpm_nhom15_be.auth.application.usecases.RegisterUseCase;
 import fit.iuh.kttkpm_nhom15_be.auth.domain.exceptions.InvalidOtpException;
 import fit.iuh.kttkpm_nhom15_be.auth.presentation.requests.VerifyOtpRequest;
+import fit.iuh.kttkpm_nhom15_be.shared.presentation.advice.SkipSuccessEnvelope;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.RegisterRequest;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.UserResponse;
@@ -52,6 +53,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @SkipSuccessEnvelope
     public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> request) {
         String identifier = request.get("identifier");
         if (identifier == null || identifier.isBlank()) {

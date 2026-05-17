@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.users.application.usecases;
 
 import fit.iuh.kttkpm_nhom15_be.auth.application.services.OtpService;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.FileStoragePort;
 import fit.iuh.kttkpm_nhom15_be.users.application.commands.UpdateProfileCommand;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.UserResponse;
 import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.ActionNotAllowedException;
@@ -22,13 +23,15 @@ class UpdateProfileUseCaseTest {
 
     private UserRepository userRepository;
     private OtpService otpService;
+    private FileStoragePort fileStoragePort;
     private UpdateProfileUseCase useCase;
 
     @BeforeEach
     void setUp() {
         userRepository = mock(UserRepository.class);
         otpService = mock(OtpService.class);
-        useCase = new UpdateProfileUseCase(userRepository, otpService);
+        fileStoragePort = mock(FileStoragePort.class);
+        useCase = new UpdateProfileUseCase(userRepository, otpService, fileStoragePort);
     }
 
     @Test
@@ -49,7 +52,10 @@ class UpdateProfileUseCaseTest {
                 "old@example.com",
                 "0909000001",
                 "Nguyen Van A",
-                "https://cdn.example/avatar.png"
+                "https://cdn.example/avatar.png",
+                null,
+                null,
+                null
         ));
 
         verify(userRepository).save(any(User.class));
@@ -75,6 +81,9 @@ class UpdateProfileUseCaseTest {
                         "new@example.com",
                         "0909000001",
                         "Nguyen Van A",
+                        null,
+                        null,
+                        null,
                         null
                 ))
         );
@@ -93,7 +102,7 @@ class UpdateProfileUseCaseTest {
         when(userRepository.findByEmail("new@example.com")).thenReturn(Optional.of(otherUser));
 
         assertThrows(DuplicateUserException.class, () ->
-                useCase.execute(new UpdateProfileCommand("user-1", "new@example.com", "01", "A", null))
+                useCase.execute(new UpdateProfileCommand("user-1", "new@example.com", "01", "A", null, null, null, null))
         );
 
         verify(otpService, never()).sendOtp(any(), any());
@@ -105,7 +114,7 @@ class UpdateProfileUseCaseTest {
         when(userRepository.findById("missing-user")).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () ->
-                useCase.execute(new UpdateProfileCommand("missing-user", "a@b.com", "09", "A", null))
+                useCase.execute(new UpdateProfileCommand("missing-user", "a@b.com", "09", "A", null, null, null, null))
         );
     }
 
@@ -116,7 +125,7 @@ class UpdateProfileUseCaseTest {
         when(userRepository.existsByEmailOrPhoneExcludingId("same@example.com", "0999", "user-1")).thenReturn(true);
 
         assertThrows(DuplicateUserException.class, () ->
-                useCase.execute(new UpdateProfileCommand("user-1", "same@example.com", "0999", "A", null))
+                useCase.execute(new UpdateProfileCommand("user-1", "same@example.com", "0999", "A", null, null, null, null))
         );
     }
 }

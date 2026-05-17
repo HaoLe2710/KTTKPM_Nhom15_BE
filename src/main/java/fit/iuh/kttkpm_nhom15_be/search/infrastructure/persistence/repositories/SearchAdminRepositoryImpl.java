@@ -51,9 +51,9 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
     List<ProjectionTaskResponse> content = jdbcTemplate.query("""
       SELECT product_id, reason, status, attempt_count, next_attempt_at, last_error, last_attempt_at, created_at, updated_at
       FROM search_projection_tasks
-      ORDER BY """ + taskOrderBy(pageRequest) + """
-      LIMIT :limit OFFSET :offset
-      """, params, (rs, rowNum) -> new ProjectionTaskResponse(
+      """
+      + " ORDER BY " + taskOrderBy(pageRequest)
+      + " LIMIT :limit OFFSET :offset", params, (rs, rowNum) -> new ProjectionTaskResponse(
       rs.getString("product_id"),
       rs.getString("reason"),
       rs.getString("status"),
@@ -79,10 +79,9 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
     List<ProjectionFailureResponse> content = jdbcTemplate.query("""
       SELECT product_id, event_type, error_message, retry_count, failed_at, last_retried_at, state, resolution_type, resolution_note, resolved_at, updated_at
       FROM search_projection_failures
-      """ + where + """
-      ORDER BY """ + failureOrderBy(pageRequest) + """
-      LIMIT :limit OFFSET :offset
-      """, params, (rs, rowNum) -> new ProjectionFailureResponse(
+      """ + where
+      + " ORDER BY " + failureOrderBy(pageRequest)
+      + " LIMIT :limit OFFSET :offset", params, (rs, rowNum) -> new ProjectionFailureResponse(
       rs.getString("product_id"),
       rs.getString("event_type"),
       rs.getString("error_message"),
@@ -106,9 +105,9 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
     List<ProjectionRunResponse> content = jdbcTemplate.query("""
       SELECT id, run_type, status, cursor_product_id, processed_count, failed_count, started_at, finished_at
       FROM search_projection_runs
-      ORDER BY """ + runOrderBy(pageRequest) + """
-      LIMIT :limit OFFSET :offset
-      """, params, (rs, rowNum) -> new ProjectionRunResponse(
+      """
+      + " ORDER BY " + runOrderBy(pageRequest)
+      + " LIMIT :limit OFFSET :offset", params, (rs, rowNum) -> new ProjectionRunResponse(
       rs.getString("id"),
       rs.getString("run_type"),
       rs.getString("status"),
@@ -211,10 +210,9 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
     List<SuggestionResponse> content = jdbcTemplate.query("""
       SELECT id, keyword, keyword_normalized, locale, weight, is_active, created_at, updated_at
       FROM search_suggestions
-      """ + where + """
-      ORDER BY """ + suggestionOrderBy(pageRequest) + """
-      LIMIT :limit OFFSET :offset
-      """, params, (rs, rowNum) -> new SuggestionResponse(
+      """ + where
+      + " ORDER BY " + suggestionOrderBy(pageRequest)
+      + " LIMIT :limit OFFSET :offset", params, (rs, rowNum) -> new SuggestionResponse(
       rs.getString("id"),
       rs.getString("keyword"),
       rs.getString("keyword_normalized"),
@@ -320,10 +318,9 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
     List<SynonymGroupResponse> baseGroups = jdbcTemplate.query("""
       SELECT g.id, g.code, g.locale, g.is_active, g.created_at, g.updated_at
       FROM search_synonym_groups g
-      """ + where + """
-      ORDER BY """ + synonymOrderBy(pageRequest) + """
-      LIMIT :limit OFFSET :offset
-      """, params, (rs, rowNum) -> new SynonymGroupResponse(
+      """ + where
+      + " ORDER BY " + synonymOrderBy(pageRequest)
+      + " LIMIT :limit OFFSET :offset", params, (rs, rowNum) -> new SynonymGroupResponse(
       rs.getString("id"),
       rs.getString("code"),
       rs.getString("locale"),
