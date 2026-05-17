@@ -5,6 +5,9 @@ public record UpdateProfileCommand(
         String email,
         String phone,
         String fullName,
-        String avatarUrl
+        String avatarUrl,
+        String avatarOriginalFilename,
+        String avatarContentType,
+        byte[] avatarBytes
 ) {
 }

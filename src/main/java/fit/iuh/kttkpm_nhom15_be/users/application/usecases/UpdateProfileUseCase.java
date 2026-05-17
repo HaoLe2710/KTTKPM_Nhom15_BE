@@ -1,6 +1,9 @@
 package fit.iuh.kttkpm_nhom15_be.users.application.usecases;
 
 import fit.iuh.kttkpm_nhom15_be.auth.application.services.OtpService;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.FileStoragePort;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.StoredFile;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.UploadFileCommand;
 import fit.iuh.kttkpm_nhom15_be.users.application.commands.UpdateProfileCommand;
 import fit.iuh.kttkpm_nhom15_be.users.application.dto.UserResponse;
 import fit.iuh.kttkpm_nhom15_be.users.domain.exceptions.ActionNotAllowedException;
@@ -18,6 +21,7 @@ public class UpdateProfileUseCase {
 
     private final UserRepository userRepository;
     private final OtpService otpService;
+    private final FileStoragePort fileStoragePort;
 
     @Transactional
     public UserResponse execute(UpdateProfileCommand command) {
@@ -43,12 +47,28 @@ public class UpdateProfileUseCase {
             throw new DuplicateUserException("So dien thoai nay da duoc su dung boi tai khoan khac!");
         }
 
-        user.setAvatarUrl(command.avatarUrl());
+        user.setAvatarUrl(resolveAvatarUrl(command, user.getAvatarUrl(), command.userId()));
         user.setFullName(command.fullName());
         user.setPhone(command.phone());
 
         User updatedUser = userRepository.save(user);
 
         return UserResponse.fromDomain(updatedUser);
+    }
+
+    private String resolveAvatarUrl(UpdateProfileCommand command, String fallbackAvatarUrl, String userId) {
+        if (command.avatarBytes() != null && command.avatarBytes().length > 0) {
+            StoredFile storedFile = fileStoragePort.upload(new UploadFileCommand(
+                    "users/avatars/" + userId,
+                    command.avatarOriginalFilename(),
+                    command.avatarContentType(),
+                    command.avatarBytes()
+            ));
+            return storedFile.url();
+        }
+        if (command.avatarUrl() != null && !command.avatarUrl().isBlank()) {
+            return command.avatarUrl().trim();
+        }
+        return fallbackAvatarUrl;
     }
 }

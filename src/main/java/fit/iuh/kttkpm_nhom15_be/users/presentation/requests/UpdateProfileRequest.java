@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Getter
@@ -24,4 +25,5 @@ public class UpdateProfileRequest {
     private String fullName;
 
     private String avatar;
+    private MultipartFile avatarFile;
 }

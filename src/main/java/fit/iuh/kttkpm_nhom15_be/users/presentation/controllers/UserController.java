@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -45,7 +46,7 @@ public class UserController {
     private final ConfirmOldEmailChangeUseCase confirmOldEmailChangeUseCase;
     private final VerifyUpdateEmailUseCase verifyUpdateEmailUseCase;
 
-    @PutMapping("/profile")
+    @PutMapping(value = "/profile", consumes = "application/json")
     public ResponseEntity<UserResponse> updateProfile(
             @AuthenticationPrincipal String userId,
             @Valid @RequestBody UpdateProfileRequest req
@@ -55,7 +56,41 @@ public class UserController {
                 req.getEmail(),
                 req.getPhone(),
                 req.getFullName(),
-                req.getAvatar()
+                req.getAvatar(),
+                null,
+                null,
+                null
+        ));
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping(value = "/profile", consumes = "multipart/form-data")
+    public ResponseEntity<UserResponse> updateProfileMultipart(
+            @AuthenticationPrincipal String userId,
+            @Valid @ModelAttribute UpdateProfileRequest req
+    ) {
+        byte[] avatarBytes = null;
+        String avatarOriginalFilename = null;
+        String avatarContentType = null;
+        if (req.getAvatarFile() != null && !req.getAvatarFile().isEmpty()) {
+            try {
+                avatarBytes = req.getAvatarFile().getBytes();
+                avatarOriginalFilename = req.getAvatarFile().getOriginalFilename();
+                avatarContentType = req.getAvatarFile().getContentType();
+            } catch (java.io.IOException ex) {
+                throw new IllegalStateException("Khong the doc du lieu file avatar", ex);
+            }
+        }
+
+        UserResponse response = updateProfileUseCase.execute(new UpdateProfileCommand(
+                userId,
+                req.getEmail(),
+                req.getPhone(),
+                req.getFullName(),
+                req.getAvatar(),
+                avatarOriginalFilename,
+                avatarContentType,
+                avatarBytes
         ));
         return ResponseEntity.ok(response);
     }
