@@ -24,6 +24,7 @@ public class ChatMessagePayloadSupport {
                 .type(command.type())
                 .content(normalize(command.content()))
                 .imageUrl(normalize(command.imageUrl()))
+                .videoUrl(normalize(command.videoUrl()))
                 .linkUrl(normalize(command.linkUrl()))
                 .productId(normalize(command.productId()))
                 .variantId(normalize(command.variantId()))
@@ -48,6 +49,11 @@ public class ChatMessagePayloadSupport {
             case IMAGE -> {
                 if (isBlank(command.imageUrl())) {
                     throw new ChatMessageValidationException("Tin nhan hinh anh phai co imageUrl.");
+                }
+            }
+            case VIDEO -> {
+                if (isBlank(command.videoUrl())) {
+                    throw new ChatMessageValidationException("Tin nhan video phai co videoUrl.");
                 }
             }
             case PRODUCT_LINK -> {

@@ -10,6 +10,7 @@ public record SendMessageCommand(
         ChatMessageType type,
         String content,
         String imageUrl,
+        String videoUrl,
         String linkUrl,
         String productId,
         String variantId,

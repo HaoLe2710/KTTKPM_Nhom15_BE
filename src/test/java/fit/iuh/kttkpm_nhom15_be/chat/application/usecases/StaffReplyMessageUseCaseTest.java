@@ -155,7 +155,7 @@ class StaffReplyMessageUseCaseTest {
 
         MessageDTO result = useCase.execute(new SendMessageCommand(
                 "room-image", "staff-5", ChatMessageType.IMAGE, null,
-                "https://cdn.example.com/reply/image.png", null, null, null, null, null, null
+                "https://cdn.example.com/reply/image.png", null, null, null, null, null, null, null
         ));
 
         assertEquals(ChatMessageType.IMAGE, result.type());
@@ -164,6 +164,6 @@ class StaffReplyMessageUseCaseTest {
 
     private SendMessageCommand textCommand(String roomId, String senderId, String content) {
         return new SendMessageCommand(roomId, senderId, ChatMessageType.TEXT, content,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null);
     }
 }

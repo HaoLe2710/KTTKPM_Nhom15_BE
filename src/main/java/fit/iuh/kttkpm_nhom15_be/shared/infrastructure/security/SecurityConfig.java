@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/payments/vnpay-return", "/api/v1/payments/vnpay-ipn", "/api/v1/payments/sepay-webhook").permitAll()
+                        .requestMatchers("/api/v1/files/**").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/v3/api-docs.yaml", "/swagger-ui.html", "/swagger-ui/**", "/docs/api/**").permitAll()
                         .requestMatchers("/api/v1/products", "/api/v1/products/*").permitAll()
                         .requestMatchers("/api/v1/products/search", "/api/v1/search/suggestions").permitAll()

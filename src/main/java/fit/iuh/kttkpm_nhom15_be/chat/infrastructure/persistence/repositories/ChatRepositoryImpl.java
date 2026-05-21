@@ -36,6 +36,17 @@ public class ChatRepositoryImpl implements ChatRepository {
 
     @Override
     public ChatRoom saveRoom(ChatRoom room) {
+        if (room.getId() != null) {
+            return roomRepo.findById(room.getId())
+                    .map(existing -> {
+                        existing.setUserId(room.getCustomerId());
+                        existing.setStaffId(room.getStaffId());
+                        existing.setClosed(room.isClosed());
+                        return mapper.toDomainModel(roomRepo.save(existing));
+                    })
+                    .orElseGet(() -> mapper.toDomainModel(roomRepo.save(mapper.toJpaEntity(room))));
+        }
+
         ChatRoomJpaEntity entity = mapper.toJpaEntity(room);
         return mapper.toDomainModel(roomRepo.save(entity));
     }

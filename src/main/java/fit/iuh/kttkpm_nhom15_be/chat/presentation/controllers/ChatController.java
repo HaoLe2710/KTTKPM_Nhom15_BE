@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.chat.presentation.controllers;
 
 import fit.iuh.kttkpm_nhom15_be.chat.application.commands.SendMessageCommand;
+import fit.iuh.kttkpm_nhom15_be.chat.application.dto.ChatAttachmentDTO;
 import fit.iuh.kttkpm_nhom15_be.chat.application.dto.ChatRoomDTO;
 import fit.iuh.kttkpm_nhom15_be.chat.application.dto.MessageDTO;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.AssignChatRoomUseCase;
@@ -12,7 +13,11 @@ import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.GetChatHistoryUseCase;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.SendMessageUseCase;
 import fit.iuh.kttkpm_nhom15_be.chat.application.usecases.StaffReplyMessageUseCase;
 import fit.iuh.kttkpm_nhom15_be.chat.presentation.requests.SendMessageRequest;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.FileStoragePort;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.StoredFile;
+import fit.iuh.kttkpm_nhom15_be.shared.application.storage.UploadFileCommand;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,7 +29,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
 @RequestMapping("/api/v1/chat")
@@ -39,10 +47,38 @@ public class ChatController {
     private final GetActiveChatRoomsUseCase getActiveChatRoomsUseCase;
     private final AssignChatRoomUseCase assignChatRoomUseCase;
     private final GetChatHistoryUseCase getChatHistoryUseCase;
+    private final FileStoragePort fileStoragePort;
 
     @GetMapping("/rooms/{roomId}/messages")
     public ResponseEntity<List<MessageDTO>> getChatHistory(@PathVariable String roomId) {
         return ResponseEntity.ok(getChatHistoryUseCase.execute(roomId));
+    }
+
+    @PostMapping(path = "/attachments", consumes = "multipart/form-data")
+    public ResponseEntity<ChatAttachmentDTO> uploadAttachment(@RequestParam("file") MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File chat khong duoc de trong.");
+        }
+
+        StoredFile storedFile = fileStoragePort.upload(new UploadFileCommand(
+                "chat",
+                file.getOriginalFilename(),
+                file.getContentType(),
+                file.getBytes()
+        ));
+
+        String url = storedFile.url();
+        if (url != null && url.startsWith("/")) {
+            url = ServletUriComponentsBuilder.fromCurrentContextPath().path(url).toUriString();
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ChatAttachmentDTO(
+                url,
+                storedFile.objectKey(),
+                file.getContentType(),
+                file.getOriginalFilename(),
+                file.getSize()
+        ));
     }
 
     @GetMapping("/customer/rooms/active")
@@ -88,6 +124,7 @@ public class ChatController {
                         request.getType(),
                         request.getContent(),
                         request.getImageUrl(),
+                        request.getVideoUrl(),
                         request.getLinkUrl(),
                         request.getProductId(),
                         request.getVariantId(),
@@ -112,6 +149,7 @@ public class ChatController {
                         request.getType(),
                         request.getContent(),
                         request.getImageUrl(),
+                        request.getVideoUrl(),
                         request.getLinkUrl(),
                         request.getProductId(),
                         request.getVariantId(),
@@ -135,6 +173,7 @@ public class ChatController {
                 request.getType(),
                 request.getContent(),
                 request.getImageUrl(),
+                request.getVideoUrl(),
                 request.getLinkUrl(),
                 request.getProductId(),
                 request.getVariantId(),

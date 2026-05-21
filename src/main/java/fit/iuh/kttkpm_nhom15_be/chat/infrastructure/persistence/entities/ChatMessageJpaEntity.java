@@ -41,6 +41,9 @@ public class ChatMessageJpaEntity {
     private String imageUrl;
 
     @Column(columnDefinition = "TEXT")
+    private String videoUrl;
+
+    @Column(columnDefinition = "TEXT")
     private String linkUrl;
 
     private String productId;
