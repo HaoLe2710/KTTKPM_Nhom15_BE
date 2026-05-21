@@ -19,6 +19,8 @@ public class SendMessageRequest {
 
     private String imageUrl;
 
+    private String videoUrl;
+
     private String linkUrl;
 
     private String productId;

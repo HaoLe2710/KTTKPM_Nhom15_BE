@@ -189,15 +189,44 @@ class SendMessageUseCaseTest {
 
         MessageDTO result = useCase.execute(new SendMessageCommand(
                 "room-image", "user-2", ChatMessageType.IMAGE, null,
-                "https://cdn.example.com/chat/image.png", null, null, null, null, null, null
+                "https://cdn.example.com/chat/image.png", null, null, null, null, null, null, null
         ));
 
         assertEquals(ChatMessageType.IMAGE, result.type());
         assertEquals("https://cdn.example.com/chat/image.png", result.imageUrl());
     }
 
+    @Test
+    void executeSendsVideoMessage() {
+        ChatRepository chatRepository = Mockito.mock(ChatRepository.class);
+        UserFacade userFacade = Mockito.mock(UserFacade.class);
+        ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+        SendMessageUseCase useCase = new SendMessageUseCase(chatRepository, userFacade, eventPublisher, new ChatMessagePayloadSupport());
+
+        ChatRoom room = ChatRoom.builder().id("room-video").customerId("user-3").isClosed(false).build();
+        ChatMessage savedMessage = ChatMessage.builder()
+                .id("msg-video")
+                .roomId("room-video")
+                .senderId("user-3")
+                .type(ChatMessageType.VIDEO)
+                .videoUrl("https://cdn.example.com/chat/video.mp4")
+                .build();
+
+        when(userFacade.isUserActive("user-3")).thenReturn(true);
+        when(chatRepository.findRoomById("room-video")).thenReturn(Optional.of(room));
+        when(chatRepository.saveMessage(any(ChatMessage.class))).thenReturn(savedMessage);
+
+        MessageDTO result = useCase.execute(new SendMessageCommand(
+                "room-video", "user-3", ChatMessageType.VIDEO, null,
+                null, "https://cdn.example.com/chat/video.mp4", null, null, null, null, null, null
+        ));
+
+        assertEquals(ChatMessageType.VIDEO, result.type());
+        assertEquals("https://cdn.example.com/chat/video.mp4", result.videoUrl());
+    }
+
     private SendMessageCommand textCommand(String roomId, String senderId, String content) {
         return new SendMessageCommand(roomId, senderId, ChatMessageType.TEXT, content,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null);
     }
 }

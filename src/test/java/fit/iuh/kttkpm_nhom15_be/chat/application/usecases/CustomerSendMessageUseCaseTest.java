@@ -101,7 +101,7 @@ class CustomerSendMessageUseCaseTest {
 
         MessageDTO result = useCase.execute(new SendMessageCommand(
                 "room-product", "customer-3", ChatMessageType.PRODUCT_LINK, "Anh chi xem giup em san pham nay",
-                null, "https://shop.example.com/products/coffee", "product-1", "variant-1",
+                null, null, "https://shop.example.com/products/coffee", "product-1", "variant-1",
                 "Arabica Coffee", "https://cdn.example.com/products/coffee.png", null
         ));
 
@@ -112,6 +112,6 @@ class CustomerSendMessageUseCaseTest {
 
     private SendMessageCommand textCommand(String roomId, String senderId, String content) {
         return new SendMessageCommand(roomId, senderId, ChatMessageType.TEXT, content,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null);
     }
 }
