@@ -8,6 +8,7 @@ import fit.iuh.kttkpm_nhom15_be.orders.application.usecases.CancelOrderUseCase;
 import fit.iuh.kttkpm_nhom15_be.orders.application.usecases.PlaceOrderUseCase;
 import fit.iuh.kttkpm_nhom15_be.orders.presentation.requests.CancelOrderRequest;
 import fit.iuh.kttkpm_nhom15_be.orders.presentation.requests.PlaceOrderRequest;
+import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.security.ShopperAccessGuard;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.advice.ApiSuccessMessage;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -27,13 +28,15 @@ public class OrderController {
 
   private final PlaceOrderUseCase placeOrderUseCase;
   private final CancelOrderUseCase cancelOrderUseCase;
+  private final ShopperAccessGuard shopperAccessGuard;
 
   @PostMapping
   @ApiSuccessMessage("Dat hang thanh cong")
   public ResponseEntity<PlaceOrderResult> placeOrder(@Valid @RequestBody PlaceOrderRequest request,
                                                      HttpServletRequest httpServletRequest) {
+    String resolvedUserId = shopperAccessGuard.resolveAllowedUserId(request.getUserId());
     PlaceOrderCommand command = PlaceOrderCommand.builder()
-      .userId(request.getUserId())
+      .userId(resolvedUserId)
       .promotionCode(request.getPromotionCode())
       .clientIp(resolveClientIp(httpServletRequest))
       .shipFullName(request.getShipFullName())

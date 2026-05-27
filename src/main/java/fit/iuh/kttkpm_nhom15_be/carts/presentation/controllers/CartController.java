@@ -5,6 +5,7 @@ import fit.iuh.kttkpm_nhom15_be.carts.application.dto.CartSummaryDTO;
 import fit.iuh.kttkpm_nhom15_be.carts.application.interfaces.CartFacade;
 import fit.iuh.kttkpm_nhom15_be.carts.application.usecases.AddToCartUseCase;
 import fit.iuh.kttkpm_nhom15_be.carts.presentation.requests.AddToCartRequest;
+import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.security.ShopperAccessGuard;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.advice.ApiSuccessMessage;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
 import jakarta.validation.Valid;
@@ -24,6 +25,7 @@ public class CartController {
 
   private final AddToCartUseCase addToCartUseCase;
   private final CartFacade cartFacade;
+  private final ShopperAccessGuard shopperAccessGuard;
 
   @PostMapping("/items")
   @ApiSuccessMessage("Cap nhat gio hang thanh cong")
@@ -31,8 +33,9 @@ public class CartController {
     @RequestHeader("X-User-Id") String userId,
     @Valid @RequestBody AddToCartRequest request
   ) {
+    String resolvedUserId = shopperAccessGuard.resolveAllowedUserId(userId);
     AddToCartCommand command = new AddToCartCommand(
-      userId,
+      resolvedUserId,
       request.getVariantId(),
       request.getQuantity()
     );
@@ -42,7 +45,7 @@ public class CartController {
 
   @DeleteMapping("/active")
   public ResponseEntity<MessageResponse> archiveActiveCart(@RequestHeader("X-User-Id") String userId) {
-    cartFacade.clearCart(userId);
+    cartFacade.clearCart(shopperAccessGuard.resolveAllowedUserId(userId));
     return ResponseEntity.ok(new MessageResponse("Gio hang hien tai da duoc lam moi thanh cong"));
   }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,6 +44,11 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/products", "/api/v1/products/*").permitAll()
                         .requestMatchers("/api/v1/products/search", "/api/v1/search/suggestions").permitAll()
                         .requestMatchers("/api/v1/product-types", "/api/v1/options").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/carts/items").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/carts/active").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/orders").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/payments/create").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/payments/order/*").permitAll()
                         .requestMatchers("/login/**", "/oauth2/**", "/error").permitAll()
                         .anyRequest().authenticated()
                 )

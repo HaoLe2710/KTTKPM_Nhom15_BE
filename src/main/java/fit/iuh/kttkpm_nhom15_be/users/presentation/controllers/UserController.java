@@ -46,6 +46,11 @@ public class UserController {
     private final ConfirmOldEmailChangeUseCase confirmOldEmailChangeUseCase;
     private final VerifyUpdateEmailUseCase verifyUpdateEmailUseCase;
 
+    @GetMapping("/profile")
+    public ResponseEntity<UserResponse> getCurrentProfile(@AuthenticationPrincipal String userId) {
+        return ResponseEntity.ok(getUserByIdUseCase.execute(userId));
+    }
+
     @PutMapping(value = "/profile", consumes = "application/json")
     public ResponseEntity<UserResponse> updateProfile(
             @AuthenticationPrincipal String userId,
