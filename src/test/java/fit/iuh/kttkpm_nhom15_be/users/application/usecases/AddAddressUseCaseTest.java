@@ -74,7 +74,7 @@ class AddAddressUseCaseTest {
                 .userId("user-1")
                 .fullName("Tran Thi B")
                 .phone("0909000002")
-                .address("34 Le Loi")
+                .address("34 Lê Lợi")
                 .city("Da Nang")
                 .district("Hai Chau")
                 .ward("Thach Thang")
@@ -85,7 +85,7 @@ class AddAddressUseCaseTest {
                 "user-1",
                 "Tran Thi B",
                 "0909000002",
-                "34 Le Loi",
+                "34 Lê Lợi",
                 "Da Nang",
                 "Hai Chau",
                 "Thach Thang",

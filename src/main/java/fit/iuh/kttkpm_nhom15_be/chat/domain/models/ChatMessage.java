@@ -13,6 +13,7 @@ public class ChatMessage {
     private ChatMessageType type;
     private String content;
     private String imageUrl;
+    private String videoUrl;
     private String linkUrl;
     private String productId;
     private String variantId;

@@ -20,11 +20,13 @@ public class OrderDiscountCalculator implements PromotionCalculator {
     public BigDecimal calculateDiscount(Promotion promotion, OrderCartDTO cart) {
         BigDecimal discountPercent = PromotionConfigUtils.getBigDecimal(promotion.getConfig(), "discountPercent");
         BigDecimal discountAmount = PromotionConfigUtils.getBigDecimal(promotion.getConfig(), "discountAmount");
+        BigDecimal maxDiscountAmount = PromotionConfigUtils.getBigDecimal(promotion.getConfig(), "maxDiscountAmount");
 
         if (discountPercent != null) {
-            return cart.subtotal()
+            BigDecimal calculatedDiscount = cart.subtotal()
                 .multiply(discountPercent)
                 .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+            return maxDiscountAmount == null ? calculatedDiscount : calculatedDiscount.min(maxDiscountAmount);
         }
         return discountAmount == null ? BigDecimal.ZERO : discountAmount;
     }

@@ -21,9 +21,13 @@ public class CreateOptionUseCase {
 
     @Transactional
     public OptionResponse execute(OptionRequest request) {
+        if (optionRepository.existsByCode(request.getCode().trim())) {
+            throw new IllegalArgumentException("Option code da ton tai: " + request.getCode());
+        }
+
         Option newOption = Option.builder()
-                .code(request.getCode())
-                .name(request.getName())
+                .code(request.getCode().trim())
+                .name(request.getName().trim())
                 .build();
                 
         Option savedOption = optionRepository.save(newOption);
@@ -32,9 +36,12 @@ public class CreateOptionUseCase {
         
         if (request.getValues() != null && !request.getValues().isEmpty()) {
             for (String valStr : request.getValues()) {
+                if (valStr == null || valStr.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Giá trị option không được để trống");
+                }
                 OptionValue ov = OptionValue.builder()
                         .optionId(savedOption.getId())
-                        .value(valStr)
+                        .value(valStr.trim())
                         .isActive(true)
                         .build();
                 OptionValue savedOv = optionValueRepository.save(ov);

@@ -57,4 +57,26 @@ class PromotionConfigValidatorTest {
             10
         ));
     }
+
+    @Test
+    void orderDiscountValidationRequiresTargetCustomers() {
+        assertThrows(IllegalArgumentException.class, () -> validator.validateForSave(
+            PromotionType.ORDER_DISCOUNT,
+            Map.of("discountAmount", 20, "minOrderValue", 0),
+            LocalDateTime.now(),
+            LocalDateTime.now().plusDays(1),
+            10
+        ));
+    }
+
+    @Test
+    void validOrderDiscountWithTargetCustomersPassesValidation() {
+        assertDoesNotThrow(() -> validator.validateForSave(
+            PromotionType.ORDER_DISCOUNT,
+            Map.of("discountAmount", 20, "minOrderValue", 0, "targetCustomerIds", List.of("user-1")),
+            LocalDateTime.now(),
+            LocalDateTime.now().plusDays(1),
+            10
+        ));
+    }
 }

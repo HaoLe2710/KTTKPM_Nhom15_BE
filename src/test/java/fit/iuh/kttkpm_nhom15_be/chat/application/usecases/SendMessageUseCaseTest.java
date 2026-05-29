@@ -107,7 +107,7 @@ class SendMessageUseCaseTest {
         ChatMessageValidationException ex = assertThrows(ChatMessageValidationException.class,
                 () -> useCase.execute(textCommand("room-1", "user-1", "  ")));
 
-        assertEquals("Noi dung tin nhan khong duoc de trong.", ex.getMessage());
+        assertEquals("Nội dung tin nhắn không được để trống.", ex.getMessage());
         verify(userFacade, never()).isUserActive(any());
     }
 
@@ -123,7 +123,7 @@ class SendMessageUseCaseTest {
         InactiveChatUserException ex = assertThrows(InactiveChatUserException.class,
                 () -> useCase.execute(textCommand("room-1", "user-1", "Xin chao")));
 
-        assertEquals("Khong the gui tin nhan. Tai khoan khong hoat dong: user-1", ex.getMessage());
+        assertEquals("Không thể gửi tin nhắn. Tài khoản không hoạt động: user-1", ex.getMessage());
         verify(chatRepository, never()).findRoomById(any());
     }
 
@@ -140,7 +140,7 @@ class SendMessageUseCaseTest {
         ChatRoomNotFoundException ex = assertThrows(ChatRoomNotFoundException.class,
                 () -> useCase.execute(textCommand("missing-room", "user-1", "Xin chao")));
 
-        assertEquals("Khong tim thay phong chat voi ID: missing-room", ex.getMessage());
+        assertEquals("Không tìm thấy phòng chat với ID: missing-room", ex.getMessage());
         verify(chatRepository, never()).saveMessage(any());
     }
 
@@ -189,15 +189,44 @@ class SendMessageUseCaseTest {
 
         MessageDTO result = useCase.execute(new SendMessageCommand(
                 "room-image", "user-2", ChatMessageType.IMAGE, null,
-                "https://cdn.example.com/chat/image.png", null, null, null, null, null, null
+                "https://cdn.example.com/chat/image.png", null, null, null, null, null, null, null
         ));
 
         assertEquals(ChatMessageType.IMAGE, result.type());
         assertEquals("https://cdn.example.com/chat/image.png", result.imageUrl());
     }
 
+    @Test
+    void executeSendsVideoMessage() {
+        ChatRepository chatRepository = Mockito.mock(ChatRepository.class);
+        UserFacade userFacade = Mockito.mock(UserFacade.class);
+        ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+        SendMessageUseCase useCase = new SendMessageUseCase(chatRepository, userFacade, eventPublisher, new ChatMessagePayloadSupport());
+
+        ChatRoom room = ChatRoom.builder().id("room-video").customerId("user-3").isClosed(false).build();
+        ChatMessage savedMessage = ChatMessage.builder()
+                .id("msg-video")
+                .roomId("room-video")
+                .senderId("user-3")
+                .type(ChatMessageType.VIDEO)
+                .videoUrl("https://cdn.example.com/chat/video.mp4")
+                .build();
+
+        when(userFacade.isUserActive("user-3")).thenReturn(true);
+        when(chatRepository.findRoomById("room-video")).thenReturn(Optional.of(room));
+        when(chatRepository.saveMessage(any(ChatMessage.class))).thenReturn(savedMessage);
+
+        MessageDTO result = useCase.execute(new SendMessageCommand(
+                "room-video", "user-3", ChatMessageType.VIDEO, null,
+                null, "https://cdn.example.com/chat/video.mp4", null, null, null, null, null, null
+        ));
+
+        assertEquals(ChatMessageType.VIDEO, result.type());
+        assertEquals("https://cdn.example.com/chat/video.mp4", result.videoUrl());
+    }
+
     private SendMessageCommand textCommand(String roomId, String senderId, String content) {
         return new SendMessageCommand(roomId, senderId, ChatMessageType.TEXT, content,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null);
     }
 }

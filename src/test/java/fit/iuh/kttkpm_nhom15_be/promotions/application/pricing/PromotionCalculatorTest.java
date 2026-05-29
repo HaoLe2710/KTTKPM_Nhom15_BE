@@ -33,6 +33,18 @@ class PromotionCalculatorTest {
     }
 
     @Test
+    void orderDiscountPercentIsCappedByMaxDiscountAmount() {
+        Promotion promotion = promotion(PromotionType.ORDER_DISCOUNT, Map.of(
+            "minOrderValue", 100,
+            "discountPercent", 20,
+            "maxDiscountAmount", 30
+        ));
+        OrderCartDTO cart = cart(BigDecimal.valueOf(500), List.of(item("v1", 5, 100)));
+
+        assertEquals(BigDecimal.valueOf(30.0), orderDiscountCalculator.calculateDiscount(promotion, cart));
+    }
+
+    @Test
     void orderDiscountFixedAmountReturnsConfiguredDiscount() {
         Promotion promotion = promotion(PromotionType.ORDER_DISCOUNT, Map.of(
             "minOrderValue", 0,

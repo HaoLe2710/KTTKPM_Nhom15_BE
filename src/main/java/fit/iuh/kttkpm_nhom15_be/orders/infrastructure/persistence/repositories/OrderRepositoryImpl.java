@@ -6,12 +6,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.DailyOrderStat;
+import fit.iuh.kttkpm_nhom15_be.orders.application.dto.OrderHistoryItemDTO;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.RawOrderStatsDTO;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.Order;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.repositories.OrderRepository;
@@ -31,6 +34,29 @@ interface JpaOrderRepository extends JpaRepository<OrderJpaEntity, String> {
     List<Object[]> getOrderStatistics(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
     boolean existsByPromotionId(String promotionId);
     boolean existsByUserId(String userId);
+
+    @Query("""
+        SELECT DISTINCT o
+        FROM OrderJpaEntity o
+        JOIN o.items i
+        WHERE o.userId = :userId
+          AND o.status IN (
+            fit.iuh.kttkpm_nhom15_be.orders.domain.models.OrderStatus.CREATED,
+            fit.iuh.kttkpm_nhom15_be.orders.domain.models.OrderStatus.COMPLETED
+          )
+          AND i.productId = :productId
+        ORDER BY o.updatedAt DESC, o.createdAt DESC
+        """)
+    List<OrderJpaEntity> findReviewableOrdersByUserIdAndProductId(
+        @Param("userId") String userId,
+        @Param("productId") String productId,
+        org.springframework.data.domain.Pageable pageable
+    );
+
+    List<OrderJpaEntity> findByUserIdOrderByCreatedAtDesc(String userId);
+
+    @EntityGraph(attributePaths = "items")
+    Optional<OrderJpaEntity> findByIdAndUserId(String id, String userId);
 }
 
 // 2. Lớp Implement interface của tầng Domain
@@ -52,6 +78,36 @@ public class OrderRepositoryImpl implements OrderRepository {
     public Optional<Order> findById(String id) {
         return jpaOrderRepository.findById(id)
                 .map(orderDataMapper::toDomainModel);
+    }
+
+    @Override
+    public Optional<Order> findByIdAndUserId(String id, String userId) {
+        return jpaOrderRepository.findByIdAndUserId(id, userId)
+            .map(orderDataMapper::toDomainModel);
+    }
+
+    @Override
+    public Optional<Order> findLatestReviewableOrderByUserIdAndProductId(String userId, String productId) {
+        return jpaOrderRepository.findReviewableOrdersByUserIdAndProductId(userId, productId, PageRequest.of(0, 1))
+            .stream()
+            .findFirst()
+            .map(orderDataMapper::toDomainModel);
+    }
+
+    @Override
+    public List<OrderHistoryItemDTO> findOrderHistoryByUserId(String userId) {
+        return jpaOrderRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
+            .map(entity -> new OrderHistoryItemDTO(
+                entity.getId(),
+                entity.getOrderNo(),
+                entity.getPaymentMethod(),
+                entity.getPaymentStatus(),
+                entity.getStatus(),
+                entity.getShipFullName(),
+                entity.getTotalAmount(),
+                entity.getCreatedAt()
+            ))
+            .toList();
     }
 
     @Override

@@ -91,12 +91,31 @@ class CancelOrderUseCaseTest {
         verify(eventPublisher, never()).publishEvent(any());
     }
 
+    @Test
+    void executeSkipsRestoreForLegacyOrdersWithoutStockDeduction() {
+        OrderRepository orderRepository = Mockito.mock(OrderRepository.class);
+        CatalogFacade catalogFacade = Mockito.mock(CatalogFacade.class);
+        ApplicationEventPublisher eventPublisher = Mockito.mock(ApplicationEventPublisher.class);
+        CancelOrderUseCase useCase = new CancelOrderUseCase(orderRepository, catalogFacade, eventPublisher);
+        Order order = cancellableOrder(OrderStatus.CREATED);
+        order.setStockDeducted(false);
+
+        when(orderRepository.findById("order-1")).thenReturn(Optional.of(order));
+        when(orderRepository.save(order)).thenReturn(order);
+
+        useCase.execute(new CancelOrderCommand("order-1", "Legacy order"));
+
+        verify(catalogFacade, never()).restoreStock(any());
+        verify(orderRepository).save(order);
+    }
+
     private Order cancellableOrder(OrderStatus status) {
         return Order.builder()
             .id("order-1")
             .orderNo("ORD-001")
             .userId("user-1")
             .status(status)
+            .stockDeducted(true)
             .totalAmount(new BigDecimal("220.00"))
             .items(List.of(OrderItem.builder()
                 .productId("product-1")

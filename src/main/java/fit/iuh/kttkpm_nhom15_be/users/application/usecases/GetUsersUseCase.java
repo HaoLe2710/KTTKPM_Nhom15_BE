@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,10 +17,10 @@ public class GetUsersUseCase {
 
     @Transactional(readOnly = true)
     public Page<UserResponse> execute(String keyword, int page, int size) {
-        // Tạo Pageable phân trang, sắp xếp theo thời gian tạo mới nhất
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        // searchUsers native SQL already orders by created_at DESC.
+        // Avoid passing Sort to Pageable to prevent Spring from appending camelCase column names to native SQL.
+        Pageable pageable = PageRequest.of(page, size);
 
-        // Trả về Page<UserResponse> thay vì Page<User>
         return userRepository.findAll(keyword, pageable)
                 .map(UserResponse::fromDomain);
     }

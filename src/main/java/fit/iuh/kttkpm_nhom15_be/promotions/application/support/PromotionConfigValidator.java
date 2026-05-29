@@ -40,7 +40,7 @@ public class PromotionConfigValidator {
         }
 
         switch (type) {
-            case ORDER_DISCOUNT -> validateDiscountShape(config, true);
+            case ORDER_DISCOUNT -> validateOrderDiscount(config);
             case PRODUCT_DISCOUNT -> validateProductDiscount(config);
             case BUY_X_GET_Y -> validateBuyXGetY(config);
         }
@@ -64,6 +64,13 @@ public class PromotionConfigValidator {
         }
     }
 
+    private void validateOrderDiscount(Map<String, Object> config) {
+        validateDiscountShape(config, true);
+        if (PromotionCustomerEligibility.targetCustomerIds(config).isEmpty()) {
+            throw new IllegalArgumentException("ORDER_DISCOUNT requires targetCustomerIds.");
+        }
+    }
+
     private void validateBuyXGetY(Map<String, Object> config) {
         String buyVariantId = PromotionConfigUtils.getString(config, "buyVariantId");
         String getVariantId = PromotionConfigUtils.getString(config, "getVariantId");
@@ -84,6 +91,7 @@ public class PromotionConfigValidator {
     private void validateDiscountShape(Map<String, Object> config, boolean requireMinOrderValue) {
         BigDecimal discountPercent = PromotionConfigUtils.getBigDecimal(config, "discountPercent");
         BigDecimal discountAmount = PromotionConfigUtils.getBigDecimal(config, "discountAmount");
+        BigDecimal maxDiscountAmount = PromotionConfigUtils.getBigDecimal(config, "maxDiscountAmount");
         boolean hasPercent = discountPercent != null;
         boolean hasAmount = discountAmount != null;
 
@@ -95,6 +103,12 @@ public class PromotionConfigValidator {
         }
         if (discountAmount != null && discountAmount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("discountAmount must be greater than 0.");
+        }
+        if (maxDiscountAmount != null && maxDiscountAmount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("maxDiscountAmount must be greater than 0.");
+        }
+        if (maxDiscountAmount != null && discountPercent == null) {
+            throw new IllegalArgumentException("maxDiscountAmount can only be used with discountPercent.");
         }
         if (requireMinOrderValue) {
             BigDecimal minOrderValue = PromotionConfigUtils.getBigDecimal(config, "minOrderValue");

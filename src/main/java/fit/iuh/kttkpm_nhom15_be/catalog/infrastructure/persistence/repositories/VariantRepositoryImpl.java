@@ -18,6 +18,25 @@ import java.util.List;
 
 // 1. Interface Spring Data JPA thông thường
 interface JpaVariantRepository extends JpaRepository<VariantJpaEntity, String> {
+    boolean existsBySkuIgnoreCase(String sku);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        UPDATE VariantJpaEntity v
+        SET v.stockQuantity = v.stockQuantity - :quantity
+        WHERE v.id = :id
+          AND v.isActive = true
+          AND v.stockQuantity >= :quantity
+        """)
+    int deductStockIfAvailable(@Param("id") String id, @Param("quantity") int quantity);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        UPDATE VariantJpaEntity v
+        SET v.stockQuantity = v.stockQuantity + :quantity
+        WHERE v.id = :id
+        """)
+    int restoreStock(@Param("id") String id, @Param("quantity") int quantity);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE VariantJpaEntity v SET v.stockQuantity = v.stockQuantity + :addedStock, v.price = :price WHERE v.id = :id")
@@ -42,9 +61,24 @@ public class VariantRepositoryImpl implements VariantRepository {
   }
 
   @Override
+  public boolean existsBySku(String sku) {
+      return jpaVariantRepository.existsBySkuIgnoreCase(sku);
+  }
+
+  @Override
   public Variant save(Variant variant) {
       VariantJpaEntity entity = catalogDataMapper.toJpaEntity(variant);
       return catalogDataMapper.toDomainModel(jpaVariantRepository.save(entity));
+  }
+
+  @Override
+  public boolean deductStock(String id, int quantity) {
+      return jpaVariantRepository.deductStockIfAvailable(id, quantity) > 0;
+  }
+
+  @Override
+  public boolean restoreStock(String id, int quantity) {
+      return jpaVariantRepository.restoreStock(id, quantity) > 0;
   }
 
   @Override

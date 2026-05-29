@@ -15,6 +15,8 @@ import java.util.List;
 public class DashboardReportResponse {
     private BigDecimal netRevenue;
     private double successRate;
+    private BigDecimal deltaPct;
+    private String statusLabel;
     private List<DailyMetric> chartData;
 
     @Data
@@ -23,8 +25,9 @@ public class DashboardReportResponse {
     @AllArgsConstructor
     public static class DailyMetric {
         private String date;
-        private long totalOrders;
         private BigDecimal revenue;
+        private Boolean isAccent;
+        private long totalOrders;
         private long completedOrders;
     }
 }

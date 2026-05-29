@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 
 // 1. Interface Spring Data JPA
 interface JpaOptionRepository extends JpaRepository<OptionJpaEntity, String> {
+    boolean existsByCodeIgnoreCase(String code);
+    Optional<OptionJpaEntity> findByCodeIgnoreCase(String code);
 }
 
 // 2. Lớp Implement interface của tầng Domain
@@ -34,6 +36,21 @@ public class OptionRepositoryImpl implements OptionRepository {
   public Optional<Option> findById(String id) {
     return jpaOptionRepository.findById(id)
       .map(catalogDataMapper::toDomainModel);
+  }
+
+  @Override
+  public Optional<Option> findByCode(String code) {
+      return jpaOptionRepository.findByCodeIgnoreCase(code).map(catalogDataMapper::toDomainModel);
+  }
+
+  @Override
+  public boolean existsByCode(String code) {
+      return jpaOptionRepository.existsByCodeIgnoreCase(code);
+  }
+
+  @Override
+  public void deleteById(String id) {
+      jpaOptionRepository.deleteById(id);
   }
 
   @Override

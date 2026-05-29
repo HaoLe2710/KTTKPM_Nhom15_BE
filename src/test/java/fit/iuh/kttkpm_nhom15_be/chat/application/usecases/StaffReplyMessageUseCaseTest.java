@@ -50,7 +50,7 @@ class StaffReplyMessageUseCaseTest {
                 .roomId("room-1")
                 .senderId("staff-1")
                 .type(ChatMessageType.TEXT)
-                .content("Anh chi can ho tro san pham nao?")
+                .content("Anh chị cần hỗ trợ sản phẩm nào?")
                 .build();
 
         when(userFacade.isUserActive("staff-1")).thenReturn(true);
@@ -58,7 +58,7 @@ class StaffReplyMessageUseCaseTest {
         when(chatRepository.saveRoom(any(ChatRoom.class))).thenReturn(assignedRoom);
         when(chatRepository.saveMessage(any(ChatMessage.class))).thenReturn(savedMessage);
 
-        MessageDTO result = useCase.execute(textCommand("room-1", "staff-1", "Anh chi can ho tro san pham nao?"));
+        MessageDTO result = useCase.execute(textCommand("room-1", "staff-1", "Anh chị cần hỗ trợ sản phẩm nào?"));
 
         assertEquals("msg-1", result.id());
         verify(chatRepository).saveRoom(any(ChatRoom.class));
@@ -85,7 +85,7 @@ class StaffReplyMessageUseCaseTest {
         UnauthorizedChatAccessException ex = assertThrows(UnauthorizedChatAccessException.class,
                 () -> useCase.execute(textCommand("room-2", "staff-other", "Toi se ho tro anh chi")));
 
-        assertEquals("Nguoi dung staff-other khong co quyen thao tac voi phong chat: room-2", ex.getMessage());
+        assertEquals("Người dùng staff-other không có quyền thao tác với phòng chat: room-2", ex.getMessage());
         verify(chatRepository, never()).saveMessage(any());
     }
 
@@ -102,7 +102,7 @@ class StaffReplyMessageUseCaseTest {
         ChatRoomNotFoundException ex = assertThrows(ChatRoomNotFoundException.class,
                 () -> useCase.execute(textCommand("missing-room", "staff-3", "Xin chao")));
 
-        assertEquals("Khong tim thay phong chat voi ID: missing-room", ex.getMessage());
+        assertEquals("Không tìm thấy phòng chat với ID: missing-room", ex.getMessage());
     }
 
     @Test
@@ -155,7 +155,7 @@ class StaffReplyMessageUseCaseTest {
 
         MessageDTO result = useCase.execute(new SendMessageCommand(
                 "room-image", "staff-5", ChatMessageType.IMAGE, null,
-                "https://cdn.example.com/reply/image.png", null, null, null, null, null, null
+                "https://cdn.example.com/reply/image.png", null, null, null, null, null, null, null
         ));
 
         assertEquals(ChatMessageType.IMAGE, result.type());
@@ -164,6 +164,6 @@ class StaffReplyMessageUseCaseTest {
 
     private SendMessageCommand textCommand(String roomId, String senderId, String content) {
         return new SendMessageCommand(roomId, senderId, ChatMessageType.TEXT, content,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null);
     }
 }

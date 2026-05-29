@@ -16,6 +16,7 @@ public class MasterDataDTOs {
         private String code;
         @NotEmpty(message = "Name is required")
         private String name;
+        private Boolean isActive;
     }
 
     @Data @Builder @NoArgsConstructor @AllArgsConstructor
@@ -23,6 +24,7 @@ public class MasterDataDTOs {
         private String id;
         private String code;
         private String name;
+        private Boolean isActive;
     }
 
     @Data @Builder @NoArgsConstructor @AllArgsConstructor

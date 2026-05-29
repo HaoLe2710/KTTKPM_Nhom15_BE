@@ -6,9 +6,15 @@ import fit.iuh.kttkpm_nhom15_be.catalog.infrastructure.persistence.entites.Varia
 import fit.iuh.kttkpm_nhom15_be.catalog.infrastructure.persistence.mappers.CatalogDataMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 interface JpaVariantOptionRepository extends JpaRepository<VariantOptionJpaEntity, String> {
+    @Query("SELECT COUNT(vo) > 0 FROM VariantOptionJpaEntity vo WHERE vo.optionValue.id IN :ids")
+    boolean existsByOptionValueIds(@Param("ids") List<String> optionValueIds);
 }
 
 @Repository
@@ -22,5 +28,13 @@ public class VariantOptionRepositoryImpl implements VariantOptionRepository {
     public VariantOption save(VariantOption variantOption) {
         VariantOptionJpaEntity entity = dataMapper.toJpaEntity(variantOption);
         return dataMapper.toDomainModel(jpaRepository.save(entity));
+    }
+
+    @Override
+    public boolean existsByOptionValueIds(List<String> optionValueIds) {
+        if (optionValueIds == null || optionValueIds.isEmpty()) {
+            return false;
+        }
+        return jpaRepository.existsByOptionValueIds(optionValueIds);
     }
 }

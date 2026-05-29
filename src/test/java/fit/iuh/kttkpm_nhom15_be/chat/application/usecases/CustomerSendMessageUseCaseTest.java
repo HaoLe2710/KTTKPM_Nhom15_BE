@@ -42,14 +42,14 @@ class CustomerSendMessageUseCaseTest {
                 .roomId("room-1")
                 .senderId("customer-1")
                 .type(ChatMessageType.TEXT)
-                .content("Toi muon mua san pham nay")
+                .content("Tôi muốn mua sản phẩm này")
                 .build();
 
         when(userFacade.isUserActive("customer-1")).thenReturn(true);
         when(chatRepository.findRoomById("room-1")).thenReturn(Optional.of(room));
         when(chatRepository.saveMessage(any(ChatMessage.class))).thenReturn(savedMessage);
 
-        MessageDTO result = useCase.execute(textCommand("room-1", "customer-1", "Toi muon mua san pham nay"));
+        MessageDTO result = useCase.execute(textCommand("room-1", "customer-1", "Tôi muốn mua sản phẩm này"));
 
         assertEquals("msg-1", result.id());
         verify(eventPublisher).publishEvent(any(ChatMessageSentEvent.class));
@@ -74,7 +74,7 @@ class CustomerSendMessageUseCaseTest {
         UnauthorizedChatAccessException ex = assertThrows(UnauthorizedChatAccessException.class,
                 () -> useCase.execute(textCommand("room-2", "customer-other", "Tin nhan sai room")));
 
-        assertEquals("Nguoi dung customer-other khong co quyen thao tac voi phong chat: room-2", ex.getMessage());
+        assertEquals("Người dùng customer-other không có quyền thao tác với phòng chat: room-2", ex.getMessage());
         verify(chatRepository, never()).saveMessage(any());
     }
 
@@ -100,8 +100,8 @@ class CustomerSendMessageUseCaseTest {
         when(chatRepository.saveMessage(any(ChatMessage.class))).thenReturn(savedMessage);
 
         MessageDTO result = useCase.execute(new SendMessageCommand(
-                "room-product", "customer-3", ChatMessageType.PRODUCT_LINK, "Anh chi xem giup em san pham nay",
-                null, "https://shop.example.com/products/coffee", "product-1", "variant-1",
+                "room-product", "customer-3", ChatMessageType.PRODUCT_LINK, "Anh chị xem giúp em sản phẩm này",
+                null, null, "https://shop.example.com/products/coffee", "product-1", "variant-1",
                 "Arabica Coffee", "https://cdn.example.com/products/coffee.png", null
         ));
 
@@ -112,6 +112,6 @@ class CustomerSendMessageUseCaseTest {
 
     private SendMessageCommand textCommand(String roomId, String senderId, String content) {
         return new SendMessageCommand(roomId, senderId, ChatMessageType.TEXT, content,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null);
     }
 }

@@ -18,7 +18,7 @@ import java.util.Optional;
  * Verification rules:
  * 1. Order must exist
  * 2. Order must belong to the user
- * 3. Order must be in COMPLETED status (ready for review)
+ * 3. Order must be in CREATED or COMPLETED status (ready for review)
  */
 @Component
 @RequiredArgsConstructor
@@ -27,7 +27,7 @@ public class OrderFacadeForReviewsImpl implements OrderFacade {
     private final OrderRepository orderRepository;
 
     @Override
-    public void verifyOrderForReview(String orderId, String userId) {
+    public void verifyOrderForReview(String orderId, String userId, String productId) {
         // 1. Find order by ID
         Optional<Order> orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isEmpty()) {
@@ -41,9 +41,19 @@ public class OrderFacadeForReviewsImpl implements OrderFacade {
             throw new OrderNotFoundException(orderId);  // Unauthorized access masked as not found
         }
 
-        // 3. Verify order is in COMPLETED status
-        if (order.getStatus() != OrderStatus.COMPLETED) {
+        // 3. Verify order is in a reviewable status
+        if (!isReviewableStatus(order.getStatus())) {
             throw new OrderNotCompletedException(orderId);
         }
+
+        boolean productBelongsToOrder = order.getItems() != null
+            && order.getItems().stream().anyMatch(item -> productId.equals(item.getProductId()));
+        if (!productBelongsToOrder) {
+            throw new IllegalArgumentException("Sản phẩm không thuộc đơn hàng này.");
+        }
+    }
+
+    private boolean isReviewableStatus(OrderStatus status) {
+        return status == OrderStatus.CREATED || status == OrderStatus.COMPLETED;
     }
 }
