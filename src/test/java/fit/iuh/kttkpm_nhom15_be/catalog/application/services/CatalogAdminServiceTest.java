@@ -24,11 +24,10 @@ class CatalogAdminServiceTest {
   @Test
   void createProductRejectsDuplicateSlugIgnoringCase() {
     CatalogAdminRepository repository = Mockito.mock(CatalogAdminRepository.class);
-    CatalogMasterDataCacheService masterDataCacheService = Mockito.mock(CatalogMasterDataCacheService.class);
     ApplicationEventPublisher publisher = Mockito.mock(ApplicationEventPublisher.class);
     AdminAuditService auditService = Mockito.mock(AdminAuditService.class);
     FileStoragePort fileStoragePort = Mockito.mock(FileStoragePort.class);
-    CatalogAdminService service = new CatalogAdminService(repository, masterDataCacheService, publisher, auditService, fileStoragePort);
+    CatalogAdminService service = new CatalogAdminService(repository, publisher, auditService, fileStoragePort);
 
     when(repository.existsProductType("type-1")).thenReturn(true);
     when(repository.existsProductSlugIgnoreCase("serum-ban-dem", null)).thenReturn(true);
@@ -70,11 +69,10 @@ class CatalogAdminServiceTest {
   @Test
   void createVariantRejectsDuplicateNormalizedSku() {
     CatalogAdminRepository repository = Mockito.mock(CatalogAdminRepository.class);
-    CatalogMasterDataCacheService masterDataCacheService = Mockito.mock(CatalogMasterDataCacheService.class);
     ApplicationEventPublisher publisher = Mockito.mock(ApplicationEventPublisher.class);
     AdminAuditService auditService = Mockito.mock(AdminAuditService.class);
     FileStoragePort fileStoragePort = Mockito.mock(FileStoragePort.class);
-    CatalogAdminService service = new CatalogAdminService(repository, masterDataCacheService, publisher, auditService, fileStoragePort);
+    CatalogAdminService service = new CatalogAdminService(repository, publisher, auditService, fileStoragePort);
 
     when(repository.existsProduct("product-1")).thenReturn(true);
     when(repository.existsNormalizedSku("SKU001", null)).thenReturn(true);

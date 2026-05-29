@@ -12,8 +12,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.ProductRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.ProductTypeRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.VariantOptionRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.VariantRepository;
-import fit.iuh.kttkpm_nhom15_be.catalog.application.services.ProductListCacheService;
-import fit.iuh.kttkpm_nhom15_be.shared.application.cache.CachedPage;
+import fit.iuh.kttkpm_nhom15_be.search.application.usecases.query.BrowseLegacyProductsUseCase;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -113,19 +112,18 @@ class CatalogProductUseCaseTest {
 
     @Test
     void listProductsSummaryDelegatesFiltersAndPagination() {
-        ProductListCacheService productListCacheService = Mockito.mock(ProductListCacheService.class);
-        ListProductsSummaryUseCase useCase = new ListProductsSummaryUseCase(productListCacheService);
+        BrowseLegacyProductsUseCase browseLegacyProductsUseCase = Mockito.mock(BrowseLegacyProductsUseCase.class);
+        ListProductsSummaryUseCase useCase = new ListProductsSummaryUseCase(browseLegacyProductsUseCase);
         Page<ProductSummaryDTO> expectedPage = new PageImpl<>(List.of(
             ProductSummaryDTO.builder().id("product-1").name("Running Shoe").lowestPrice(new BigDecimal("99.99")).build()
         ));
 
-        when(productListCacheService.getProductSummaries("type-1", new BigDecimal("10.00"), new BigDecimal("100.00"), 2, 5))
-            .thenReturn(CachedPage.from(expectedPage));
+        when(browseLegacyProductsUseCase.execute("type-1", new BigDecimal("10.00"), new BigDecimal("100.00"), 2, 5))
+            .thenReturn(expectedPage);
 
         Page<ProductSummaryDTO> result = useCase.execute("type-1", new BigDecimal("10.00"), new BigDecimal("100.00"), 2, 5);
 
-        assertEquals(expectedPage.getContent(), result.getContent());
-        assertEquals(expectedPage.getTotalElements(), result.getTotalElements());
+        assertSame(expectedPage, result);
     }
 
     @Test

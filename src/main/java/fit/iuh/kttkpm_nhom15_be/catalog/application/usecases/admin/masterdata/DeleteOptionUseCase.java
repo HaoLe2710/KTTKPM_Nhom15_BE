@@ -3,9 +3,7 @@ package fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.masterdata;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.OptionRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.OptionValueRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.VariantOptionRepository;
-import fit.iuh.kttkpm_nhom15_be.shared.application.cache.CacheNames;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +18,6 @@ public class DeleteOptionUseCase {
     private final VariantOptionRepository variantOptionRepository;
 
     @Transactional
-    @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
     public void execute(String id) {
         optionRepository.findById(id)
                 .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy option: " + id));
