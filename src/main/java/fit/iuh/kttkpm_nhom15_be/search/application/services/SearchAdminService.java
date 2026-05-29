@@ -27,6 +27,7 @@ import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiNotFoundExcepti
 import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiValidationException;
 import fit.iuh.kttkpm_nhom15_be.shared.infrastructure.audit.AdminAuditService;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Locale;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class SearchAdminService {
+
+  private static final ZoneId ANALYTICS_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
   private final SearchAdminRepository searchAdminRepository;
   private final SearchProjectionRepository searchProjectionRepository;
@@ -277,11 +280,11 @@ public class SearchAdminService {
   }
 
   private LocalDateTime resolveFrom(LocalDateTime from) {
-    return from == null ? LocalDateTime.now().minusDays(7) : from;
+    return from == null ? LocalDateTime.now(ANALYTICS_ZONE).minusDays(7) : from;
   }
 
   private LocalDateTime resolveTo(LocalDateTime to) {
-    return to == null ? LocalDateTime.now() : to;
+    return to == null ? LocalDateTime.now(ANALYTICS_ZONE) : to;
   }
 
   private int resolveLimit(int limit) {

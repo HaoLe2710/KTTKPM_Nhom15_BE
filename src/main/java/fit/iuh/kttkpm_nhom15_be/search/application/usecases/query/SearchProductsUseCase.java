@@ -20,15 +20,18 @@ public class SearchProductsUseCase {
     Instant startedAt = Instant.now();
     SearchResponseDTO response = searchProductsCacheService.search(request);
 
-    long latency = Duration.between(startedAt, Instant.now()).toMillis();
-    searchReadRepository.logQuery(
-      request.query() == null ? "" : request.query(),
-      response.normalizedQuery(),
-      Math.toIntExact(response.total()),
-      latency
-    );
-    if (response.redirect() == null && response.total() == 0 && request.query() != null && !request.query().isBlank()) {
-      searchReadRepository.upsertZeroResultQuery(request.query(), response.normalizedQuery());
+    String queryText = request.query() == null ? "" : request.query().trim();
+    if (!queryText.isBlank()) {
+      long latency = Duration.between(startedAt, Instant.now()).toMillis();
+      searchReadRepository.logQuery(
+        queryText,
+        response.normalizedQuery(),
+        Math.toIntExact(response.total()),
+        latency
+      );
+      if (response.redirect() == null && response.total() == 0) {
+        searchReadRepository.upsertZeroResultQuery(queryText, response.normalizedQuery());
+      }
     }
 
     return response;

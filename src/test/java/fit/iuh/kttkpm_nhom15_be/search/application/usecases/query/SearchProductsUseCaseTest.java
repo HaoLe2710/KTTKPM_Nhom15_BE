@@ -3,6 +3,8 @@ package fit.iuh.kttkpm_nhom15_be.search.application.usecases.query;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,5 +69,30 @@ class SearchProductsUseCaseTest {
 
     assertEquals(0, response.total());
     verify(searchReadRepository).upsertZeroResultQuery("serum", "serum");
+  }
+
+  @Test
+  void browseWithoutKeywordDoesNotPolluteSearchAnalytics() {
+    SearchReadRepository searchReadRepository = Mockito.mock(SearchReadRepository.class);
+    SearchProductsCacheService searchProductsCacheService = Mockito.mock(SearchProductsCacheService.class);
+    SearchProductsUseCase useCase = new SearchProductsUseCase(searchReadRepository, searchProductsCacheService);
+    SearchProductsRequest request = new SearchProductsRequest(null, List.of(), null, null, null, "relevance", 0, 20);
+
+    when(searchProductsCacheService.search(request)).thenReturn(new SearchResponseDTO(
+      List.of(),
+      List.of(),
+      0,
+      20,
+      5,
+      null,
+      "",
+      null
+    ));
+
+    var response = useCase.execute(request);
+
+    assertEquals(5, response.total());
+    verify(searchReadRepository, never()).logQuery(any(), any(), anyInt(), anyLong());
+    verify(searchReadRepository, never()).upsertZeroResultQuery(any(), any());
   }
 }
