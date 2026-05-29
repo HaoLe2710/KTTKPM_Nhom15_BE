@@ -500,6 +500,8 @@ public class SearchAdminRepositoryImpl implements SearchAdminRepository {
              COUNT(*) AS total_count
       FROM search_query_logs
       WHERE created_at BETWEEN :from AND :to
+        AND query_normalized IS NOT NULL
+        AND query_normalized <> ''
       """);
     MapSqlParameterSource params = new MapSqlParameterSource()
       .addValue("from", Timestamp.valueOf(from))
