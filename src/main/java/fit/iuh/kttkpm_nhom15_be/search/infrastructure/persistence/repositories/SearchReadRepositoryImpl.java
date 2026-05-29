@@ -189,7 +189,7 @@ public class SearchReadRepositoryImpl implements SearchReadRepository {
 
     int fromIndex = Math.min(request.page() * request.size(), allCandidates.size());
     int toIndex = Math.min(fromIndex + request.size(), allCandidates.size());
-    List<SearchProductItemDTO> paged = allCandidates.subList(fromIndex, toIndex);
+    List<SearchProductItemDTO> paged = new ArrayList<>(allCandidates.subList(fromIndex, toIndex));
 
     Long total = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM (" + candidateSql + ") c", params, Long.class);
 
@@ -238,8 +238,8 @@ public class SearchReadRepositoryImpl implements SearchReadRepository {
       .add(new SearchFacetBucketDTO(rs.getString("facet_value"), rs.getString("facet_label"), rs.getLong("facet_count"))));
 
     return grouped.entrySet().stream()
-      .map(entry -> new SearchFacetDTO(entry.getKey(), entry.getValue()))
-      .toList();
+      .map(entry -> new SearchFacetDTO(entry.getKey(), new ArrayList<>(entry.getValue())))
+      .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
   }
 
   @Override

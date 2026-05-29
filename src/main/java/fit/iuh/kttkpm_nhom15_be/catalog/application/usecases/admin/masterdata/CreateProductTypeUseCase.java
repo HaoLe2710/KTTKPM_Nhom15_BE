@@ -4,7 +4,9 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.MasterDataDTOs.Pro
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.MasterDataDTOs.ProductTypeResponse;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.ProductType;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.ProductTypeRepository;
+import fit.iuh.kttkpm_nhom15_be.shared.application.cache.CacheNames;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,6 +15,7 @@ public class CreateProductTypeUseCase {
 
     private final ProductTypeRepository repository;
 
+    @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
     public ProductTypeResponse execute(ProductTypeRequest request) {
         if (repository.existsByCode(request.getCode().trim())) {
             throw new IllegalArgumentException("Product type code da ton tai: " + request.getCode());

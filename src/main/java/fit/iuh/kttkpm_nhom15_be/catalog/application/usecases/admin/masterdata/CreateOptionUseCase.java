@@ -5,7 +5,9 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.Option;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.OptionValue;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.OptionRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.OptionValueRepository;
+import fit.iuh.kttkpm_nhom15_be.shared.application.cache.CacheNames;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ public class CreateOptionUseCase {
     private final OptionValueRepository optionValueRepository;
 
     @Transactional
+    @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
     public OptionResponse execute(OptionRequest request) {
         if (optionRepository.existsByCode(request.getCode().trim())) {
             throw new IllegalArgumentException("Option code da ton tai: " + request.getCode());

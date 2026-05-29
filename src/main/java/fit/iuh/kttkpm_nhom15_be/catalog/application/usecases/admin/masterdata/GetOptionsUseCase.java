@@ -5,7 +5,9 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.Option;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.OptionValue;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.OptionRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.OptionValueRepository;
+import fit.iuh.kttkpm_nhom15_be.shared.application.cache.CacheNames;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +21,10 @@ public class GetOptionsUseCase {
     private final OptionRepository optionRepository;
     private final OptionValueRepository optionValueRepository;
 
+    @Cacheable(
+            cacheNames = CacheNames.PRODUCT_MASTER_DATA,
+            key = "T(fit.iuh.kttkpm_nhom15_be.shared.application.cache.CacheKeys).masterData('options')"
+    )
     public List<OptionResponse> execute() {
         List<Option> options = optionRepository.findAll();
         List<OptionValue> allValues = optionValueRepository.findAll();
