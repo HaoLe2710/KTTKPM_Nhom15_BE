@@ -26,25 +26,25 @@ public class UpdateProfileUseCase {
     @Transactional
     public UserResponse execute(UpdateProfileCommand command) {
         User user = userRepository.findById(command.userId())
-                .orElseThrow(() -> new UserNotFoundException("User khong ton tai"));
+                .orElseThrow(() -> new UserNotFoundException("User không tồn tại"));
 
         if (!user.getEmail().equals(command.email())) {
             User existingUser = userRepository.findByEmail(command.email()).orElse(null);
             if (existingUser != null && !existingUser.getId().equals(command.userId())) {
-                throw new DuplicateUserException("Email nay da duoc su dung boi tai khoan khac!");
+                throw new DuplicateUserException("Email này đã được sử dụng bởi tài khoản khác!");
             }
 
             // Step 1: verify current (old) email first.
             otpService.sendOtp(user.getEmail(), "UPDATE_EMAIL_OLD");
 
             throw new ActionNotAllowedException(
-                    "Yeu cau doi email da duoc ghi nhan. Vui long xac thuc OTP gui den email cu: " + user.getEmail()
+                    "Yêu cầu đổi email đã được ghi nhận. Vui lòng xác thực OTP gửi đến email cũ: " + user.getEmail()
             );
         }
 
         if (!user.getPhone().equals(command.phone())
                 && userRepository.existsByEmailOrPhoneExcludingId(command.email(), command.phone(), command.userId())) {
-            throw new DuplicateUserException("So dien thoai nay da duoc su dung boi tai khoan khac!");
+            throw new DuplicateUserException("Số điện thoại này đã được sử dụng bởi tài khoản khác!");
         }
 
         user.setAvatarUrl(resolveAvatarUrl(command, user.getAvatarUrl(), command.userId()));

@@ -134,7 +134,7 @@ class MasterDataControllerIntegrationTest {
         mockMvc.perform(delete("/api/v1/product-types/type-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Loai san pham da duoc xoa thanh cong"));
+                .andExpect(jsonPath("$.message").value("Loại sản phẩm đã được xóa thành công"));
 
         verify(deleteProductTypeUseCase).execute("type-1");
     }
@@ -197,7 +197,7 @@ class MasterDataControllerIntegrationTest {
         mockMvc.perform(delete("/api/v1/options/opt-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.message").value("Tuy chon da duoc xoa thanh cong"));
+                .andExpect(jsonPath("$.message").value("Tùy chọn đã được xóa thành công"));
 
         verify(deleteOptionUseCase).execute("opt-1");
     }

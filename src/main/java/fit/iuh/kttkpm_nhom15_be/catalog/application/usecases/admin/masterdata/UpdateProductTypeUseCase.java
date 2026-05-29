@@ -16,7 +16,7 @@ public class UpdateProductTypeUseCase {
     @Transactional
     public ProductTypeResponse execute(String id, ProductTypeRequest request) {
         var existing = repository.findById(id)
-                .orElseThrow(() -> new java.util.NoSuchElementException("Khong tim thay product type: " + id));
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy product type: " + id));
 
         String normalizedCode = request.getCode().trim();
         repository.findByCode(normalizedCode).ifPresent(found -> {

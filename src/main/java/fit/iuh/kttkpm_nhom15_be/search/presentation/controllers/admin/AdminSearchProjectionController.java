@@ -85,6 +85,6 @@ public class AdminSearchProjectionController {
   public ResponseEntity<MessageResponse> resolveFailure(@PathVariable String productId,
                                                         @RequestBody(required = false) @Valid FailureResolveRequest request) {
     searchAdminService.resolveFailure(productId, request);
-    return ResponseEntity.ok(new MessageResponse("Projection failure da duoc xu ly thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Projection failure đã được xử lý thành công"));
   }
 }

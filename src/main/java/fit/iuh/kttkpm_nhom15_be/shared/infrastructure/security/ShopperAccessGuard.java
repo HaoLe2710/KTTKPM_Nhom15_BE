@@ -10,7 +10,7 @@ public class ShopperAccessGuard {
 
     public String resolveAllowedUserId(String requestedUserId) {
         if (requestedUserId == null || requestedUserId.isBlank()) {
-            throw new AccessDeniedException("userId khong hop le");
+            throw new AccessDeniedException("userId không hợp lệ");
         }
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -18,13 +18,13 @@ public class ShopperAccessGuard {
 
         if (principal instanceof String principalUserId && !"anonymousUser".equals(principalUserId)) {
             if (!principalUserId.equals(requestedUserId)) {
-                throw new AccessDeniedException("userId khong khop voi tai khoan dang nhap");
+                throw new AccessDeniedException("userId không khớp với tài khoản đăng nhập");
             }
             return principalUserId;
         }
 
         if (!requestedUserId.startsWith("guest-")) {
-            throw new AccessDeniedException("Khach mua hang phai su dung guest userId hop le");
+            throw new AccessDeniedException("Khách mua hàng phải sử dụng guest userId hợp lệ");
         }
 
         return requestedUserId;

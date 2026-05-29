@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public class SendMessageRequest {
     private String roomId;
 
-    @NotNull(message = "Loai tin nhan khong duoc de trong.")
+    @NotNull(message = "Loại tin nhắn không được để trống.")
     private ChatMessageType type;
 
     private String content;

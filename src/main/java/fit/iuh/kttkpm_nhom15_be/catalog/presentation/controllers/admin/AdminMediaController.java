@@ -60,7 +60,7 @@ public class AdminMediaController {
   public ResponseEntity<MessageResponse> deleteProductMedia(@PathVariable String productId,
                                                             @PathVariable String mediaId) {
     catalogMediaAdminService.deleteProductMedia(productId, mediaId);
-    return ResponseEntity.ok(new MessageResponse("Media cua san pham da duoc xoa thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Media của sản phẩm đã được xóa thành công"));
   }
 
   @PatchMapping("/products/{productId}/media/{mediaId}/primary")
@@ -101,7 +101,7 @@ public class AdminMediaController {
   public ResponseEntity<MessageResponse> deleteVariantMedia(@PathVariable String variantId,
                                                             @PathVariable String mediaId) {
     catalogMediaAdminService.deleteVariantMedia(variantId, mediaId);
-    return ResponseEntity.ok(new MessageResponse("Media cua bien the da duoc xoa thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Media của biến thể đã được xóa thành công"));
   }
 
   @PatchMapping("/variants/{variantId}/media/{mediaId}/primary")

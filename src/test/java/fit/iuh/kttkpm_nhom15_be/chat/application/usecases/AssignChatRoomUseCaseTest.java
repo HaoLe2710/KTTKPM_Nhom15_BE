@@ -61,7 +61,7 @@ class AssignChatRoomUseCaseTest {
         InactiveChatUserException ex = assertThrows(InactiveChatUserException.class,
                 () -> useCase.execute("room-2", "staff-2"));
 
-        assertEquals("Khong the gui tin nhan. Tai khoan khong hoat dong: staff-2", ex.getMessage());
+        assertEquals("Không thể gửi tin nhắn. Tài khoản không hoạt động: staff-2", ex.getMessage());
         verify(chatRepository, never()).findRoomById(any());
     }
 
@@ -77,7 +77,7 @@ class AssignChatRoomUseCaseTest {
         ChatRoomNotFoundException ex = assertThrows(ChatRoomNotFoundException.class,
                 () -> useCase.execute("missing-room", "staff-3"));
 
-        assertEquals("Khong tim thay phong chat voi ID: missing-room", ex.getMessage());
+        assertEquals("Không tìm thấy phòng chat với ID: missing-room", ex.getMessage());
     }
 
     @Test
@@ -120,7 +120,7 @@ class AssignChatRoomUseCaseTest {
         UnauthorizedChatAccessException ex = assertThrows(UnauthorizedChatAccessException.class,
                 () -> useCase.execute("room-3", "staff-other"));
 
-        assertEquals("Nguoi dung staff-other khong co quyen thao tac voi phong chat: room-3", ex.getMessage());
+        assertEquals("Người dùng staff-other không có quyền thao tác với phòng chat: room-3", ex.getMessage());
         verify(chatRepository, never()).saveRoom(any(ChatRoom.class));
     }
 }

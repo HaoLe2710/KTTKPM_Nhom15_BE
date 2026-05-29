@@ -37,13 +37,13 @@ public class ChatMessagePayloadSupport {
 
     public void validateCommand(SendMessageCommand command) {
         if (command.type() == null) {
-            throw new ChatMessageValidationException("Loai tin nhan khong duoc de trong.");
+            throw new ChatMessageValidationException("Loại tin nhắn không được để trống.");
         }
 
         switch (command.type()) {
             case TEXT -> {
                 if (isBlank(command.content())) {
-                    throw new ChatMessageValidationException("Noi dung tin nhan khong duoc de trong.");
+                    throw new ChatMessageValidationException("Nội dung tin nhắn không được để trống.");
                 }
             }
             case IMAGE -> {
@@ -58,10 +58,10 @@ public class ChatMessagePayloadSupport {
             }
             case PRODUCT_LINK -> {
                 if (isBlank(command.linkUrl())) {
-                    throw new ChatMessageValidationException("Tin nhan san pham phai co linkUrl.");
+                    throw new ChatMessageValidationException("Tin nhắn sản phẩm phải có linkUrl.");
                 }
                 if (isBlank(command.productName())) {
-                    throw new ChatMessageValidationException("Tin nhan san pham phai co ten san pham.");
+                    throw new ChatMessageValidationException("Tin nhắn sản phẩm phải có tên sản phẩm.");
                 }
             }
         }

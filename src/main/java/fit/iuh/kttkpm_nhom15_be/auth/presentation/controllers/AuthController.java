@@ -39,7 +39,7 @@ public class AuthController {
     public ResponseEntity<MessageResponse> register(@Valid @RequestBody RegisterRequest request) {
         registerUseCase.execute(request);
         otpService.sendOtp(request.email(), "REGISTER");
-        return ResponseEntity.ok(new MessageResponse("Dang ky thanh cong. Vui long kiem tra ma OTP trong email cua ban."));
+        return ResponseEntity.ok(new MessageResponse("Đăng ký thành công. Vui lòng kiểm tra mã OTP trong email của bạn."));
     }
 
     @PostMapping("/verify-otp")
@@ -47,9 +47,9 @@ public class AuthController {
         boolean isValid = otpService.verifyOtp(request.email(), request.otp(), "REGISTER");
         if (isValid) {
             userFacade.activateUser(request.email());
-            return ResponseEntity.ok(new MessageResponse("Tai khoan da duoc kich hoat thanh cong!"));
+            return ResponseEntity.ok(new MessageResponse("Tài khoản đã được kích hoạt thành công!"));
         }
-        throw new InvalidOtpException("Ma OTP khong dung hoac da het han.");
+        throw new InvalidOtpException("Mã OTP không đúng hoặc đã hết hạn.");
     }
 
     @PostMapping("/login")
@@ -65,7 +65,7 @@ public class AuthController {
 
         String token = loginUseCase.execute(identifier, request.get("password"));
         User user = userFacade.findByIdentifier(identifier)
-                .orElseThrow(() -> new IllegalStateException("Khong tim thay thong tin nguoi dung sau khi dang nhap"));
+                .orElseThrow(() -> new IllegalStateException("Không tìm thấy thông tin người dùng sau khi đăng nhập"));
         UserResponse userResponse = UserResponse.fromDomain(user);
 
         return ResponseEntity.ok(Map.of(
@@ -94,6 +94,6 @@ public class AuthController {
         response.addHeader(HttpHeaders.SET_COOKIE, clearAuthTokenCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, clearAccessTokenCookie.toString());
 
-        return ResponseEntity.ok(new MessageResponse("Dang xuat thanh cong"));
+        return ResponseEntity.ok(new MessageResponse("Đăng xuất thành công"));
     }
 }

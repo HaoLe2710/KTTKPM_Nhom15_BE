@@ -12,17 +12,17 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateStaffRequest {
-    @NotBlank(message = "Email khong duoc trong")
+    @NotBlank(message = "Email không được trống")
     @Email
     private String email;
 
-    @NotBlank(message = "SDT khong duoc trong")
+    @NotBlank(message = "SĐT không được trống")
     private String phone;
 
-    @NotBlank(message = "Mat khau khong duoc trong")
+    @NotBlank(message = "Mật khẩu không được trống")
     private String password;
 
-    @NotBlank(message = "Ho ten khong duoc trong")
+    @NotBlank(message = "Họ tên không được trống")
     private String fullName;
 }
 

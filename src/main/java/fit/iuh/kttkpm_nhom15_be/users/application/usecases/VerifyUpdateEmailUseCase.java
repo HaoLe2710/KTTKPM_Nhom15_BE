@@ -21,16 +21,16 @@ public class VerifyUpdateEmailUseCase {
     @Transactional
     public UserResponse execute(String userId, String newEmail, String otpCode) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Khong tim thay tai khoan de cap nhat."));
+                .orElseThrow(() -> new UserNotFoundException("Không tìm thấy tài khoản để cập nhật."));
 
         User existingUser = userRepository.findByEmail(newEmail).orElse(null);
         if (existingUser != null && !existingUser.getId().equals(userId)) {
-            throw new DuplicateUserException("Email nay da duoc su dung boi tai khoan khac!");
+            throw new DuplicateUserException("Email này đã được sử dụng bởi tài khoản khác!");
         }
 
         boolean isValid = otpService.verifyOtp(newEmail, otpCode, "UPDATE_EMAIL_NEW");
         if (!isValid) {
-            throw new ActionNotAllowedException("Ma xac thuc email moi khong dung hoac da het han!");
+            throw new ActionNotAllowedException("Mã xác thực email mới không đúng hoặc đã hết hạn!");
         }
 
         user.setEmail(newEmail);

@@ -78,7 +78,7 @@ class CreateOrGetChatRoomUseCaseTest {
         InactiveChatUserException ex = assertThrows(InactiveChatUserException.class,
                 () -> useCase.execute("customer-3"));
 
-        assertEquals("Khong the gui tin nhan. Tai khoan khong hoat dong: customer-3", ex.getMessage());
+        assertEquals("Không thể gửi tin nhắn. Tài khoản không hoạt động: customer-3", ex.getMessage());
         verify(chatRepository, never()).findActiveRoomByCustomer(any());
     }
 }

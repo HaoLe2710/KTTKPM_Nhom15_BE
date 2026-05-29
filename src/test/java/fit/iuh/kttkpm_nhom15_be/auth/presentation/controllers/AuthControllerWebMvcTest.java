@@ -80,7 +80,7 @@ class AuthControllerWebMvcTest {
                 ))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.message").value("Dang nhap thanh cong"))
+            .andExpect(jsonPath("$.message").value("Đăng nhập thành công"))
             .andExpect(jsonPath("$.data.accessToken").value("jwt-token"))
             .andExpect(jsonPath("$.data.tokenType").value("Bearer"));
     }
@@ -100,7 +100,7 @@ class AuthControllerWebMvcTest {
     @Test
     void loginReturnsStructuredUnauthorizedErrorWhenCredentialsAreWrong() throws Exception {
         when(loginUseCase.execute(anyString(), anyString()))
-            .thenThrow(new InvalidCredentialsException("Tai khoan hoac mat khau khong chinh xac"));
+            .thenThrow(new InvalidCredentialsException("Tài khoản hoặc mật khẩu không chính xác"));
 
         mockMvc.perform(post("/api/v1/auth/login")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -111,7 +111,7 @@ class AuthControllerWebMvcTest {
             .andExpect(status().isUnauthorized())
             .andExpect(jsonPath("$.success").value(false))
             .andExpect(jsonPath("$.code").value("INVALID_CREDENTIALS"))
-            .andExpect(jsonPath("$.message").value("Tai khoan hoac mat khau khong chinh xac"));
+            .andExpect(jsonPath("$.message").value("Tài khoản hoặc mật khẩu không chính xác"));
     }
 
     @Test
@@ -127,7 +127,7 @@ class AuthControllerWebMvcTest {
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.success").value(false))
             .andExpect(jsonPath("$.code").value("INVALID_OTP"))
-            .andExpect(jsonPath("$.message").value("Ma OTP khong dung hoac da het han."));
+            .andExpect(jsonPath("$.message").value("Mã OTP không đúng hoặc đã hết hạn."));
     }
 
     @Test
@@ -142,7 +142,7 @@ class AuthControllerWebMvcTest {
                 ))))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.success").value(true))
-            .andExpect(jsonPath("$.message").value("Tai khoan da duoc kich hoat thanh cong!"));
+            .andExpect(jsonPath("$.message").value("Tài khoản đã được kích hoạt thành công!"));
 
         verify(userFacade).activateUser("user@example.com");
     }

@@ -32,8 +32,8 @@ public class CreateReviewUseCase {
             throw new InvalidRatingException(command.getRating());
         }
 
-        // 2. Verify order is valid and completed (user owns order, order is COMPLETED)
-        orderFacade.verifyOrderForReview(command.getOrderId(), command.getUserId());
+        // 2. Verify order is valid and in a reviewable state for this product
+        orderFacade.verifyOrderForReview(command.getOrderId(), command.getUserId(), command.getProductId());
 
         // 3. Check if review already exists for this product (unique constraint)
         Optional<Review> existingReview = reviewRepository.findByUserIdAndProductId(

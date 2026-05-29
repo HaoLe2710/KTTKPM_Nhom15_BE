@@ -49,7 +49,7 @@ public class PaymentController {
     private String frontendBaseUrl;
 
     @PostMapping("/create")
-    @ApiSuccessMessage("Khoi tao giao dich thanh toan thanh cong")
+    @ApiSuccessMessage("Khởi tạo giao dịch thanh toán thành công")
     public ResponseEntity<PaymentTransactionResponse> createPayment(@Valid @RequestBody CreatePaymentRequest request,
                                                                     HttpServletRequest httpServletRequest) {
         PaymentTransactionResponse response = createPaymentUseCase.execute(CreatePaymentCommand.builder()
@@ -95,7 +95,7 @@ public class PaymentController {
 
     @PatchMapping("/{transactionId}/mark-paid")
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    @ApiSuccessMessage("Cap nhat thanh toan COD thanh cong")
+    @ApiSuccessMessage("Cập nhật thanh toán COD thành công")
     public ResponseEntity<PaymentStatusResponse> markCodPaid(@PathVariable String transactionId) {
         return ResponseEntity.ok(handlePaymentCallbackUseCase.markCodPaid(transactionId));
     }

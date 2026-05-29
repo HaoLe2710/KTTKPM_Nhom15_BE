@@ -60,7 +60,7 @@ public class AdminSearchSynonymController {
   public ResponseEntity<MessageResponse> updateSynonymGroup(@PathVariable String id,
                                                             @Valid @RequestBody SynonymGroupWriteRequest request) {
     searchAdminService.updateSynonymGroup(id, request);
-    return ResponseEntity.ok(new MessageResponse("Synonym group da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Synonym group đã được cập nhật thành công"));
   }
 
   @PostMapping("/synonym-groups/{id}/terms")
@@ -72,7 +72,7 @@ public class AdminSearchSynonymController {
   @DeleteMapping("/synonym-terms/{termId}")
   public ResponseEntity<MessageResponse> deleteSynonymTerm(@PathVariable String termId) {
     searchAdminService.deleteSynonymTerm(termId);
-    return ResponseEntity.ok(new MessageResponse("Synonym term da duoc xoa thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Synonym term đã được xóa thành công"));
   }
 
   @PostMapping("/synonyms/recommendations")

@@ -31,7 +31,7 @@ public class OptionValueRepositoryImpl implements OptionValueRepository {
   @Override
   public OptionValue save(OptionValue optionValue) {
       OptionJpaEntity optionEntity = jpaOptionRepository.findById(optionValue.getOptionId())
-              .orElseThrow(() -> new IllegalArgumentException("Option khong ton tai: " + optionValue.getOptionId()));
+              .orElseThrow(() -> new IllegalArgumentException("Option không tồn tại: " + optionValue.getOptionId()));
 
       OptionValueJpaEntity entity = new OptionValueJpaEntity();
       entity.setId(optionValue.getId());

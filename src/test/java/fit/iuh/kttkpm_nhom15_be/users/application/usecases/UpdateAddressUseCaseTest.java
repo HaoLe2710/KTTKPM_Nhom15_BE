@@ -81,7 +81,7 @@ class UpdateAddressUseCaseTest {
                 .userId("user-1")
                 .fullName("Tran Thi B")
                 .phone("0909000002")
-                .address("34 Le Loi")
+                .address("34 Lê Lợi")
                 .city("Da Nang")
                 .district("Hai Chau")
                 .ward("Thach Thang")
@@ -97,7 +97,7 @@ class UpdateAddressUseCaseTest {
                 "user-1",
                 "Tran Thi B",
                 "0909000002",
-                "99 Bach Dang",
+                "99 Bạch Đằng",
                 "Da Nang",
                 "Hai Chau",
                 "Hai Chau 1",
@@ -105,7 +105,7 @@ class UpdateAddressUseCaseTest {
         ));
 
         verify(addressRepository, never()).updateAllDefaultToFalse("user-1");
-        assertEquals("99 Bach Dang", result.address());
+        assertEquals("99 Bạch Đằng", result.address());
         assertFalse(result.isDefault());
     }
 

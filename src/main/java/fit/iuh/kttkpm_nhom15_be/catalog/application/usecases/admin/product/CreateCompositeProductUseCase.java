@@ -35,7 +35,7 @@ public class CreateCompositeProductUseCase {
     @Transactional(rollbackFor = Exception.class)
     public String execute(CompositeProductRequestDTO request) {
         if (!productTypeRepository.findById(request.getTypeId()).isPresent()) {
-            throw new IllegalArgumentException("Khong tim thay product type: " + request.getTypeId());
+            throw new IllegalArgumentException("Không tìm thấy product type: " + request.getTypeId());
         }
 
         Set<String> seenSkus = new HashSet<>();
@@ -76,9 +76,9 @@ public class CreateCompositeProductUseCase {
                 if (vReq.getOptions() != null) {
                     for (OptionAssignmentDTO optReq : vReq.getOptions()) {
                         var optionValue = optionValueRepository.findById(optReq.getValueId())
-                                .orElseThrow(() -> new IllegalArgumentException("Khong tim thay option value: " + optReq.getValueId()));
+                                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy option value: " + optReq.getValueId()));
                         if (optionValue.getOptionId() == null || !optionValue.getOptionId().equals(optReq.getOptionId())) {
-                            throw new IllegalArgumentException("Option value khong thuoc option duoc chi dinh: " + optReq.getValueId());
+                            throw new IllegalArgumentException("Option value không thuộc option được chỉ định: " + optReq.getValueId());
                         }
                         VariantOption vo = VariantOption.builder()
                                 .variantId(savedVariant.getId())

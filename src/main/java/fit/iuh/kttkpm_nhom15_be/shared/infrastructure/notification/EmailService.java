@@ -37,13 +37,13 @@ public class EmailService {
             helper.setFrom(effectiveFrom, fromName);
             helper.setReplyTo(replyTo);
             helper.setTo(toEmail);
-            helper.setSubject("Ma xac thuc OTP - Nhom 15 Cosmetics");
+            helper.setSubject("Mã xác thực OTP - Nhóm 15 Cosmetics");
             helper.setText(buildOtpHtml(otp), true);
             mailSender.send(message);
             log.info("OTP email sent to {} with from {}", toEmail, effectiveFrom);
         } catch (MessagingException | UnsupportedEncodingException ex) {
             log.error("Failed to send OTP email to {} with from {}: {}", toEmail, effectiveFrom, ex.getMessage());
-            throw new IllegalStateException("Khong the gui email OTP", ex);
+            throw new IllegalStateException("Không thể gửi email OTP", ex);
         }
     }
 
