@@ -6,9 +6,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.MasterDataDTOs.Opt
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.OptionValue;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.OptionRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.OptionValueRepository;
-import fit.iuh.kttkpm_nhom15_be.shared.application.cache.CacheNames;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +21,6 @@ public class UpdateOptionUseCase {
     private final OptionValueRepository optionValueRepository;
 
     @Transactional
-    @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
     public OptionResponse execute(String id, OptionRequest request) {
         var existing = optionRepository.findById(id)
                 .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy option: " + id));
