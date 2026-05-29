@@ -3,7 +3,9 @@ package fit.iuh.kttkpm_nhom15_be.catalog.application.usecases.admin.masterdata;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.MasterDataDTOs.ProductTypeRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.MasterDataDTOs.ProductTypeResponse;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.ProductTypeRepository;
+import fit.iuh.kttkpm_nhom15_be.shared.application.cache.CacheNames;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +16,7 @@ public class UpdateProductTypeUseCase {
     private final ProductTypeRepository repository;
 
     @Transactional
+    @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
     public ProductTypeResponse execute(String id, ProductTypeRequest request) {
         var existing = repository.findById(id)
                 .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy product type: " + id));

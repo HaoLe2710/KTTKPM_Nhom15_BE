@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.orders.infrastructure.persistence.repositories;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -115,17 +116,29 @@ public class OrderRepositoryImpl implements OrderRepository {
         List<Object[]> rawStats = jpaOrderRepository.getOrderStatistics(startDate, endDate);
         List<DailyOrderStat> dailyStats = rawStats.stream().map(row -> {
             return DailyOrderStat.builder()
-                .statDate(
-                    ((java.time.temporal.TemporalAccessor) row[0]) instanceof LocalDate
-                        ? (LocalDate) row[0]
-                        : ((java.sql.Date) row[0]).toLocalDate()
-                )
+                .statDate(toLocalDate(row[0]))
                 .status((String) row[1])
                 .orderCount(((Number) row[2]).longValue())
-                .revenue((BigDecimal) row[3])
+                .revenue(row[3] == null ? BigDecimal.ZERO : (BigDecimal) row[3])
                 .build();
         }).toList();
         return RawOrderStatsDTO.builder().dailyStats(dailyStats).build();
+    }
+
+    private LocalDate toLocalDate(Object value) {
+        if (value instanceof LocalDate localDate) {
+            return localDate;
+        }
+        if (value instanceof java.sql.Date sqlDate) {
+            return sqlDate.toLocalDate();
+        }
+        if (value instanceof Timestamp timestamp) {
+            return timestamp.toLocalDateTime().toLocalDate();
+        }
+        if (value instanceof LocalDateTime localDateTime) {
+            return localDateTime.toLocalDate();
+        }
+        throw new IllegalArgumentException("Unsupported order statistic date type: " + (value == null ? "null" : value.getClass().getName()));
     }
 
     @Override
