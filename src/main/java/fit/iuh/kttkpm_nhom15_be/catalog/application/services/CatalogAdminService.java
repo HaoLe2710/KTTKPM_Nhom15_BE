@@ -27,6 +27,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.CatalogAdminReposito
 import fit.iuh.kttkpm_nhom15_be.catalog.presentation.requests.admin.BrandMultipartWriteRequest;
 import fit.iuh.kttkpm_nhom15_be.search.application.support.SearchNormalizer;
 import fit.iuh.kttkpm_nhom15_be.shared.application.admin.AdminPageRequest;
+import fit.iuh.kttkpm_nhom15_be.shared.application.cache.CacheNames;
 import fit.iuh.kttkpm_nhom15_be.shared.application.storage.FileStoragePort;
 import fit.iuh.kttkpm_nhom15_be.shared.application.storage.StoredFile;
 import fit.iuh.kttkpm_nhom15_be.shared.application.storage.UploadFileCommand;
@@ -43,11 +44,9 @@ import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataAccessException;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,6 +57,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CatalogAdminService {
 
   private final CatalogAdminRepository catalogAdminRepository;
+  private final CatalogMasterDataCacheService catalogMasterDataCacheService;
   private final ApplicationEventPublisher eventPublisher;
   private final AdminAuditService adminAuditService;
   private final FileStoragePort fileStoragePort;
@@ -242,56 +242,38 @@ public class CatalogAdminService {
   }
 
   public Page<OptionListItemResponse> getOptions(Boolean active, AdminPageRequest pageRequest) {
-    try {
-      return catalogAdminRepository.findOptions(active, pageRequest);
-    } catch (DataAccessException ex) {
-      log.warn("Cannot load options (likely migration/schema not ready): {}", ex.getMessage());
-      return new PageImpl<>(List.of(), PageRequest.of(pageRequest.page(), pageRequest.size()), 0);
-    }
+    return catalogMasterDataCacheService.getOptions(active, pageRequest).toPage();
   }
 
   public Page<SemanticMasterListItemResponse> getBrands(Boolean active, AdminPageRequest pageRequest) {
-    return safeSemanticList(SemanticMasterKind.BRAND, active, pageRequest);
+    return catalogMasterDataCacheService.getSemanticMasters(SemanticMasterKind.BRAND, active, pageRequest).toPage();
   }
 
   public Page<SemanticMasterListItemResponse> getIngredients(Boolean active, AdminPageRequest pageRequest) {
-    return safeSemanticList(SemanticMasterKind.INGREDIENT, active, pageRequest);
+    return catalogMasterDataCacheService.getSemanticMasters(SemanticMasterKind.INGREDIENT, active, pageRequest).toPage();
   }
 
   public Page<SemanticMasterListItemResponse> getSkinTypes(Boolean active, AdminPageRequest pageRequest) {
-    return safeSemanticList(SemanticMasterKind.SKIN_TYPE, active, pageRequest);
+    return catalogMasterDataCacheService.getSemanticMasters(SemanticMasterKind.SKIN_TYPE, active, pageRequest).toPage();
   }
 
   public Page<SemanticMasterListItemResponse> getConcerns(Boolean active, AdminPageRequest pageRequest) {
-    return safeSemanticList(SemanticMasterKind.CONCERN, active, pageRequest);
+    return catalogMasterDataCacheService.getSemanticMasters(SemanticMasterKind.CONCERN, active, pageRequest).toPage();
   }
 
   public Page<SemanticMasterListItemResponse> getTags(Boolean active, AdminPageRequest pageRequest) {
-    return safeSemanticList(SemanticMasterKind.TAG, active, pageRequest);
+    return catalogMasterDataCacheService.getSemanticMasters(SemanticMasterKind.TAG, active, pageRequest).toPage();
   }
 
   public Page<OptionValueListItemResponse> getOptionValues(String optionId, Boolean active, AdminPageRequest pageRequest) {
     if (optionId != null && !optionId.isBlank() && !catalogAdminRepository.existsOption(optionId)) {
       throw new ApiNotFoundException("Option not found");
     }
-    try {
-      return catalogAdminRepository.findOptionValues(optionId, active, pageRequest);
-    } catch (DataAccessException ex) {
-      log.warn("Cannot load option values (likely migration/schema not ready): {}", ex.getMessage());
-      return new PageImpl<>(List.of(), PageRequest.of(pageRequest.page(), pageRequest.size()), 0);
-    }
-  }
-
-  private Page<SemanticMasterListItemResponse> safeSemanticList(SemanticMasterKind kind, Boolean active, AdminPageRequest pageRequest) {
-    try {
-      return catalogAdminRepository.findSemanticMasters(kind, active, pageRequest);
-    } catch (DataAccessException ex) {
-      log.warn("Cannot load semantic masters for {} (likely migration/schema not ready): {}", kind, ex.getMessage());
-      return new PageImpl<>(List.of(), PageRequest.of(pageRequest.page(), pageRequest.size()), 0);
-    }
+    return catalogMasterDataCacheService.getOptionValues(optionId, active, pageRequest).toPage();
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public CreatedResourceResponse createOption(OptionWriteRequest request) {
     validateOptionCode(request.code(), null);
     String optionId = catalogAdminRepository.insertOption(request.code().trim(), request.name().trim(), resolveActive(request.isActive()));
@@ -308,6 +290,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void updateOption(String optionId, OptionWriteRequest request) {
     ensureOptionExists(optionId);
     validateOptionCode(request.code(), optionId);
@@ -319,6 +302,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public CreatedResourceResponse createOptionValue(OptionValueWriteRequest request, String optionId) {
     ensureOptionExists(optionId);
     validateOptionValue(optionId, request.value(), null);
@@ -333,6 +317,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void updateOptionValue(String optionValueId, OptionValueWriteRequest request) {
     OptionValueListItemResponse existing = catalogAdminRepository.findOptionValueById(optionValueId)
       .orElseThrow(() -> new ApiNotFoundException("Option value not found"));
@@ -350,6 +335,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void toggleOptionValueActive(String optionValueId, ToggleActiveRequest request) {
     ensureOptionValueExists(optionValueId);
     if (Boolean.FALSE.equals(request.active()) && catalogAdminRepository.countActiveVariantAssignmentsForOptionValue(optionValueId) > 0) {
@@ -360,6 +346,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public CreatedResourceResponse createBrand(BrandWriteRequest request) {
     validateSemanticMasterCode(SemanticMasterKind.BRAND, request.code(), null, "Brand code already exists");
     String slug = resolveSlug(request.slug(), request.name());
@@ -377,6 +364,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public CreatedResourceResponse createBrandWithLogo(BrandMultipartWriteRequest request) {
     String logoUrl = resolveBrandLogoUrl(request.getLogoFile(), request.getLogoUrl());
     return createBrand(new BrandWriteRequest(
@@ -390,6 +378,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void updateBrand(String id, BrandWriteRequest request) {
     ensureSemanticMasterExists(SemanticMasterKind.BRAND, id, "Brand not found");
     validateSemanticMasterCode(SemanticMasterKind.BRAND, request.code(), id, "Brand code already exists");
@@ -409,6 +398,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void updateBrandWithLogo(String id, BrandMultipartWriteRequest request) {
     String logoUrl = resolveBrandLogoUrl(request.getLogoFile(), request.getLogoUrl());
     updateBrand(id, new BrandWriteRequest(
@@ -422,6 +412,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void toggleBrandActive(String id, ToggleActiveRequest request) {
     ensureSemanticMasterExists(SemanticMasterKind.BRAND, id, "Brand not found");
     catalogAdminRepository.updateBrandActive(id, request.active());
@@ -430,6 +421,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public CreatedResourceResponse createIngredient(IngredientWriteRequest request) {
     validateSemanticMasterCode(SemanticMasterKind.INGREDIENT, request.code(), null, "Ingredient code already exists");
     String id = catalogAdminRepository.insertIngredient(
@@ -445,6 +437,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void updateIngredient(String id, IngredientWriteRequest request) {
     ensureSemanticMasterExists(SemanticMasterKind.INGREDIENT, id, "Ingredient not found");
     validateSemanticMasterCode(SemanticMasterKind.INGREDIENT, request.code(), id, "Ingredient code already exists");
@@ -462,6 +455,7 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void toggleIngredientActive(String id, ToggleActiveRequest request) {
     ensureSemanticMasterExists(SemanticMasterKind.INGREDIENT, id, "Ingredient not found");
     catalogAdminRepository.updateIngredientActive(id, request.active());
@@ -470,46 +464,55 @@ public class CatalogAdminService {
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public CreatedResourceResponse createSkinType(SemanticMasterWriteRequest request) {
     return createSemanticMaster(SemanticMasterKind.SKIN_TYPE, request, "SKIN_TYPE", "Skin type code already exists");
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void updateSkinType(String id, SemanticMasterWriteRequest request) {
     updateSemanticMaster(SemanticMasterKind.SKIN_TYPE, id, request, "SKIN_TYPE", "Skin type not found", "Skin type code already exists");
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void toggleSkinTypeActive(String id, ToggleActiveRequest request) {
     toggleSemanticMasterActive(SemanticMasterKind.SKIN_TYPE, id, request, "SKIN_TYPE", "Skin type not found");
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public CreatedResourceResponse createConcern(SemanticMasterWriteRequest request) {
     return createSemanticMaster(SemanticMasterKind.CONCERN, request, "CONCERN", "Concern code already exists");
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void updateConcern(String id, SemanticMasterWriteRequest request) {
     updateSemanticMaster(SemanticMasterKind.CONCERN, id, request, "CONCERN", "Concern not found", "Concern code already exists");
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void toggleConcernActive(String id, ToggleActiveRequest request) {
     toggleSemanticMasterActive(SemanticMasterKind.CONCERN, id, request, "CONCERN", "Concern not found");
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public CreatedResourceResponse createTag(SemanticMasterWriteRequest request) {
     return createSemanticMaster(SemanticMasterKind.TAG, request, "TAG", "Tag code already exists");
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void updateTag(String id, SemanticMasterWriteRequest request) {
     updateSemanticMaster(SemanticMasterKind.TAG, id, request, "TAG", "Tag not found", "Tag code already exists");
   }
 
   @Transactional
+  @CacheEvict(cacheNames = CacheNames.PRODUCT_MASTER_DATA, allEntries = true)
   public void toggleTagActive(String id, ToggleActiveRequest request) {
     toggleSemanticMasterActive(SemanticMasterKind.TAG, id, request, "TAG", "Tag not found");
   }
