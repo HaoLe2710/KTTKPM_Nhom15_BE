@@ -39,6 +39,39 @@ public class Cart {
             .build());
     }
 
+    public void setItemQuantity(String variantId, int quantity, BigDecimal unitPrice) {
+        if (quantity <= 0) {
+            removeItem(variantId);
+            return;
+        }
+
+        if (this.items == null) {
+            this.items = new java.util.ArrayList<>();
+        }
+
+        for (CartItem item : this.items) {
+            if (item.getVariantId().equals(variantId)) {
+                item.setQuantity(quantity);
+                item.setUnitPrice(unitPrice);
+                return;
+            }
+        }
+
+        this.items.add(CartItem.builder()
+            .variantId(variantId)
+            .quantity(quantity)
+            .unitPrice(unitPrice)
+            .build());
+    }
+
+    public void removeItem(String variantId) {
+        if (this.items == null || variantId == null) {
+            return;
+        }
+
+        this.items.removeIf(item -> variantId.equals(item.getVariantId()));
+    }
+
     /**
      * Tính tổng số lượng sản phẩm trong giỏ.
      */

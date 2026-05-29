@@ -37,7 +37,7 @@ public class CreateOptionUseCase {
         if (request.getValues() != null && !request.getValues().isEmpty()) {
             for (String valStr : request.getValues()) {
                 if (valStr == null || valStr.trim().isEmpty()) {
-                    throw new IllegalArgumentException("Gia tri option khong duoc de trong");
+                    throw new IllegalArgumentException("Giá trị option không được để trống");
                 }
                 OptionValue ov = OptionValue.builder()
                         .optionId(savedOption.getId())

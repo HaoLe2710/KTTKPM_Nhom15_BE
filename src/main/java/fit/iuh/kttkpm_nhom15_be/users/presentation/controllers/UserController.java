@@ -46,23 +46,28 @@ public class UserController {
     private final ConfirmOldEmailChangeUseCase confirmOldEmailChangeUseCase;
     private final VerifyUpdateEmailUseCase verifyUpdateEmailUseCase;
 
-    @PutMapping(value = "/profile", consumes = "application/json")
-    public ResponseEntity<UserResponse> updateProfile(
-            @AuthenticationPrincipal String userId,
-            @Valid @RequestBody UpdateProfileRequest req
-    ) {
-        UserResponse response = updateProfileUseCase.execute(new UpdateProfileCommand(
-                userId,
-                req.getEmail(),
-                req.getPhone(),
-                req.getFullName(),
-                req.getAvatar(),
-                null,
-                null,
-                null
-        ));
-        return ResponseEntity.ok(response);
+    @GetMapping("/profile")
+    public ResponseEntity<UserResponse> getCurrentProfile(@AuthenticationPrincipal String userId) {
+        return ResponseEntity.ok(getUserByIdUseCase.execute(userId));
     }
+
+//    @PutMapping(value = "/profile", consumes = "application/json")
+//    public ResponseEntity<UserResponse> updateProfile(
+//            @AuthenticationPrincipal String userId,
+//            @Valid @RequestBody UpdateProfileRequest req
+//    ) {
+//        UserResponse response = updateProfileUseCase.execute(new UpdateProfileCommand(
+//                userId,
+//                req.getEmail(),
+//                req.getPhone(),
+//                req.getFullName(),
+//                req.getAvatar(),
+//                null,
+//                null,
+//                null
+//        ));
+//        return ResponseEntity.ok(response);
+//    }
 
     @PutMapping(value = "/profile", consumes = "multipart/form-data")
     public ResponseEntity<UserResponse> updateProfileMultipart(
@@ -78,7 +83,7 @@ public class UserController {
                 avatarOriginalFilename = req.getAvatarFile().getOriginalFilename();
                 avatarContentType = req.getAvatarFile().getContentType();
             } catch (java.io.IOException ex) {
-                throw new IllegalStateException("Khong the doc du lieu file avatar", ex);
+                throw new IllegalStateException("Không thể đọc dữ liệu file avatar", ex);
             }
         }
 
@@ -104,7 +109,7 @@ public class UserController {
         confirmOldEmailChangeUseCase.execute(userId, newEmail, oldEmailOtp);
         return ResponseEntity.ok(Map.of(
                 "message",
-                "Xac thuc email cu thanh cong. OTP da duoc gui den email moi: " + newEmail
+                "Xác thực email cũ thành công. OTP đã được gửi đến email mới: " + newEmail
         ));
     }
 
@@ -137,7 +142,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<MessageResponse> deleteUser(@PathVariable String id) {
         deleteUserUseCase.execute(id);
-        return ResponseEntity.ok(new MessageResponse("Nguoi dung da duoc xoa thanh cong"));
+        return ResponseEntity.ok(new MessageResponse("Người dùng đã được xóa thành công"));
     }
 
     @PutMapping("/{id}")
@@ -153,7 +158,7 @@ public class UserController {
                 req.getFullName(),
                 req.getRole()
         ));
-        return ResponseEntity.ok(new MessageResponse("Thong tin nguoi dung da duoc cap nhat thanh cong"));
+        return ResponseEntity.ok(new MessageResponse("Thông tin người dùng đã được cập nhật thành công"));
     }
 
     @PatchMapping("/{id}/toggle-status")
@@ -163,6 +168,6 @@ public class UserController {
             @PathVariable("id") String targetUserId
     ) {
         toggleUserStatusUseCase.execute(adminId, targetUserId);
-        return ResponseEntity.ok(new MessageResponse("Trang thai nguoi dung da duoc cap nhat thanh cong"));
+        return ResponseEntity.ok(new MessageResponse("Trạng thái người dùng đã được cập nhật thành công"));
     }
 }

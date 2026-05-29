@@ -54,7 +54,7 @@ class UpdateProfileRequestValidationTest {
     @Test
     void validateFailsWhenEmailHasInvalidFormat() {
         UpdateProfileRequest request = validRequest();
-        request.setEmail("sai-dinh-dang");
+        request.setEmail("sai-định-dạng");
 
         Set<ConstraintViolation<UpdateProfileRequest>> violations = validator.validate(request);
 

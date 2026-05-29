@@ -60,7 +60,10 @@ public final class PromotionConfigUtils {
             List<String> values = new ArrayList<>();
             for (Object item : list) {
                 if (item != null) {
-                    values.add(String.valueOf(item).trim());
+                    String text = String.valueOf(item).trim();
+                    if (!text.isBlank()) {
+                        values.add(text);
+                    }
                 }
             }
             return values;

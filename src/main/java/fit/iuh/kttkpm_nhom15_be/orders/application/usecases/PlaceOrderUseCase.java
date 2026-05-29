@@ -5,6 +5,8 @@ import fit.iuh.kttkpm_nhom15_be.carts.application.dto.CartItemDTO;
 import fit.iuh.kttkpm_nhom15_be.carts.application.interfaces.CartFacade;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.interfaces.CatalogFacade;
 import fit.iuh.kttkpm_nhom15_be.orders.application.commands.PlaceOrderCommand;
+import fit.iuh.kttkpm_nhom15_be.orders.application.commands.QuoteShippingFeeCommand;
+import fit.iuh.kttkpm_nhom15_be.orders.application.dto.ShippingFeeQuoteDTO;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.VariantSnapshot;
 import fit.iuh.kttkpm_nhom15_be.orders.application.events.OrderPlacedEvent;
 import fit.iuh.kttkpm_nhom15_be.orders.application.events.ProductSalesChangedEvent;
@@ -20,6 +22,7 @@ import fit.iuh.kttkpm_nhom15_be.promotions.application.dto.AppliedPromotionDTO;
 import fit.iuh.kttkpm_nhom15_be.promotions.application.dto.OrderCartDTO;
 import fit.iuh.kttkpm_nhom15_be.promotions.application.dto.OrderCartItemDTO;
 import fit.iuh.kttkpm_nhom15_be.promotions.application.interfaces.PromotionFacade;
+import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -41,10 +44,13 @@ public class PlaceOrderUseCase {
   private final CatalogFacade catalogFacade;
   private final PromotionFacade promotionFacade;
   private final CreatePaymentUseCase createPaymentUseCase;
+  private final QuoteShippingFeeUseCase quoteShippingFeeUseCase;
   private final ApplicationEventPublisher eventPublisher;
 
   @Transactional
   public PlaceOrderResult execute(PlaceOrderCommand command) {
+    rejectGuestVoucher(command);
+
     CartDTO cart = cartFacade.getActiveCart(command.getUserId());
 
     List<CartItemDTO> cartItems = cart.getItems();
@@ -76,10 +82,23 @@ public class PlaceOrderUseCase {
       .map(OrderItem::getLineTotal)
       .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-    AppliedPromotionDTO appliedPromotion = resolvePromotion(command, subtotal, orderItems);
-    BigDecimal discount = appliedPromotion != null ? appliedPromotion.discountAmount() : BigDecimal.ZERO;
-    BigDecimal shipping = command.getShippingFee();
-    BigDecimal total = subtotal.subtract(discount).add(shipping);
+    OrderCartDTO promotionCart = buildPromotionCart(subtotal, orderItems);
+    List<AppliedPromotionDTO> productPromotions = promotionFacade.findAutomaticProductDiscounts(promotionCart);
+    if (productPromotions == null) {
+      productPromotions = List.of();
+    }
+    BigDecimal productDiscount = productPromotions.stream()
+      .map(AppliedPromotionDTO::discountAmount)
+      .reduce(BigDecimal.ZERO, BigDecimal::add);
+    BigDecimal subtotalAfterProductDiscount = subtotal.subtract(productDiscount).max(BigDecimal.ZERO);
+    AppliedPromotionDTO voucherPromotion = resolveVoucherPromotion(command, subtotalAfterProductDiscount, orderItems);
+    BigDecimal voucherDiscount = voucherPromotion != null ? voucherPromotion.discountAmount() : BigDecimal.ZERO;
+    BigDecimal discount = productDiscount.add(voucherDiscount).min(subtotal);
+    BigDecimal shipping = resolveShippingFee(command, subtotalAfterProductDiscount, orderItems);
+    BigDecimal total = subtotal.subtract(discount).add(shipping).max(BigDecimal.ZERO);
+    AppliedPromotionDTO primaryPromotion = voucherPromotion != null
+      ? voucherPromotion
+      : productPromotions.stream().findFirst().orElse(null);
 
     Order newOrder = Order.builder()
       .orderNo(generateOrderNo())
@@ -88,8 +107,8 @@ public class PlaceOrderUseCase {
       .discountAmount(discount)
       .shippingFee(shipping)
       .totalAmount(total)
-      .promotionId(appliedPromotion != null ? appliedPromotion.promotionId() : null)
-      .promotionCode(appliedPromotion != null ? appliedPromotion.promotionCode() : null)
+      .promotionId(primaryPromotion != null ? primaryPromotion.promotionId() : null)
+      .promotionCode(primaryPromotion != null ? primaryPromotion.promotionCode() : null)
       .status(OrderStatus.CREATED)
       .paymentMethod(command.getPaymentMethod())
       .paymentStatus(PaymentStatus.UNPAID)
@@ -110,8 +129,11 @@ public class PlaceOrderUseCase {
     Order savedOrder = orderRepository.save(newOrder);
     PaymentTransactionResponse paymentTransactionResponse = createPaymentUseCase.execute(savedOrder, command.getClientIp());
 
-    if (appliedPromotion != null) {
-      promotionFacade.markPromotionUsed(appliedPromotion.promotionId());
+    for (AppliedPromotionDTO productPromotion : productPromotions) {
+      promotionFacade.markPromotionUsed(productPromotion.promotionId());
+    }
+    if (voucherPromotion != null && productPromotions.stream().noneMatch(productPromotion -> voucherPromotion.promotionId().equals(productPromotion.promotionId()))) {
+      promotionFacade.markPromotionUsed(voucherPromotion.promotionId());
     }
 
     cartFacade.clearCart(command.getUserId());
@@ -140,18 +162,60 @@ public class PlaceOrderUseCase {
       .build();
   }
 
-  private AppliedPromotionDTO resolvePromotion(PlaceOrderCommand command, BigDecimal subtotal, List<OrderItem> orderItems) {
+  private void rejectGuestVoucher(PlaceOrderCommand command) {
+    if (command.getPromotionCode() == null || command.getPromotionCode().isBlank()) {
+      return;
+    }
+    if (command.getUserId() == null || command.getUserId().isBlank() || command.getUserId().startsWith("guest-")) {
+      throw new ApiValidationException("Voucher chỉ áp dụng cho khách hàng đã đăng nhập.");
+    }
+  }
+
+  private AppliedPromotionDTO resolveVoucherPromotion(PlaceOrderCommand command, BigDecimal subtotal, List<OrderItem> orderItems) {
     if (command.getPromotionCode() == null || command.getPromotionCode().isBlank()) {
       return null;
     }
 
-    OrderCartDTO promotionCart = new OrderCartDTO(
+    return promotionFacade.validateOrderDiscountAndCalculate(command.getPromotionCode(), buildPromotionCart(subtotal, orderItems), command.getUserId());
+  }
+
+  private OrderCartDTO buildPromotionCart(BigDecimal subtotal, List<OrderItem> orderItems) {
+    return new OrderCartDTO(
       subtotal,
       orderItems.stream()
         .map(item -> new OrderCartItemDTO(item.getVariantId(), item.getQuantity(), item.getUnitPrice(), item.getLineTotal()))
         .toList()
     );
-    return promotionFacade.validateAndCalculate(command.getPromotionCode(), promotionCart);
+  }
+
+  private BigDecimal resolveShippingFee(PlaceOrderCommand command, BigDecimal orderValue, List<OrderItem> orderItems) {
+    if (command.getShippingMode() != fit.iuh.kttkpm_nhom15_be.orders.domain.models.ShippingMode.PROVIDER_API) {
+      return command.getShippingFee();
+    }
+
+    if (command.getShippingProvider() == null) {
+      throw new ApiValidationException("shippingProvider không được để trống khi tính phí qua đơn vị vận chuyển.");
+    }
+
+    int itemQuantity = orderItems.stream()
+      .map(OrderItem::getQuantity)
+      .reduce(0, Integer::sum);
+
+    ShippingFeeQuoteDTO quote = quoteShippingFeeUseCase.execute(new QuoteShippingFeeCommand(
+      command.getShippingProvider(),
+      command.getShipAddress(),
+      command.getShipCity(),
+      command.getShipDistrict(),
+      command.getShipWard(),
+      orderValue,
+      itemQuantity
+    ));
+
+    if (!quote.deliverySupported()) {
+      throw new ApiValidationException(quote.message());
+    }
+
+    return quote.fee();
   }
 
   private String generateOrderNo() {

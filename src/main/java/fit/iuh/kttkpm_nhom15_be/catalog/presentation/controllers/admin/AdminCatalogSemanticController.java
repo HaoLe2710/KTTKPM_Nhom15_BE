@@ -64,7 +64,7 @@ public class AdminCatalogSemanticController {
   @PutMapping("/brands/{id}")
   public ResponseEntity<MessageResponse> updateBrand(@PathVariable String id, @Valid @RequestBody BrandWriteRequest request) {
     catalogAdminService.updateBrand(id, request);
-    return ResponseEntity.ok(new MessageResponse("Thuong hieu da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Thương hiệu đã được cập nhật thành công"));
   }
 
   @PutMapping(path = "/brands/{id}", consumes = "multipart/form-data")
@@ -76,7 +76,7 @@ public class AdminCatalogSemanticController {
   @PatchMapping("/brands/{id}/active")
   public ResponseEntity<MessageResponse> toggleBrandActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleBrandActive(id, request);
-    return ResponseEntity.ok(new MessageResponse("Trang thai thuong hieu da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Trạng thái thương hiệu đã được cập nhật thành công"));
   }
 
   @GetMapping("/ingredients")
@@ -98,13 +98,13 @@ public class AdminCatalogSemanticController {
   @PutMapping("/ingredients/{id}")
   public ResponseEntity<MessageResponse> updateIngredient(@PathVariable String id, @Valid @RequestBody IngredientWriteRequest request) {
     catalogAdminService.updateIngredient(id, request);
-    return ResponseEntity.ok(new MessageResponse("Thanh phan da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Thành phần đã được cập nhật thành công"));
   }
 
   @PatchMapping("/ingredients/{id}/active")
   public ResponseEntity<MessageResponse> toggleIngredientActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleIngredientActive(id, request);
-    return ResponseEntity.ok(new MessageResponse("Trang thai thanh phan da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Trạng thái thành phần đã được cập nhật thành công"));
   }
 
   @GetMapping("/skin-types")
@@ -126,13 +126,13 @@ public class AdminCatalogSemanticController {
   @PutMapping("/skin-types/{id}")
   public ResponseEntity<MessageResponse> updateSkinType(@PathVariable String id, @Valid @RequestBody SemanticMasterWriteRequest request) {
     catalogAdminService.updateSkinType(id, request);
-    return ResponseEntity.ok(new MessageResponse("Loai da da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Loại da đã được cập nhật thành công"));
   }
 
   @PatchMapping("/skin-types/{id}/active")
   public ResponseEntity<MessageResponse> toggleSkinTypeActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleSkinTypeActive(id, request);
-    return ResponseEntity.ok(new MessageResponse("Trang thai loai da da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Trạng thái loại da đã được cập nhật thành công"));
   }
 
   @GetMapping("/concerns")
@@ -154,13 +154,13 @@ public class AdminCatalogSemanticController {
   @PutMapping("/concerns/{id}")
   public ResponseEntity<MessageResponse> updateConcern(@PathVariable String id, @Valid @RequestBody SemanticMasterWriteRequest request) {
     catalogAdminService.updateConcern(id, request);
-    return ResponseEntity.ok(new MessageResponse("Concern da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Concern đã được cập nhật thành công"));
   }
 
   @PatchMapping("/concerns/{id}/active")
   public ResponseEntity<MessageResponse> toggleConcernActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleConcernActive(id, request);
-    return ResponseEntity.ok(new MessageResponse("Trang thai concern da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Trạng thái concern đã được cập nhật thành công"));
   }
 
   @GetMapping("/tags")
@@ -182,12 +182,12 @@ public class AdminCatalogSemanticController {
   @PutMapping("/tags/{id}")
   public ResponseEntity<MessageResponse> updateTag(@PathVariable String id, @Valid @RequestBody SemanticMasterWriteRequest request) {
     catalogAdminService.updateTag(id, request);
-    return ResponseEntity.ok(new MessageResponse("Tag da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Tag đã được cập nhật thành công"));
   }
 
   @PatchMapping("/tags/{id}/active")
   public ResponseEntity<MessageResponse> toggleTagActive(@PathVariable String id, @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleTagActive(id, request);
-    return ResponseEntity.ok(new MessageResponse("Trang thai tag da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Trạng thái tag đã được cập nhật thành công"));
   }
 }

@@ -1,0 +1,542 @@
+[INFO] Scanning for projects...
+Downloading from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml
+Progress (1): 243 BProgress (2): 243 B | 234 BProgress (3): 243 B | 234 B | 255 BProgress (4): 243 B | 234 B | 255 B | 249 B                                           Downloaded from central: https://repo.maven.apache.org/maven2/org/springframework/boot/maven-metadata.xml (249 B at 286 B/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/flywaydb/maven-metadata.xml (234 B at 268 B/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/io/github/git-commit-id/maven-metadata.xml (255 B at 292 B/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/cyclonedx/maven-metadata.xml (243 B at 278 B/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml
+Progress (1): 242 BProgress (2): 242 B | 394 BProgress (3): 242 B | 394 B | 375 B                                   Downloaded from central: https://repo.maven.apache.org/maven2/org/liquibase/maven-metadata.xml (394 B at 4.8 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/graalvm/buildtools/maven-metadata.xml (242 B at 3.1 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/jetbrains/kotlin/maven-metadata.xml (375 B at 4.2 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml
+Progress (1): 398 B                   Downloaded from central: https://repo.maven.apache.org/maven2/org/jooq/maven-metadata.xml (398 B at 3.9 kB/s)
+Progress (1): 3.1 kBProgress (2): 3.1 kB | 3.9 kBProgress (2): 3.1 kB | 7.7 kBProgress (2): 7.7 kB | 7.7 kBProgress (2): 7.7 kB | 10 kB Progress (2): 12 kB | 10 kB Progress (2): 17 kB | 10 kBProgress (2): 20 kB | 10 kBProgress (2): 21 kB | 10 kB                           Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/plugins/maven-metadata.xml (10 kB at 124 kB/s)
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/mojo/maven-metadata.xml (21 kB at 133 kB/s)
+[INFO] 
+[INFO] ----------------------< fit.iuh:KTTKPM_Nhom15_BE >----------------------
+[INFO] Building KTTKPM_Nhom15_BE 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ war ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.0:run (default-cli) > test-compile @ KTTKPM_Nhom15_BE >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ KTTKPM_Nhom15_BE ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 20 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ KTTKPM_Nhom15_BE ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ KTTKPM_Nhom15_BE ---
+[INFO] skip non existing resourceDirectory D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ KTTKPM_Nhom15_BE ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] <<< spring-boot:3.3.0:run (default-cli) < test-compile @ KTTKPM_Nhom15_BE <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.3.0:run (default-cli) @ KTTKPM_Nhom15_BE ---
+[INFO] Attaching agents: []
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2026-05-29T15:08:21.423+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] f.i.k.KttkpmNhom15BeApplication          : Starting KttkpmNhom15BeApplication using Java 21.0.4 with PID 12148 (D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE\target\classes started by LENOVO in D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE)
+2026-05-29T15:08:21.427+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] f.i.k.KttkpmNhom15BeApplication          : No active profile set, falling back to 1 default profile: "default"
+2026-05-29T15:08:21.475+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2026-05-29T15:08:21.476+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2026-05-29T15:08:21.511+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.b.d.c.l.DockerComposeLifecycleManager : Using Docker Compose file 'D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE\compose.yaml'
+2026-05-29T15:08:22.495+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.b.d.c.l.DockerComposeLifecycleManager : There are already Docker Compose services running, skipping startup
+2026-05-29T15:08:23.992+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-29T15:08:24.293+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 291 ms. Found 22 JPA repository interfaces.
+2026-05-29T15:08:24.743+07:00  WARN 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [annotationActionEndpointMapping] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-05-29T15:08:24.811+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .w.s.a.s.AnnotationActionEndpointMapping : Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2026-05-29T15:08:25.229+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-05-29T15:08:25.243+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-29T15:08:25.243+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.24]
+2026-05-29T15:08:25.322+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-29T15:08:25.323+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2818 ms
+2026-05-29T15:08:25.749+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://127.0.0.1:5433/cosmetics_db (PostgreSQL 15.17)
+2026-05-29T15:08:26.204+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 19 migrations (execution time 00:00.410s)
+2026-05-29T15:08:26.247+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 19
+2026-05-29T15:08:26.252+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-05-29T15:08:26.377+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-29T15:08:26.447+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.5.2.Final
+2026-05-29T15:08:26.486+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-29T15:08:26.786+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-29T15:08:26.815+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-05-29T15:08:26.848+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@49fd3e88
+2026-05-29T15:08:26.850+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-05-29T15:08:26.890+07:00  WARN 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-29T15:08:28.321+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-29T15:08:28.422+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-29T15:08:29.352+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-05-29T15:08:31.384+07:00  WARN 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-29T15:08:31.896+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@5376c51a, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1cdddcd1, org.springframework.security.web.context.SecurityContextHolderFilter@1004484b, org.springframework.security.web.header.HeaderWriterFilter@3c747176, org.springframework.web.filter.CorsFilter@40dd231, org.springframework.security.web.authentication.logout.LogoutFilter@505d4bab, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@568ff324, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@3cde6752, fit.iuh.kttkpm_nhom15_be.shared.infrastructure.security.JwtAuthenticationFilter@32f152dd, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@10df2d35, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@5f0560d1, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@41aacfe9, org.springframework.security.web.session.SessionManagementFilter@5f0796a5, org.springframework.security.web.access.ExceptionTranslationFilter@273592e5, org.springframework.security.web.access.intercept.AuthorizationFilter@2bf9456d]
+2026-05-29T15:08:32.445+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-05-29T15:08:32.505+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-05-29T15:08:32.507+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-05-29T15:08:32.509+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@7e7ab9e3]]
+2026-05-29T15:08:32.510+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-05-29T15:08:32.522+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] f.i.k.KttkpmNhom15BeApplication          : Started KttkpmNhom15BeApplication in 11.492 seconds (process running for 12.212)
+Hibernate: 
+    DELETE 
+    FROM
+        users 
+    WHERE
+        is_active = false   
+        AND created_at < ? 
+2026-05-29T15:09:01.594+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-05-29T15:09:01.595+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-05-29T15:09:01.597+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2026-05-29T15:09:01.674+07:00  WARN 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-2] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Invalid UTF-8 middle byte 0x6d]
+2026-05-29T15:09:12.262+07:00  WARN 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Invalid UTF-8 middle byte 0x6d]
+2026-05-29T15:09:21.860+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-3] f.i.k.a.a.services.AgentService          : USER_MESSAGE=Tìm kem chống nắng cho da dầu dưới 300k
+2026-05-29T15:09:32.496+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [MessageBroker-5] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 10, active threads = 1, queued tasks = 5, completed tasks = 4]
+Hibernate: 
+    DELETE 
+    FROM
+        users 
+    WHERE
+        is_active = false   
+        AND created_at < ? 
+2026-05-29T15:09:34.898+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-3] f.iuh.kttkpm_nhom15_be.ai.GeminiService  : GEMINI_RAW_DECISION={
+  "action": "SEARCH_PRODUCTS",
+  "parameters": {
+    "keyword": "kem chống nắng",
+    "skinType": "da dầu",
+    "maxPrice": 300000
+  }
+}
+2026-05-29T15:09:34.901+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-3] f.i.k.a.a.services.AgentService          : PARSED_ACTION=SEARCH_PRODUCTS
+2026-05-29T15:09:34.901+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-3] f.i.k.a.a.services.AgentService          : PARSED_PARAMETERS={keyword=kem chống nắng, skinType=da dầu, maxPrice=300000}
+2026-05-29T15:09:35.007+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-3] f.i.k.a.a.services.AgentService          : TOOL_RESULT={"success":true,"total":8,"products":[{"id":"prod_sun_002","typeId":"ptype_sunscreen","typeName":"Kem chống nắng","name":"Matte Air Sunscreen","slug":"matte-air-sunscreen","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":269000.00,"maxPrice":359000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prod_sun_003","typeId":"ptype_sunscreen","typeName":"Kem chống nắng","name":"Hydra Dew Sunscreen","slug":"hydra-dew-sunscreen","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":259000.00,"maxPrice":349000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prod_sun_004","typeId":"ptype_sunscreen","typeName":"Kem chống nắng","name":"Sensitive Mineral Sunscreen","slug":"sensitive-mineral-sunscreen","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":289000.00,"maxPrice":379000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prod_sun_001","typeId":"ptype_sunscreen","typeName":"Kem chống nắng","name":"UV Shield Daily Sunscreen","slug":"uv-shield-daily-sunscreen","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":249000.00,"maxPrice":339000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prd_hydrating_cleanser_cerave","typeId":"pt_sua_rua_mat","typeName":"Sữa rửa mặt","name":"Hydrating Facial Cleanser","slug":"hydating-facial-cleanser-cerave","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":289000.00,"maxPrice":389000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prd_sample_barrier_cream","typeId":"pt_kem_duong","typeName":"Kem dưỡng","name":"Barrier Repair Cream","slug":"barrier-repair-cream-sample","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":289000.00,"maxPrice":289000.00,"totalStock":null,"inStock":true,"averageRating":5.00,"reviewCount":1,"soldCount":2,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prd_sample_cica_gel","typeId":"pt_kem_duong","typeName":"Kem dưỡng","name":"Cica B5 Recovery Gel","slug":"cica-b5-recovery-gel-sample","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":249000.00,"maxPrice":339000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prd_sample_niacinamide_serum","typeId":"pt_serum","typeName":"Serum","name":"Niacinamide 10 Serum","slug":"niacinamide-10-serum-sample","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":259000.00,"maxPrice":349000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null}]}
+2026-05-29T15:09:37.546+07:00  WARN 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-3] f.i.k.a.a.services.AgentService          : Agent could not get final answer from Gemini. Returning deterministic fallback.
+
+org.springframework.web.reactive.function.client.WebClientResponseException$ServiceUnavailable: 503 Service Unavailable from POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
+	at org.springframework.web.reactive.function.client.WebClientResponseException.create(WebClientResponseException.java:321) ~[spring-webflux-6.1.8.jar:6.1.8]
+	Suppressed: reactor.core.publisher.FluxOnAssembly$OnAssemblyException: 
+Error has been observed at the following site(s):
+	*__checkpoint ⇢ 503 SERVICE_UNAVAILABLE from POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent [DefaultWebClient]
+Original Stack Trace:
+		at org.springframework.web.reactive.function.client.WebClientResponseException.create(WebClientResponseException.java:321) ~[spring-webflux-6.1.8.jar:6.1.8]
+		at org.springframework.web.reactive.function.client.DefaultClientResponse.lambda$createException$1(DefaultClientResponse.java:214) ~[spring-webflux-6.1.8.jar:6.1.8]
+		at reactor.core.publisher.FluxMap$MapSubscriber.onNext(FluxMap.java:106) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.FluxOnErrorReturn$ReturnSubscriber.onNext(FluxOnErrorReturn.java:162) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.FluxDefaultIfEmpty$DefaultIfEmptySubscriber.onNext(FluxDefaultIfEmpty.java:122) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber.onNext(FluxMapFuseable.java:129) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber.onNext(FluxContextWrite.java:107) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.FluxMapFuseable$MapFuseableConditionalSubscriber.onNext(FluxMapFuseable.java:299) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.FluxFilterFuseable$FilterFuseableConditionalSubscriber.onNext(FluxFilterFuseable.java:337) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.Operators$BaseFluxToMonoOperator.completePossiblyEmpty(Operators.java:2097) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.MonoCollect$CollectSubscriber.onComplete(MonoCollect.java:145) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.FluxPeek$PeekSubscriber.onComplete(FluxPeek.java:260) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.FluxMap$MapSubscriber.onComplete(FluxMap.java:144) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.netty.channel.FluxReceive.onInboundComplete(FluxReceive.java:415) ~[reactor-netty-core-1.1.19.jar:1.1.19]
+		at reactor.netty.channel.ChannelOperations.onInboundComplete(ChannelOperations.java:446) ~[reactor-netty-core-1.1.19.jar:1.1.19]
+		at reactor.netty.channel.ChannelOperations.terminate(ChannelOperations.java:500) ~[reactor-netty-core-1.1.19.jar:1.1.19]
+		at reactor.netty.http.client.HttpClientOperations.onInboundNext(HttpClientOperations.java:793) ~[reactor-netty-http-1.1.19.jar:1.1.19]
+		at reactor.netty.channel.ChannelOperationsHandler.channelRead(ChannelOperationsHandler.java:114) ~[reactor-netty-core-1.1.19.jar:1.1.19]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.handler.codec.MessageToMessageDecoder.channelRead(MessageToMessageDecoder.java:103) ~[netty-codec-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext.fireChannelRead(CombinedChannelDuplexHandler.java:436) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.fireChannelRead(ByteToMessageDecoder.java:346) ~[netty-codec-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:318) ~[netty-codec-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.CombinedChannelDuplexHandler.channelRead(CombinedChannelDuplexHandler.java:251) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:442) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.handler.ssl.SslHandler.unwrap(SslHandler.java:1475) ~[netty-handler-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.handler.ssl.SslHandler.decodeJdkCompatible(SslHandler.java:1338) ~[netty-handler-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.handler.ssl.SslHandler.decode(SslHandler.java:1387) ~[netty-handler-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.decodeRemovalReentryProtection(ByteToMessageDecoder.java:530) ~[netty-codec-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.callDecode(ByteToMessageDecoder.java:469) ~[netty-codec-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.handler.codec.ByteToMessageDecoder.channelRead(ByteToMessageDecoder.java:290) ~[netty-codec-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:444) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.fireChannelRead(AbstractChannelHandlerContext.java:412) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.DefaultChannelPipeline$HeadContext.channelRead(DefaultChannelPipeline.java:1407) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:440) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.AbstractChannelHandlerContext.invokeChannelRead(AbstractChannelHandlerContext.java:420) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.DefaultChannelPipeline.fireChannelRead(DefaultChannelPipeline.java:918) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.nio.AbstractNioByteChannel$NioByteUnsafe.read(AbstractNioByteChannel.java:166) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.nio.NioEventLoop.processSelectedKey(NioEventLoop.java:788) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.nio.NioEventLoop.processSelectedKeysOptimized(NioEventLoop.java:724) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.nio.NioEventLoop.processSelectedKeys(NioEventLoop.java:650) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.channel.nio.NioEventLoop.run(NioEventLoop.java:562) ~[netty-transport-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.util.concurrent.SingleThreadEventExecutor$4.run(SingleThreadEventExecutor.java:994) ~[netty-common-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.util.internal.ThreadExecutorMap$2.run(ThreadExecutorMap.java:74) ~[netty-common-4.1.110.Final.jar:4.1.110.Final]
+		at io.netty.util.concurrent.FastThreadLocalRunnable.run(FastThreadLocalRunnable.java:30) ~[netty-common-4.1.110.Final.jar:4.1.110.Final]
+		at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+	Suppressed: java.lang.Exception: #block terminated with an error
+		at reactor.core.publisher.BlockingSingleSubscriber.blockingGet(BlockingSingleSubscriber.java:146) ~[reactor-core-3.6.6.jar:3.6.6]
+		at reactor.core.publisher.Mono.block(Mono.java:1807) ~[reactor-core-3.6.6.jar:3.6.6]
+		at fit.iuh.kttkpm_nhom15_be.ai.GeminiService.generateContent(GeminiService.java:86) ~[classes/:na]
+		at fit.iuh.kttkpm_nhom15_be.ai.GeminiService.generateFinalAnswer(GeminiService.java:62) ~[classes/:na]
+		at fit.iuh.kttkpm_nhom15_be.agent.application.services.AgentService.handleMessage(AgentService.java:79) ~[classes/:na]
+		at fit.iuh.kttkpm_nhom15_be.agent.presentation.controllers.AgentController.handleMessage(AgentController.java:26) ~[classes/:na]
+		at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+		at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+		at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:255) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:188) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118) ~[spring-webmvc-6.1.8.jar:6.1.8]
+		at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:926) ~[spring-webmvc-6.1.8.jar:6.1.8]
+		at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:831) ~[spring-webmvc-6.1.8.jar:6.1.8]
+		at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87) ~[spring-webmvc-6.1.8.jar:6.1.8]
+		at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089) ~[spring-webmvc-6.1.8.jar:6.1.8]
+		at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979) ~[spring-webmvc-6.1.8.jar:6.1.8]
+		at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014) ~[spring-webmvc-6.1.8.jar:6.1.8]
+		at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914) ~[spring-webmvc-6.1.8.jar:6.1.8]
+		at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590) ~[tomcat-embed-core-10.1.24.jar:6.0]
+		at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885) ~[spring-webmvc-6.1.8.jar:6.1.8]
+		at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658) ~[tomcat-embed-core-10.1.24.jar:6.0]
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:195) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:51) ~[tomcat-embed-websocket-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:110) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at fit.iuh.kttkpm_nhom15_be.shared.infrastructure.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:62) ~[classes/:na]
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter.doFilterInternal(OAuth2AuthorizationRequestRedirectFilter.java:198) ~[spring-security-oauth2-client-6.3.0.jar:6.3.0]
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191) ~[spring-security-web-6.3.0.jar:6.3.0]
+		at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195) ~[spring-webmvc-6.1.8.jar:6.1.8]
+		at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230) ~[spring-security-config-6.3.0.jar:6.3.0]
+		at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-6.1.8.jar:6.1.8]
+		at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:389) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:896) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63) ~[tomcat-embed-core-10.1.24.jar:10.1.24]
+		at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2026-05-29T15:09:37.557+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-3] f.i.k.a.a.services.AgentService          : FINAL_REPLY=Mình tìm được 8 sản phẩm phù hợp. Bạn có thể chọn một sản phẩm để xem chi tiết hơn.
+2026-05-29T15:09:47.533+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-5] f.i.k.a.a.services.AgentService          : USER_MESSAGE=Tìm kem chống nắng cho da dầu dưới 300k
+2026-05-29T15:09:49.325+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-5] f.iuh.kttkpm_nhom15_be.ai.GeminiService  : GEMINI_RAW_DECISION={"action": "SEARCH_PRODUCTS", "parameters": {"keyword": "kem chống nắng", "skinType": "da dầu", "maxPrice": 300000}}
+2026-05-29T15:09:49.325+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-5] f.i.k.a.a.services.AgentService          : PARSED_ACTION=SEARCH_PRODUCTS
+2026-05-29T15:09:49.325+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-5] f.i.k.a.a.services.AgentService          : PARSED_PARAMETERS={keyword=kem chống nắng, skinType=da dầu, maxPrice=300000}
+2026-05-29T15:09:49.364+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-5] f.i.k.a.a.services.AgentService          : TOOL_RESULT={"success":true,"total":8,"products":[{"id":"prod_sun_002","typeId":"ptype_sunscreen","typeName":"Kem chống nắng","name":"Matte Air Sunscreen","slug":"matte-air-sunscreen","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":269000.00,"maxPrice":359000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prod_sun_003","typeId":"ptype_sunscreen","typeName":"Kem chống nắng","name":"Hydra Dew Sunscreen","slug":"hydra-dew-sunscreen","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":259000.00,"maxPrice":349000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prod_sun_004","typeId":"ptype_sunscreen","typeName":"Kem chống nắng","name":"Sensitive Mineral Sunscreen","slug":"sensitive-mineral-sunscreen","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":289000.00,"maxPrice":379000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prod_sun_001","typeId":"ptype_sunscreen","typeName":"Kem chống nắng","name":"UV Shield Daily Sunscreen","slug":"uv-shield-daily-sunscreen","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":249000.00,"maxPrice":339000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prd_hydrating_cleanser_cerave","typeId":"pt_sua_rua_mat","typeName":"Sữa rửa mặt","name":"Hydrating Facial Cleanser","slug":"hydating-facial-cleanser-cerave","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":289000.00,"maxPrice":389000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prd_sample_barrier_cream","typeId":"pt_kem_duong","typeName":"Kem dưỡng","name":"Barrier Repair Cream","slug":"barrier-repair-cream-sample","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":289000.00,"maxPrice":289000.00,"totalStock":null,"inStock":true,"averageRating":5.00,"reviewCount":1,"soldCount":2,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prd_sample_cica_gel","typeId":"pt_kem_duong","typeName":"Kem dưỡng","name":"Cica B5 Recovery Gel","slug":"cica-b5-recovery-gel-sample","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":249000.00,"maxPrice":339000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null},{"id":"prd_sample_niacinamide_serum","typeId":"pt_serum","typeName":"Serum","name":"Niacinamide 10 Serum","slug":"niacinamide-10-serum-sample","descriptionMd":null,"shortDescription":null,"brandName":null,"minPrice":259000.00,"maxPrice":349000.00,"totalStock":null,"inStock":true,"averageRating":0.00,"reviewCount":0,"soldCount":0,"ingredients":[],"skinTypes":[],"concerns":[],"tags":[],"variants":[],"defaultVariant":null}]}
+2026-05-29T15:10:00.764+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [nio-8080-exec-5] f.i.k.a.a.services.AgentService          : FINAL_REPLY=Chào bạn, mình đã tìm thấy một số sản phẩm kem chống nắng có giá dưới 300.000 VNĐ cho bạn đây:
+
+*   **UV Shield Daily Sunscreen**: Có giá từ 249.000 VNĐ.
+*   **Hydra Dew Sunscreen**: Có giá từ 259.000 VNĐ.
+*   **Matte Air Sunscreen**: Có giá từ 269.000 VNĐ.
+*   **Sensitive Mineral Sunscreen**: Có giá từ 289.000 VNĐ.
+
+Hiện tại, mình chưa có thông tin cụ thể về việc sản phẩm nào phù hợp nhất với da dầu trong dữ liệu hệ thống. Bạn có thể bấm vào từng sản phẩm để xem thêm chi tiết hoặc mô tả nhé!
+Hibernate: 
+    DELETE 
+    FROM
+        users 
+    WHERE
+        is_active = false   
+        AND created_at < ? 
+Hibernate: 
+    DELETE 
+    FROM
+        users 
+    WHERE
+        is_active = false   
+        AND created_at < ? 
+Hibernate: 
+    DELETE 
+    FROM
+        users 
+    WHERE
+        is_active = false   
+        AND created_at < ? 
+2026-05-29T15:12:48.372+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [   File Watcher] rtingClassPathChangeChangedEventListener : Restarting due to 561 class path changes (0 additions, 555 deletions, 6 modifications)
+2026-05-29T15:12:48.381+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [      Thread-33] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopping...
+2026-05-29T15:12:48.381+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [      Thread-33] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=false, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@7e7ab9e3]]
+2026-05-29T15:12:48.381+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [      Thread-33] o.s.m.s.b.SimpleBrokerMessageHandler     : Stopped.
+Hibernate: 
+    select
+        jep1_0.id,
+        jep1_0.completion_date,
+        jep1_0.event_type,
+        jep1_0.listener_id,
+        jep1_0.publication_date,
+        jep1_0.serialized_event 
+    from
+        event_publication jep1_0 
+    where
+        jep1_0.completion_date is null 
+    order by
+        jep1_0.publication_date
+2026-05-29T15:12:48.521+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [      Thread-33] .s.m.e.c.DefaultEventPublicationRegistry : No publications outstanding!
+2026-05-29T15:12:48.545+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [      Thread-33] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-05-29T15:12:48.553+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [      Thread-33] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-05-29T15:12:48.565+07:00  INFO 12148 --- [KTTKPM_Nhom15_BE] [      Thread-33] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2026-05-29T08:12:48.754Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] f.i.k.KttkpmNhom15BeApplication          : Starting KttkpmNhom15BeApplication using Java 21.0.4 with PID 12148 (D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE\target\classes started by LENOVO in D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE)
+2026-05-29T08:12:48.755Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] f.i.k.KttkpmNhom15BeApplication          : No active profile set, falling back to 1 default profile: "default"
+2026-05-29T08:12:48.763Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.b.d.c.l.DockerComposeLifecycleManager : Using Docker Compose file 'D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE\compose.yaml'
+2026-05-29T08:12:49.586Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.b.d.c.l.DockerComposeLifecycleManager : There are already Docker Compose services running, skipping startup
+2026-05-29T08:12:49.655Z  WARN 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: I/O failure while processing configuration class [fit.iuh.kttkpm_nhom15_be.carts.infrastructure.persistence.mappers.CartDataMapperImpl]
+2026-05-29T08:12:49.696Z ERROR 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanDefinitionStoreException: I/O failure while processing configuration class [fit.iuh.kttkpm_nhom15_be.carts.infrastructure.persistence.mappers.CartDataMapperImpl]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:251) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:189) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:314) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:246) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:197) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:165) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:417) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:290) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:349) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:118) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:788) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:606) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.0.jar:3.3.0]
+	at fit.iuh.kttkpm_nhom15_be.KttkpmNhom15BeApplication.main(KttkpmNhom15BeApplication.java:19) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.3.0.jar:3.3.0]
+Caused by: java.io.FileNotFoundException: class path resource [fit/iuh/kttkpm_nhom15_be/carts/infrastructure/persistence/mappers/CartDataMapper.class] cannot be opened because it does not exist
+	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:215) ~[spring-core-6.1.8.jar:6.1.8]
+	at org.springframework.core.type.classreading.SimpleMetadataReader.getClassReader(SimpleMetadataReader.java:54) ~[spring-core-6.1.8.jar:6.1.8]
+	at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:48) ~[spring-core-6.1.8.jar:6.1.8]
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:103) ~[spring-core-6.1.8.jar:6.1.8]
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.createMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:86) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.getMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:73) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:81) ~[spring-core-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.asSourceClass(ConfigurationClassParser.java:630) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser$SourceClass.getInterfaces(ConfigurationClassParser.java:956) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.processInterfaces(ConfigurationClassParser.java:396) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:342) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:246) ~[spring-context-6.1.8.jar:6.1.8]
+	... 21 common frames omitted
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2026-05-29T08:12:58.435Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] f.i.k.KttkpmNhom15BeApplication          : Starting KttkpmNhom15BeApplication using Java 21.0.4 with PID 12148 (D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE\target\classes started by LENOVO in D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE)
+2026-05-29T08:12:58.436Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] f.i.k.KttkpmNhom15BeApplication          : No active profile set, falling back to 1 default profile: "default"
+2026-05-29T08:12:58.446Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.b.d.c.l.DockerComposeLifecycleManager : Using Docker Compose file 'D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE\compose.yaml'
+2026-05-29T08:12:59.571Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.b.d.c.l.DockerComposeLifecycleManager : There are already Docker Compose services running, skipping startup
+2026-05-29T08:12:59.761Z  WARN 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanDefinitionStoreException: I/O failure while processing configuration class [fit.iuh.kttkpm_nhom15_be.carts.infrastructure.persistence.mappers.CartDataMapperImpl]
+2026-05-29T08:12:59.769Z ERROR 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.BeanDefinitionStoreException: I/O failure while processing configuration class [fit.iuh.kttkpm_nhom15_be.carts.infrastructure.persistence.mappers.CartDataMapperImpl]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:251) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:189) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:314) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:246) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:197) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.parse(ConfigurationClassParser.java:165) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.processConfigBeanDefinitions(ConfigurationClassPostProcessor.java:417) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassPostProcessor.postProcessBeanDefinitionRegistry(ConfigurationClassPostProcessor.java:290) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanDefinitionRegistryPostProcessors(PostProcessorRegistrationDelegate.java:349) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.support.PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(PostProcessorRegistrationDelegate.java:118) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.support.AbstractApplicationContext.invokeBeanFactoryPostProcessors(AbstractApplicationContext.java:788) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:606) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352) ~[spring-boot-3.3.0.jar:3.3.0]
+	at fit.iuh.kttkpm_nhom15_be.KttkpmNhom15BeApplication.main(KttkpmNhom15BeApplication.java:19) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
+	at org.springframework.boot.devtools.restart.RestartLauncher.run(RestartLauncher.java:50) ~[spring-boot-devtools-3.3.0.jar:3.3.0]
+Caused by: java.io.FileNotFoundException: class path resource [fit/iuh/kttkpm_nhom15_be/carts/infrastructure/persistence/mappers/CartDataMapper.class] cannot be opened because it does not exist
+	at org.springframework.core.io.ClassPathResource.getInputStream(ClassPathResource.java:215) ~[spring-core-6.1.8.jar:6.1.8]
+	at org.springframework.core.type.classreading.SimpleMetadataReader.getClassReader(SimpleMetadataReader.java:54) ~[spring-core-6.1.8.jar:6.1.8]
+	at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:48) ~[spring-core-6.1.8.jar:6.1.8]
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:103) ~[spring-core-6.1.8.jar:6.1.8]
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.createMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:86) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.boot.type.classreading.ConcurrentReferenceCachingMetadataReaderFactory.getMetadataReader(ConcurrentReferenceCachingMetadataReaderFactory.java:73) ~[spring-boot-3.3.0.jar:3.3.0]
+	at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:81) ~[spring-core-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.asSourceClass(ConfigurationClassParser.java:630) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser$SourceClass.getInterfaces(ConfigurationClassParser.java:956) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.processInterfaces(ConfigurationClassParser.java:396) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.doProcessConfigurationClass(ConfigurationClassParser.java:342) ~[spring-context-6.1.8.jar:6.1.8]
+	at org.springframework.context.annotation.ConfigurationClassParser.processConfigurationClass(ConfigurationClassParser.java:246) ~[spring-context-6.1.8.jar:6.1.8]
+	... 21 common frames omitted
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.0)
+
+2026-05-29T08:13:05.647Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] f.i.k.KttkpmNhom15BeApplication          : Starting KttkpmNhom15BeApplication using Java 21.0.4 with PID 12148 (D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE\target\classes started by LENOVO in D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE)
+2026-05-29T08:13:05.648Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] f.i.k.KttkpmNhom15BeApplication          : No active profile set, falling back to 1 default profile: "default"
+2026-05-29T08:13:05.658Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.b.d.c.l.DockerComposeLifecycleManager : Using Docker Compose file 'D:\KTPM_HK2_2026\UI_Web\KTTKPM_Nhom15_BE\compose.yaml'
+2026-05-29T08:13:07.134Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.b.d.c.l.DockerComposeLifecycleManager : There are already Docker Compose services running, skipping startup
+2026-05-29T08:13:09.964Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-05-29T08:13:10.464Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 498 ms. Found 22 JPA repository interfaces.
+2026-05-29T08:13:11.068Z  WARN 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.ws.config.annotation.DelegatingWsConfiguration' of type [org.springframework.ws.config.annotation.DelegatingWsConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying). The currently created BeanPostProcessor [annotationActionEndpointMapping] is declared through a non-static factory method on that class; consider declaring it as static instead.
+2026-05-29T08:13:11.074Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .w.s.a.s.AnnotationActionEndpointMapping : Supporting [WS-Addressing August 2004, WS-Addressing 1.0]
+2026-05-29T08:13:11.426Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-05-29T08:13:11.429Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-05-29T08:13:11.431Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.24]
+2026-05-29T08:13:11.528Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-05-29T08:13:11.530Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 4390 ms
+2026-05-29T08:13:11.905Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://127.0.0.1:5433/cosmetics_db (PostgreSQL 15.17)
+2026-05-29T08:13:12.159Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.f.core.internal.command.DbValidate     : Successfully validated 19 migrations (execution time 00:00.223s)
+2026-05-29T08:13:12.238Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 19
+2026-05-29T08:13:12.240Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-05-29T08:13:12.410Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-05-29T08:13:12.433Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-05-29T08:13:12.469Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-05-29T08:13:12.473Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Starting...
+2026-05-29T08:13:12.525Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-2 - Added connection org.postgresql.jdbc.PgConnection@59f0d023
+2026-05-29T08:13:12.527Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-2 - Start completed.
+2026-05-29T08:13:12.537Z  WARN 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-05-29T08:13:13.453Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-05-29T08:13:13.545Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-05-29T08:13:19.954Z  WARN 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-05-29T08:13:20.633Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@12eddd55, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@54361e8f, org.springframework.security.web.context.SecurityContextHolderFilter@2750bfc7, org.springframework.security.web.header.HeaderWriterFilter@590457aa, org.springframework.web.filter.CorsFilter@203857c3, org.springframework.security.web.authentication.logout.LogoutFilter@50fe1c7a, org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter@5df531e3, org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter@7dc8fbeb, fit.iuh.kttkpm_nhom15_be.shared.infrastructure.security.JwtAuthenticationFilter@47b690cf, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@18e1bbfa, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@63a3164b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1a95f78c, org.springframework.security.web.session.SessionManagementFilter@5cc9b13a, org.springframework.security.web.access.ExceptionTranslationFilter@7938c6d9, org.springframework.security.web.access.intercept.AuthorizationFilter@3e3f045b]
+2026-05-29T08:13:21.255Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2026-05-29T08:13:21.337Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-05-29T08:13:21.338Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Starting...
+2026-05-29T08:13:21.339Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : BrokerAvailabilityEvent[available=true, SimpleBrokerMessageHandler [org.springframework.messaging.simp.broker.DefaultSubscriptionRegistry@3b05fcca]]
+2026-05-29T08:13:21.340Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] o.s.m.s.b.SimpleBrokerMessageHandler     : Started.
+2026-05-29T08:13:21.355Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] f.i.k.KttkpmNhom15BeApplication          : Started KttkpmNhom15BeApplication in 15.758 seconds (process running for 301.044)
+Hibernate: 
+    DELETE 
+    FROM
+        users 
+    WHERE
+        is_active = false   
+        AND created_at < ? 
+2026-05-29T08:13:21.363Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [  restartedMain] .ConditionEvaluationDeltaLoggingListener : Condition evaluation unchanged
+2026-05-29T08:14:21.337Z  INFO 12148 --- [KTTKPM_Nhom15_BE] [MessageBroker-5] o.s.w.s.c.WebSocketMessageBrokerStats    : WebSocketSession[0 current WS(0)-HttpStream(0)-HttpPoll(0), 0 total, 0 closed abnormally (0 connect failure, 0 send limit, 0 transport error)], stompSubProtocol[processed CONNECT(0)-CONNECTED(0)-DISCONNECT(0)], stompBrokerRelay[null], inboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], outboundChannel[pool size = 0, active threads = 0, queued tasks = 0, completed tasks = 0], sockJsScheduler[pool size = 10, active threads = 1, queued tasks = 5, completed tasks = 4]
+Hibernate: 
+    DELETE 
+    FROM
+        users 
+    WHERE
+        is_active = false   
+        AND created_at < ? 
+Hibernate: 
+    DELETE 
+    FROM
+        users 
+    WHERE
+        is_active = false   
+        AND created_at < ? 
+Hibernate: 
+    DELETE 
+    FROM
+        users 
+    WHERE
+        is_active = false   
+        AND created_at < ? 

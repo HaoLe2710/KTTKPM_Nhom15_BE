@@ -23,7 +23,7 @@ public class UpdateOptionUseCase {
     @Transactional
     public OptionResponse execute(String id, OptionRequest request) {
         var existing = optionRepository.findById(id)
-                .orElseThrow(() -> new java.util.NoSuchElementException("Khong tim thay option: " + id));
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy option: " + id));
 
         String normalizedCode = request.getCode().trim();
         optionRepository.findByCode(normalizedCode).ifPresent(found -> {
@@ -40,7 +40,7 @@ public class UpdateOptionUseCase {
             optionValueRepository.deleteByOptionId(id);
             for (String rawValue : request.getValues()) {
                 if (rawValue == null || rawValue.trim().isEmpty()) {
-                    throw new IllegalArgumentException("Gia tri option khong duoc de trong");
+                    throw new IllegalArgumentException("Giá trị option không được để trống");
                 }
                 optionValueRepository.save(OptionValue.builder()
                         .optionId(id)

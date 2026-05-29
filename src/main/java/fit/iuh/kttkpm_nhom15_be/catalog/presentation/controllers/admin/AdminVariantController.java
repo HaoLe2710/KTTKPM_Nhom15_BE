@@ -43,13 +43,13 @@ public class AdminVariantController {
   public ResponseEntity<MessageResponse> patchStock(@PathVariable String id,
                                                     @Valid @RequestBody VariantStockPatchRequest request) {
     catalogAdminService.patchVariantStock(id, request);
-    return ResponseEntity.ok(new MessageResponse("Ton kho bien the da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Tồn kho biến thể đã được cập nhật thành công"));
   }
 
   @PatchMapping("/{id}/active")
   public ResponseEntity<MessageResponse> toggleActive(@PathVariable String id,
                                                       @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleVariantActive(id, request);
-    return ResponseEntity.ok(new MessageResponse("Trang thai bien the da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Trạng thái biến thể đã được cập nhật thành công"));
   }
 }

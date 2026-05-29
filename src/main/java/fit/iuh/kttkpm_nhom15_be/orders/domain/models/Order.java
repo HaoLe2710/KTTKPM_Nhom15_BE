@@ -5,6 +5,7 @@ import fit.iuh.kttkpm_nhom15_be.payments.domain.models.PaymentMethod;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -15,6 +16,8 @@ import java.util.Map;
 @AllArgsConstructor
 public class Order {
   private String id;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
   private String orderNo;
   private String userId;
   private BigDecimal subtotalAmount;

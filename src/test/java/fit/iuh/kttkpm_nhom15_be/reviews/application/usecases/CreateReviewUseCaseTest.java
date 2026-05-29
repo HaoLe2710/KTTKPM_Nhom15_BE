@@ -43,7 +43,7 @@ class CreateReviewUseCaseTest {
                 .content("Excellent product!")
                 .build();
 
-        doNothing().when(orderFacade).verifyOrderForReview("order-1", "user-1");
+        doNothing().when(orderFacade).verifyOrderForReview("order-1", "user-1", "product-1");
         when(reviewRepository.findByUserIdAndProductId("user-1", "product-1")).thenReturn(Optional.empty());
         when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
 
@@ -54,7 +54,7 @@ class CreateReviewUseCaseTest {
         ArgumentCaptor<Review> savedReviewCaptor = ArgumentCaptor.forClass(Review.class);
         ArgumentCaptor<ReviewCreatedEvent> eventCaptor = ArgumentCaptor.forClass(ReviewCreatedEvent.class);
 
-        verify(orderFacade).verifyOrderForReview("order-1", "user-1");
+        verify(orderFacade).verifyOrderForReview("order-1", "user-1", "product-1");
         verify(reviewRepository).findByUserIdAndProductId("user-1", "product-1");
         verify(reviewRepository).save(savedReviewCaptor.capture());
         verify(eventPublisher).publishEvent(eventCaptor.capture());
@@ -85,7 +85,7 @@ class CreateReviewUseCaseTest {
         assertTrue(ex.getMessage().contains("0"));
 
         verify(reviewRepository, never()).save(any(Review.class));
-        verify(orderFacade, never()).verifyOrderForReview(any(), any());
+        verify(orderFacade, never()).verifyOrderForReview(any(), any(), any());
         verify(eventPublisher, never()).publishEvent(any());
     }
 
@@ -103,7 +103,7 @@ class CreateReviewUseCaseTest {
         assertTrue(ex.getMessage().contains("6"));
 
         verify(reviewRepository, never()).save(any(Review.class));
-        verify(orderFacade, never()).verifyOrderForReview(any(), any());
+        verify(orderFacade, never()).verifyOrderForReview(any(), any(), any());
         verify(eventPublisher, never()).publishEvent(any());
     }
 
@@ -121,7 +121,7 @@ class CreateReviewUseCaseTest {
                 .rating(3)
                 .build();
 
-        doNothing().when(orderFacade).verifyOrderForReview("order-1", "user-1");
+        doNothing().when(orderFacade).verifyOrderForReview("order-1", "user-1", "product-1");
         when(reviewRepository.findByUserIdAndProductId("user-1", "product-1")).thenReturn(Optional.of(existingReview));
 
         ReviewAlreadyExistsException ex = assertThrows(ReviewAlreadyExistsException.class, () -> useCase.execute(new CreateReviewCommand(
@@ -152,7 +152,7 @@ class CreateReviewUseCaseTest {
                     .content("Rating " + rating)
                     .build();
 
-            doNothing().when(orderFacade).verifyOrderForReview("order-1", "user-1");
+            doNothing().when(orderFacade).verifyOrderForReview("order-1", "user-1", "product-1");
             when(reviewRepository.findByUserIdAndProductId("user-1", "product-1")).thenReturn(Optional.empty());
             when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
 
@@ -181,7 +181,7 @@ class CreateReviewUseCaseTest {
                 .content(null)
                 .build();
 
-        doNothing().when(orderFacade).verifyOrderForReview("order-1", "user-1");
+        doNothing().when(orderFacade).verifyOrderForReview("order-1", "user-1", "product-1");
         when(reviewRepository.findByUserIdAndProductId("user-1", "product-1")).thenReturn(Optional.empty());
         when(reviewRepository.save(any(Review.class))).thenReturn(savedReview);
 

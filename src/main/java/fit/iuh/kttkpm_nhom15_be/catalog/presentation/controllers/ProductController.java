@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.catalog.presentation.controllers;
 
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CompositeProductRequestDTO;
+import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.PublicProductDetailResponse;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.CreatedResourceResponse;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.ProductCreateRequest;
 import fit.iuh.kttkpm_nhom15_be.catalog.application.dto.admin.CatalogAdminDtos.ProductVariantCreateRequest;
@@ -81,10 +82,11 @@ public class ProductController {
 
     @Operation(deprecated = true)
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProduct(@PathVariable String id) {
+    public ResponseEntity<PublicProductDetailResponse> getProduct(@PathVariable String id) {
         Product product = getProductDetailsUseCase.execute(id)
-                .orElseThrow(() -> new ApiNotFoundException("Khong tim thay san pham voi id: " + id));
-        return ResponseEntity.ok(product);
+                .orElseThrow(() -> new ApiNotFoundException("Không tìm thấy sản phẩm với id: " + id));
+        var detail = catalogAdminService.getProductDetail(id);
+        return ResponseEntity.ok(PublicProductDetailResponse.from(product, detail));
     }
 
     @Operation(deprecated = true)
@@ -107,7 +109,7 @@ public class ProductController {
                         .map(option -> new VariantOptionAssignmentRequest(option.optionId(), option.optionValueId()))
                         .toList()
         ));
-        return ResponseEntity.ok(new MessageResponse("Bien the san pham da duoc cap nhat thanh cong"));
+        return ResponseEntity.ok(new MessageResponse("Biến thể sản phẩm đã được cập nhật thành công"));
     }
 
     private List<VariantOptionAssignmentRequest> mapOptions(List<CompositeProductRequestDTO.OptionAssignmentDTO> options) {

@@ -74,7 +74,7 @@ public class AdminProductController {
   public ResponseEntity<MessageResponse> toggleProductActive(@PathVariable String id,
                                                              @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleProductActive(id, request);
-    return ResponseEntity.ok(new MessageResponse("Trang thai san pham da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Trạng thái sản phẩm đã được cập nhật thành công"));
   }
 
   @GetMapping("/{id}/search-status")

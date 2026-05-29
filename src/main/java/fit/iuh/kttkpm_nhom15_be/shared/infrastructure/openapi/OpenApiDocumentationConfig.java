@@ -409,23 +409,23 @@ public class OpenApiDocumentationConfig {
 
   private String resolveSuccessMessage(PathItem.HttpMethod httpMethod, String statusCode) {
     if ("201".equals(statusCode)) {
-      return "Tao moi thanh cong";
+      return "Tạo mới thành công";
     }
 
     if ("202".equals(statusCode)) {
-      return "Yeu cau da duoc tiep nhan thanh cong";
+      return "Yêu cầu đã được tiếp nhận thành công";
     }
 
     if (httpMethod == null) {
-      return "Yeu cau thanh cong";
+      return "Yêu cầu thành công";
     }
 
     return switch (httpMethod) {
-      case GET, HEAD -> "Lay du lieu thanh cong";
-      case POST -> "Xu ly thanh cong";
-      case PUT, PATCH -> "Cap nhat thanh cong";
-      case DELETE -> "Xoa thanh cong";
-      default -> "Yeu cau thanh cong";
+      case GET, HEAD -> "Lấy dữ liệu thành công";
+      case POST -> "Xử lý thành công";
+      case PUT, PATCH -> "Cập nhật thành công";
+      case DELETE -> "Xóa thành công";
+      default -> "Yêu cầu thành công";
     };
   }
 }

@@ -125,7 +125,7 @@ class HandlePaymentCallbackUseCaseTest {
             params.put("vnp_CurrCode", "VND");
             params.put("vnp_IpAddr", "127.0.0.1");
             params.put("vnp_Locale", "vn");
-            params.put("vnp_OrderInfo", "Thanh toan don hang ORD-1000");
+            params.put("vnp_OrderInfo", "Thanh toán đơn hàng ORD-1000");
             params.put("vnp_OrderType", "other");
             params.put("vnp_ResponseCode", responseCode);
             params.put("vnp_ReturnUrl", "http://localhost:8080/api/v1/payments/vnpay-return");

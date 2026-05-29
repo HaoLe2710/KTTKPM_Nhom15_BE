@@ -5,10 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
 public record VerifyOtpRequest(
-  @NotBlank(message = "email khong duoc de trong")
-  @Email(message = "email khong hop le")
+  @NotBlank(message = "email không được để trống")
+  @Email(message = "email không hợp lệ")
   String email,
-  @NotBlank(message = "otp khong duoc de trong")
+  @NotBlank(message = "otp không được để trống")
   @Pattern(regexp = "\\d{6}", message = "otp phai gom dung 6 chu so")
   String otp
 ) {

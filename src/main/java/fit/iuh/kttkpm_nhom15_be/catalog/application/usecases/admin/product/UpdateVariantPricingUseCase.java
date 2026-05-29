@@ -31,14 +31,14 @@ public class UpdateVariantPricingUseCase {
         }
 
         var variant = variantRepository.findById(variantId)
-                .orElseThrow(() -> new IllegalArgumentException("Khong tim thay variant: " + variantId));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy variant: " + variantId));
         if (!productId.equals(variant.getProductId())) {
-            throw new IllegalArgumentException("Variant khong thuoc product duoc chi dinh.");
+            throw new IllegalArgumentException("Variant không thuộc product được chỉ định.");
         }
 
         if (req.getPrice() != null) {
             if (req.getPrice().compareTo(BigDecimal.ZERO) < 0) {
-                throw new IllegalArgumentException("Price khong duoc am.");
+                throw new IllegalArgumentException("Price không được âm.");
             }
             variant.setPrice(req.getPrice());
         }
@@ -46,7 +46,7 @@ public class UpdateVariantPricingUseCase {
         if (req.getAddedStock() != null) {
             int newStock = variant.getStockQuantity() + req.getAddedStock();
             if (newStock < 0) {
-                throw new IllegalArgumentException("Khong duoc tru stock vuot qua ton kho hien tai.");
+                throw new IllegalArgumentException("Không được trừ stock vượt quá tồn kho hiện tại.");
             }
             variant.setStockQuantity(newStock);
         }

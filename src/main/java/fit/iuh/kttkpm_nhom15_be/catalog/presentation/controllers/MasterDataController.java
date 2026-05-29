@@ -74,7 +74,7 @@ public class MasterDataController {
     @DeleteMapping("/product-types/{id}")
     public ResponseEntity<MessageResponse> deleteProductType(@PathVariable String id) {
         deleteProductTypeUseCase.execute(id);
-        return ResponseEntity.ok(new MessageResponse("Loai san pham da duoc xoa thanh cong"));
+        return ResponseEntity.ok(new MessageResponse("Loại sản phẩm đã được xóa thành công"));
     }
 
     @Operation(deprecated = true)
@@ -121,6 +121,6 @@ public class MasterDataController {
     @DeleteMapping("/options/{id}")
     public ResponseEntity<MessageResponse> deleteOption(@PathVariable String id) {
         deleteOptionUseCase.execute(id);
-        return ResponseEntity.ok(new MessageResponse("Tuy chon da duoc xoa thanh cong"));
+        return ResponseEntity.ok(new MessageResponse("Tùy chọn đã được xóa thành công"));
     }
 }

@@ -107,7 +107,7 @@ class SendMessageUseCaseTest {
         ChatMessageValidationException ex = assertThrows(ChatMessageValidationException.class,
                 () -> useCase.execute(textCommand("room-1", "user-1", "  ")));
 
-        assertEquals("Noi dung tin nhan khong duoc de trong.", ex.getMessage());
+        assertEquals("Nội dung tin nhắn không được để trống.", ex.getMessage());
         verify(userFacade, never()).isUserActive(any());
     }
 
@@ -123,7 +123,7 @@ class SendMessageUseCaseTest {
         InactiveChatUserException ex = assertThrows(InactiveChatUserException.class,
                 () -> useCase.execute(textCommand("room-1", "user-1", "Xin chao")));
 
-        assertEquals("Khong the gui tin nhan. Tai khoan khong hoat dong: user-1", ex.getMessage());
+        assertEquals("Không thể gửi tin nhắn. Tài khoản không hoạt động: user-1", ex.getMessage());
         verify(chatRepository, never()).findRoomById(any());
     }
 
@@ -140,7 +140,7 @@ class SendMessageUseCaseTest {
         ChatRoomNotFoundException ex = assertThrows(ChatRoomNotFoundException.class,
                 () -> useCase.execute(textCommand("missing-room", "user-1", "Xin chao")));
 
-        assertEquals("Khong tim thay phong chat voi ID: missing-room", ex.getMessage());
+        assertEquals("Không tìm thấy phòng chat với ID: missing-room", ex.getMessage());
         verify(chatRepository, never()).saveMessage(any());
     }
 

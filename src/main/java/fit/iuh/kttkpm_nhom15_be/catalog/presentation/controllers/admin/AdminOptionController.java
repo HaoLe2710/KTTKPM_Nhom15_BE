@@ -59,7 +59,7 @@ public class AdminOptionController {
   public ResponseEntity<MessageResponse> updateOption(@PathVariable String id,
                                                       @Valid @RequestBody OptionWriteRequest request) {
     catalogAdminService.updateOption(id, request);
-    return ResponseEntity.ok(new MessageResponse("Tuy chon da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Tùy chọn đã được cập nhật thành công"));
   }
 
   @GetMapping("/option-values")
@@ -85,13 +85,13 @@ public class AdminOptionController {
   public ResponseEntity<MessageResponse> updateOptionValue(@PathVariable String id,
                                                            @Valid @RequestBody OptionValueWriteRequest request) {
     catalogAdminService.updateOptionValue(id, request);
-    return ResponseEntity.ok(new MessageResponse("Gia tri tuy chon da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Giá trị tùy chọn đã được cập nhật thành công"));
   }
 
   @PatchMapping("/option-values/{id}/active")
   public ResponseEntity<MessageResponse> toggleOptionValueActive(@PathVariable String id,
                                                                  @Valid @RequestBody ToggleActiveRequest request) {
     catalogAdminService.toggleOptionValueActive(id, request);
-    return ResponseEntity.ok(new MessageResponse("Trang thai gia tri tuy chon da duoc cap nhat thanh cong"));
+    return ResponseEntity.ok(new MessageResponse("Trạng thái giá trị tùy chọn đã được cập nhật thành công"));
   }
 }

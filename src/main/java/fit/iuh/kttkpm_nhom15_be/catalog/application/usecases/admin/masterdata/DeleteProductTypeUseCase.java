@@ -16,10 +16,10 @@ public class DeleteProductTypeUseCase {
     @Transactional
     public void execute(String id) {
         productTypeRepository.findById(id)
-                .orElseThrow(() -> new java.util.NoSuchElementException("Khong tim thay product type: " + id));
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy product type: " + id));
 
         if (productRepository.existsByTypeId(id)) {
-            throw new IllegalArgumentException("Khong the xoa product type dang duoc su dung boi san pham.");
+            throw new IllegalArgumentException("Không thể xóa product type đang được sử dụng bởi sản phẩm.");
         }
 
         productTypeRepository.deleteById(id);

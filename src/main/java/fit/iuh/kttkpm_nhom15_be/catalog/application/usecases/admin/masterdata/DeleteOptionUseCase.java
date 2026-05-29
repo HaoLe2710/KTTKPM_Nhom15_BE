@@ -20,12 +20,12 @@ public class DeleteOptionUseCase {
     @Transactional
     public void execute(String id) {
         optionRepository.findById(id)
-                .orElseThrow(() -> new java.util.NoSuchElementException("Khong tim thay option: " + id));
+                .orElseThrow(() -> new java.util.NoSuchElementException("Không tìm thấy option: " + id));
 
         var optionValues = optionValueRepository.findByOptionId(id);
         var optionValueIds = optionValues.stream().map(v -> v.getId()).collect(Collectors.toList());
         if (variantOptionRepository.existsByOptionValueIds(optionValueIds)) {
-            throw new IllegalArgumentException("Khong the xoa option dang duoc su dung boi variants.");
+            throw new IllegalArgumentException("Không thể xóa option đang được sử dụng bởi variants.");
         }
 
         optionValueRepository.deleteByOptionId(id);

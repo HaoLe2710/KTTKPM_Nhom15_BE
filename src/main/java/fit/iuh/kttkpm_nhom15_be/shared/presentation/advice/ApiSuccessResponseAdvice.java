@@ -134,30 +134,30 @@ public class ApiSuccessResponseAdvice implements ResponseBodyAdvice<Object> {
     }
 
     if (status == 201) {
-      return "Tao moi thanh cong";
+      return "Tạo mới thành công";
     }
 
     if (status == 202) {
-      return "Yeu cau da duoc tiep nhan thanh cong";
+      return "Yêu cầu đã được tiếp nhận thành công";
     }
 
     if (httpMethod == null) {
-      return "Yeu cau thanh cong";
+      return "Yêu cầu thành công";
     }
 
     if (HttpMethod.GET.equals(httpMethod) || HttpMethod.HEAD.equals(httpMethod)) {
-      return "Lay du lieu thanh cong";
+      return "Lấy dữ liệu thành công";
     }
     if (HttpMethod.POST.equals(httpMethod)) {
-      return "Xu ly thanh cong";
+      return "Xử lý thành công";
     }
     if (HttpMethod.PUT.equals(httpMethod) || HttpMethod.PATCH.equals(httpMethod)) {
-      return "Cap nhat thanh cong";
+      return "Cập nhật thành công";
     }
     if (HttpMethod.DELETE.equals(httpMethod)) {
-      return "Xoa thanh cong";
+      return "Xóa thành công";
     }
-    return "Yeu cau thanh cong";
+    return "Yêu cầu thành công";
   }
 
   private ApiSuccessMessage findSuccessMessageAnnotation(MethodParameter returnType) {
@@ -188,7 +188,7 @@ public class ApiSuccessResponseAdvice implements ResponseBodyAdvice<Object> {
     try {
       return objectMapper.writeValueAsString(envelope);
     } catch (JsonProcessingException exception) {
-      throw new IllegalStateException("Khong the tao success response JSON", exception);
+      throw new IllegalStateException("Không thể tạo success response JSON", exception);
     }
   }
 

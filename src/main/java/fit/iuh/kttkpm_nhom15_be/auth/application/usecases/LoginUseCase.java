@@ -18,14 +18,14 @@ public class LoginUseCase {
 
     public String execute(String identifier, String password) {
         User user = userFacade.findByIdentifier(identifier)
-                .orElseThrow(() -> new InvalidCredentialsException("Tai khoan hoac mat khau khong chinh xac"));
+                .orElseThrow(() -> new InvalidCredentialsException("Tài khoản hoặc mật khẩu không chính xác"));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new InvalidCredentialsException("Tai khoan hoac mat khau khong chinh xac");
+            throw new InvalidCredentialsException("Tài khoản hoặc mật khẩu không chính xác");
         }
 
         if (!user.isActive()) {
-            throw new AccountInactiveException("Tai khoan da bi khoa");
+            throw new AccountInactiveException("Tài khoản đã bị khóa");
         }
 
         return jwtProvider.generateToken(user.getEmail(), user.getId(), user.getRole().name());

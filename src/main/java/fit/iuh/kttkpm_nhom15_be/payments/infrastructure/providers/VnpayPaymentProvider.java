@@ -63,7 +63,7 @@ public class VnpayPaymentProvider implements PaymentProviderGateway {
         vnpParams.put("vnp_CurrCode", properties.getCurrCode());
         vnpParams.put("vnp_IpAddr", resolveIp(clientIp));
         vnpParams.put("vnp_Locale", properties.getLocale());
-        vnpParams.put("vnp_OrderInfo", "Thanh toan don hang " + order.getOrderNo());
+        vnpParams.put("vnp_OrderInfo", "Thanh toán đơn hàng " + order.getOrderNo());
         vnpParams.put("vnp_OrderType", properties.getOrderType());
         vnpParams.put("vnp_ReturnUrl", returnUrl);
         vnpParams.put("vnp_TxnRef", paymentTransaction.getTxnRef());

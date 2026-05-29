@@ -57,7 +57,7 @@ public class ChatController {
     @PostMapping(path = "/attachments", consumes = "multipart/form-data")
     public ResponseEntity<ChatAttachmentDTO> uploadAttachment(@RequestParam("file") MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("File chat khong duoc de trong.");
+            throw new IllegalArgumentException("File chat không được để trống.");
         }
 
         StoredFile storedFile = fileStoragePort.upload(new UploadFileCommand(

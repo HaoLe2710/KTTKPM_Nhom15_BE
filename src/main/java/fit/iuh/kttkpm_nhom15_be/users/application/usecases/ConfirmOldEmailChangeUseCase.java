@@ -18,7 +18,7 @@ public class ConfirmOldEmailChangeUseCase {
 
     public void execute(String userId, String newEmail, String oldEmailOtp) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("Khong tim thay tai khoan de doi email."));
+                .orElseThrow(() -> new UserNotFoundException("Không tìm thấy tài khoản để đổi email."));
 
         if (user.getEmail().equals(newEmail)) {
             throw new ActionNotAllowedException("Email moi trung voi email hien tai.");
@@ -26,12 +26,12 @@ public class ConfirmOldEmailChangeUseCase {
 
         User existingUser = userRepository.findByEmail(newEmail).orElse(null);
         if (existingUser != null && !existingUser.getId().equals(userId)) {
-            throw new DuplicateUserException("Email nay da duoc su dung boi tai khoan khac!");
+            throw new DuplicateUserException("Email này đã được sử dụng bởi tài khoản khác!");
         }
 
         boolean oldEmailVerified = otpService.verifyOtp(user.getEmail(), oldEmailOtp, "UPDATE_EMAIL_OLD");
         if (!oldEmailVerified) {
-            throw new ActionNotAllowedException("OTP xac thuc email cu khong dung hoac da het han!");
+            throw new ActionNotAllowedException("OTP xác thực email cũ không đúng hoặc đã hết hạn!");
         }
 
         otpService.sendOtp(newEmail, "UPDATE_EMAIL_NEW");
