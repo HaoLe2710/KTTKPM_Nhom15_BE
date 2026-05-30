@@ -6,14 +6,13 @@ import fit.iuh.kttkpm_nhom15_be.chat.domain.repositories.ChatRepository;
 import fit.iuh.kttkpm_nhom15_be.chat.infrastructure.persistence.entities.ChatMessageJpaEntity;
 import fit.iuh.kttkpm_nhom15_be.chat.infrastructure.persistence.entities.ChatRoomJpaEntity;
 import fit.iuh.kttkpm_nhom15_be.chat.infrastructure.persistence.mappers.ChatDataMapper;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
-import java.util.Optional;
 
 interface JpaChatRoomRepository extends JpaRepository<ChatRoomJpaEntity, String> {
     Optional<ChatRoomJpaEntity> findFirstByUserIdAndIsClosedFalseOrderByCreatedAtDesc(String userId);
@@ -37,14 +36,14 @@ public class ChatRepositoryImpl implements ChatRepository {
     @Override
     public ChatRoom saveRoom(ChatRoom room) {
         if (room.getId() != null) {
-            return roomRepo.findById(room.getId())
-                    .map(existing -> {
-                        existing.setUserId(room.getCustomerId());
-                        existing.setStaffId(room.getStaffId());
-                        existing.setClosed(room.isClosed());
-                        return mapper.toDomainModel(roomRepo.save(existing));
-                    })
-                    .orElseGet(() -> mapper.toDomainModel(roomRepo.save(mapper.toJpaEntity(room))));
+            Optional<ChatRoomJpaEntity> existingOpt = roomRepo.findById(room.getId());
+            if (existingOpt.isPresent()) {
+                ChatRoomJpaEntity existing = existingOpt.get();
+                existing.setUserId(room.getCustomerId());
+                existing.setStaffId(room.getStaffId());
+                existing.setClosed(room.isClosed());
+                return mapper.toDomainModel(roomRepo.save(existing));
+            }
         }
 
         ChatRoomJpaEntity entity = mapper.toJpaEntity(room);

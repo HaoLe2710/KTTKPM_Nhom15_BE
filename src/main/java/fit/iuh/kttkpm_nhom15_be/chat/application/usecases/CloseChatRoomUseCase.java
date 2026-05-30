@@ -8,6 +8,7 @@ import fit.iuh.kttkpm_nhom15_be.chat.domain.exceptions.UnauthorizedChatAccessExc
 import fit.iuh.kttkpm_nhom15_be.chat.domain.models.ChatRoom;
 import fit.iuh.kttkpm_nhom15_be.chat.domain.repositories.ChatRepository;
 import fit.iuh.kttkpm_nhom15_be.users.application.interfaces.UserFacade;
+import fit.iuh.kttkpm_nhom15_be.users.domain.models.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +22,15 @@ public class CloseChatRoomUseCase {
 
     @Transactional
     public ChatRoomDTO execute(String roomId, String staffId) {
-        if (!userFacade.isUserActive(staffId)) {
+        var staff = userFacade.findById(staffId)
+                .orElseThrow(() -> new InactiveChatUserException(staffId));
+
+        if (!staff.isActive()) {
             throw new InactiveChatUserException(staffId);
+        }
+
+        if (staff.getRole() != UserRole.STAFF && staff.getRole() != UserRole.ADMIN) {
+            throw new UnauthorizedChatAccessException(roomId, staffId);
         }
 
         ChatRoom room = chatRepository.findRoomById(roomId)

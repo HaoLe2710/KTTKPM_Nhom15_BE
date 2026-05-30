@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface UserFacade {
     boolean isUserActive(String userId);
+    Optional<User> findById(String userId);
     Optional<User> findByIdentifier(String identifier);
     void registerCustomer(String email, String phone, String password, String fullName);
     User createOAuth2User(String email, String fullName);

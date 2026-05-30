@@ -57,13 +57,13 @@ public class AdminSearchSuggestionController {
   public ResponseEntity<MessageResponse> updateSuggestion(@PathVariable String id,
                                                           @Valid @RequestBody SuggestionWriteRequest request) {
     searchAdminService.updateSuggestion(id, request);
-    return ResponseEntity.ok(new MessageResponse("Suggestion đã được cập nhật thành công"));
+    return ResponseEntity.ok(new MessageResponse("Gợi ý đã được cập nhật thành công"));
   }
 
   @PatchMapping("/{id}/active")
   public ResponseEntity<MessageResponse> toggleSuggestionActive(@PathVariable String id,
                                                                 @RequestParam boolean active) {
     searchAdminService.toggleSuggestionActive(id, active);
-    return ResponseEntity.ok(new MessageResponse("Trạng thái suggestion đã được cập nhật thành công"));
+    return ResponseEntity.ok(new MessageResponse("Trạng thái gợi ý đã được cập nhật thành công"));
   }
 }
