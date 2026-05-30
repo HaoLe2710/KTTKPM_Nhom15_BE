@@ -10,6 +10,7 @@ import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.Variant;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.models.VariantOption;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.OptionRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.OptionValueRepository;
+import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.MediaRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.ProductRepository;
 import fit.iuh.kttkpm_nhom15_be.catalog.domain.repositories.VariantRepository;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.StockRestoreItem;
@@ -31,6 +32,7 @@ public class CatalogFacadeImpl implements CatalogFacade {
 
   private final VariantRepository variantRepository;
   private final ProductRepository productRepository;
+  private final MediaRepository mediaRepository;
   private final OptionValueRepository optionValueRepository;
   private final OptionRepository optionRepository;
 
@@ -51,14 +53,7 @@ public class CatalogFacadeImpl implements CatalogFacade {
           .orElse("Unknown Product");
       }
 
-      String imageUrl = null;
-      if (variant.getMedia() != null) {
-        imageUrl = variant.getMedia().stream()
-          .filter(Media::isPrimary)
-          .map(Media::getUrl)
-          .findFirst()
-          .orElse(null);
-      }
+      String imageUrl = resolveSnapshotImageUrl(variant);
 
       Map<String, Object> attributes = new HashMap<>();
       if (variant.getOptions() != null) {
@@ -81,6 +76,43 @@ public class CatalogFacadeImpl implements CatalogFacade {
         .attributes(attributes)
         .build();
     }).toList();
+  }
+
+  private String resolveSnapshotImageUrl(Variant variant) {
+    String variantMediaUrl = pickPrimaryImageUrl(variant.getMedia());
+    if (variantMediaUrl != null) {
+      return variantMediaUrl;
+    }
+
+    if (variant.getProductId() == null || variant.getProductId().isBlank()) {
+      return null;
+    }
+
+    return pickPrimaryImageUrl(mediaRepository.findProductMedia(variant.getProductId()));
+  }
+
+  private String pickPrimaryImageUrl(List<Media> media) {
+    if (media == null || media.isEmpty()) {
+      return null;
+    }
+
+    List<Media> imageMedia = media.stream()
+      .filter(this::isImageMedia)
+      .toList();
+
+    Media selectedMedia = imageMedia.stream()
+      .filter(Media::isPrimary)
+      .findFirst()
+      .orElse(imageMedia.isEmpty() ? null : imageMedia.getFirst());
+
+    return selectedMedia != null ? selectedMedia.getUrl() : null;
+  }
+
+  private boolean isImageMedia(Media media) {
+    return media != null
+      && media.getUrl() != null
+      && !media.getUrl().isBlank()
+      && (media.getType() == null || "IMAGE".equalsIgnoreCase(media.getType().name()));
   }
 
   @Override

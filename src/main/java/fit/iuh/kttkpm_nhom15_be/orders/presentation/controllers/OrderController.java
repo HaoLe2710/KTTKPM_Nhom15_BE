@@ -82,6 +82,7 @@ public class OrderController {
       .clientIp(resolveClientIp(httpServletRequest))
       .shipFullName(request.getShipFullName())
       .shipPhone(request.getShipPhone())
+      .shipEmail(request.getShipEmail())
       .shipAddress(request.getShipAddress())
       .shipCity(request.getShipCity())
       .shipDistrict(request.getShipDistrict())
@@ -102,7 +103,8 @@ public class OrderController {
     @PathVariable String orderId,
     @Valid @RequestBody CancelOrderRequest request
   ) {
-    CancelOrderCommand command = new CancelOrderCommand(orderId, request.getReason());
+    String resolvedUserId = shopperAccessGuard.resolveAllowedUserId(request.getUserId());
+    CancelOrderCommand command = new CancelOrderCommand(orderId, resolvedUserId, request.getReason());
     CancelOrderResult result = cancelOrderUseCase.execute(command);
     return ResponseEntity.ok(result);
   }

@@ -10,9 +10,12 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import jakarta.persistence.LockModeType;
 
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.DailyOrderStat;
 import fit.iuh.kttkpm_nhom15_be.orders.application.dto.OrderHistoryItemDTO;
@@ -58,6 +61,15 @@ interface JpaOrderRepository extends JpaRepository<OrderJpaEntity, String> {
 
     @EntityGraph(attributePaths = "items")
     Optional<OrderJpaEntity> findByIdAndUserId(String id, String userId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        SELECT o
+        FROM OrderJpaEntity o
+        WHERE o.id = :id
+          AND o.userId = :userId
+        """)
+    Optional<OrderJpaEntity> findByIdAndUserIdForUpdate(@Param("id") String id, @Param("userId") String userId);
 }
 
 // 2. Lớp Implement interface của tầng Domain
@@ -84,6 +96,12 @@ public class OrderRepositoryImpl implements OrderRepository {
     @Override
     public Optional<Order> findByIdAndUserId(String id, String userId) {
         return jpaOrderRepository.findByIdAndUserId(id, userId)
+            .map(orderDataMapper::toDomainModel);
+    }
+
+    @Override
+    public Optional<Order> findByIdAndUserIdForUpdate(String id, String userId) {
+        return jpaOrderRepository.findByIdAndUserIdForUpdate(id, userId)
             .map(orderDataMapper::toDomainModel);
     }
 

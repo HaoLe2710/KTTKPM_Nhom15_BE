@@ -9,6 +9,10 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -28,6 +32,39 @@ public class EmailService {
     @Value("${spring.mail.username:}")
     private String smtpUsername;
 
+    public record OrderConfirmationEmail(
+            String toEmail,
+            String recipientName,
+            String recipientPhone,
+            String orderNo,
+            String shippingAddress,
+            String paymentMethod,
+            BigDecimal subtotalAmount,
+            BigDecimal discountAmount,
+            BigDecimal shippingFee,
+            BigDecimal totalAmount,
+            List<OrderConfirmationItem> items
+    ) {}
+
+    public record OrderConfirmationItem(
+            String name,
+            String sku,
+            int quantity,
+            BigDecimal unitPrice,
+            BigDecimal lineTotal
+    ) {}
+
+    public record OrderCancellationEmail(
+            String toEmail,
+            String recipientName,
+            String recipientPhone,
+            String orderNo,
+            String shippingAddress,
+            String paymentMethod,
+            BigDecimal totalAmount,
+            String reason
+    ) {}
+
     public void sendOtpEmail(String toEmail, String otp) {
         var message = mailSender.createMimeMessage();
         String effectiveFrom = resolveFromAddress();
@@ -44,6 +81,54 @@ public class EmailService {
         } catch (MessagingException | UnsupportedEncodingException ex) {
             log.error("Failed to send OTP email to {} with from {}: {}", toEmail, effectiveFrom, ex.getMessage());
             throw new IllegalStateException("Không thể gửi email OTP", ex);
+        }
+    }
+
+    public void sendOrderConfirmationEmail(OrderConfirmationEmail email) {
+        if (email == null || email.toEmail() == null || email.toEmail().isBlank()) {
+            log.warn("Skip order confirmation email because recipient email is blank");
+            return;
+        }
+
+        var message = mailSender.createMimeMessage();
+        String effectiveFrom = resolveFromAddress();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setFrom(effectiveFrom, fromName);
+            helper.setReplyTo(replyTo);
+            helper.setTo(email.toEmail().trim());
+            helper.setSubject("Xac nhan don hang " + safeText(email.orderNo()));
+            helper.setText(buildOrderConfirmationHtml(email), true);
+            mailSender.send(message);
+            log.info("Order confirmation email sent to {} for order {}", email.toEmail(), email.orderNo());
+        } catch (MessagingException | UnsupportedEncodingException ex) {
+            log.error("Failed to send order confirmation email to {} for order {}: {}", email.toEmail(), email.orderNo(), ex.getMessage());
+            throw new IllegalStateException("Khong the gui email xac nhan don hang", ex);
+        }
+    }
+
+    public void sendOrderCancellationEmail(OrderCancellationEmail email) {
+        if (email == null || email.toEmail() == null || email.toEmail().isBlank()) {
+            log.warn("Skip order cancellation email because recipient email is blank");
+            return;
+        }
+
+        var message = mailSender.createMimeMessage();
+        String effectiveFrom = resolveFromAddress();
+
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+            helper.setFrom(effectiveFrom, fromName);
+            helper.setReplyTo(replyTo);
+            helper.setTo(email.toEmail().trim());
+            helper.setSubject("Thong bao huy don hang " + safeText(email.orderNo()));
+            helper.setText(buildOrderCancellationHtml(email), true);
+            mailSender.send(message);
+            log.info("Order cancellation email sent to {} for order {}", email.toEmail(), email.orderNo());
+        } catch (MessagingException | UnsupportedEncodingException ex) {
+            log.error("Failed to send order cancellation email to {} for order {}: {}", email.toEmail(), email.orderNo(), ex.getMessage());
+            throw new IllegalStateException("Khong the gui email thong bao huy don hang", ex);
         }
     }
 
@@ -96,6 +181,254 @@ public class EmailService {
                 </body>
                 </html>
                 """.formatted(otp);
+    }
+
+    private String buildOrderConfirmationHtml(OrderConfirmationEmail email) {
+        String orderNo = escapeHtml(safeText(email.orderNo()));
+        String recipientName = escapeHtml(defaultText(email.recipientName(), "Quy khach"));
+        String recipientPhone = escapeHtml(safeText(email.recipientPhone()));
+        String shippingAddress = escapeHtml(safeText(email.shippingAddress()));
+        String paymentMethod = escapeHtml(safeText(email.paymentMethod()));
+        String itemRows = buildOrderItemRows(email.items());
+
+        return """
+                <!DOCTYPE html>
+                <html lang=\"vi\">
+                <head>
+                  <meta charset=\"UTF-8\" />
+                  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />
+                  <title>Xac nhan don hang</title>
+                </head>
+                <body style=\"margin:0;padding:0;background:#f5f7fb;font-family:Arial,sans-serif;color:#1f2937;\">
+                  <table role=\"presentation\" width=\"100%%\" cellspacing=\"0\" cellpadding=\"0\" style=\"padding:24px 12px;\">
+                    <tr>
+                      <td align=\"center\">
+                        <table role=\"presentation\" width=\"100%%\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width:720px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.08);\">
+                          <tr>
+                            <td style=\"background:linear-gradient(135deg,#111827,#374151);padding:28px;color:#fff;\">
+                              <h1 style=\"margin:0;font-size:22px;line-height:1.3;\">Don hang cua ban da duoc ghi nhan</h1>
+                              <p style=\"margin:10px 0 0 0;font-size:14px;opacity:.95;\">Ma don hang: <strong>%s</strong></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style=\"padding:24px 28px;\">
+                              <p style=\"margin:0 0 14px 0;font-size:15px;line-height:1.6;\">Xin chao <strong>%s</strong>,</p>
+                              <p style=\"margin:0 0 18px 0;font-size:15px;line-height:1.6;\">Cam on ban da dat hang tai <strong>Nhom 15 Cosmetics</strong>. Chung toi da nhan duoc don hang va se xu ly trong thoi gian som nhat.</p>
+
+                              <table role=\"presentation\" width=\"100%%\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin:0 0 20px 0;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;\">
+                                <tr>
+                                  <td style=\"padding:12px 14px;background:#f8fafc;font-size:13px;color:#64748b;width:34%%;\">Nguoi nhan</td>
+                                  <td style=\"padding:12px 14px;font-size:14px;color:#111827;\">%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:12px 14px;background:#f8fafc;font-size:13px;color:#64748b;\">So dien thoai</td>
+                                  <td style=\"padding:12px 14px;font-size:14px;color:#111827;\">%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:12px 14px;background:#f8fafc;font-size:13px;color:#64748b;\">Dia chi giao hang</td>
+                                  <td style=\"padding:12px 14px;font-size:14px;color:#111827;line-height:1.5;\">%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:12px 14px;background:#f8fafc;font-size:13px;color:#64748b;\">Thanh toan</td>
+                                  <td style=\"padding:12px 14px;font-size:14px;color:#111827;\">%s</td>
+                                </tr>
+                              </table>
+
+                              <table role=\"presentation\" width=\"100%%\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse;margin:0 0 20px 0;\">
+                                <thead>
+                                  <tr>
+                                    <th align=\"left\" style=\"border-bottom:1px solid #e5e7eb;padding:10px 8px;font-size:12px;color:#64748b;text-transform:uppercase;\">San pham</th>
+                                    <th align=\"center\" style=\"border-bottom:1px solid #e5e7eb;padding:10px 8px;font-size:12px;color:#64748b;text-transform:uppercase;\">SL</th>
+                                    <th align=\"right\" style=\"border-bottom:1px solid #e5e7eb;padding:10px 8px;font-size:12px;color:#64748b;text-transform:uppercase;\">Don gia</th>
+                                    <th align=\"right\" style=\"border-bottom:1px solid #e5e7eb;padding:10px 8px;font-size:12px;color:#64748b;text-transform:uppercase;\">Thanh tien</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  %s
+                                </tbody>
+                              </table>
+
+                              <table role=\"presentation\" width=\"100%%\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin-left:auto;max-width:360px;\">
+                                <tr>
+                                  <td style=\"padding:6px 0;font-size:14px;color:#64748b;\">Tam tinh</td>
+                                  <td align=\"right\" style=\"padding:6px 0;font-size:14px;color:#111827;\">%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:6px 0;font-size:14px;color:#64748b;\">Giam gia</td>
+                                  <td align=\"right\" style=\"padding:6px 0;font-size:14px;color:#111827;\">-%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:6px 0;font-size:14px;color:#64748b;\">Phi van chuyen</td>
+                                  <td align=\"right\" style=\"padding:6px 0;font-size:14px;color:#111827;\">%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:12px 0 0 0;border-top:1px solid #e5e7eb;font-size:16px;font-weight:700;color:#111827;\">Tong cong</td>
+                                  <td align=\"right\" style=\"padding:12px 0 0 0;border-top:1px solid #e5e7eb;font-size:18px;font-weight:700;color:#111827;\">%s</td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style=\"padding:16px 28px 24px 28px;background:#f8fafc;border-top:1px solid #e5e7eb;\">
+                              <p style=\"margin:0 0 6px 0;font-size:13px;color:#475569;\">Tran trong,</p>
+                              <p style=\"margin:0;font-size:13px;color:#0f172a;font-weight:600;\">Nhom 15 Cosmetics</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </body>
+                </html>
+                """.formatted(
+                orderNo,
+                recipientName,
+                recipientName,
+                recipientPhone,
+                shippingAddress,
+                paymentMethod,
+                itemRows,
+                formatMoney(email.subtotalAmount()),
+                formatMoney(email.discountAmount()),
+                formatMoney(email.shippingFee()),
+                formatMoney(email.totalAmount())
+        );
+    }
+
+    private String buildOrderCancellationHtml(OrderCancellationEmail email) {
+        String orderNo = escapeHtml(safeText(email.orderNo()));
+        String recipientName = escapeHtml(defaultText(email.recipientName(), "Quy khach"));
+        String recipientPhone = escapeHtml(safeText(email.recipientPhone()));
+        String shippingAddress = escapeHtml(safeText(email.shippingAddress()));
+        String paymentMethod = escapeHtml(safeText(email.paymentMethod()));
+        String reason = escapeHtml(defaultText(email.reason(), "Khach hang huy don khi chua thanh toan"));
+
+        return """
+                <!DOCTYPE html>
+                <html lang=\"vi\">
+                <head>
+                  <meta charset=\"UTF-8\" />
+                  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />
+                  <title>Thong bao huy don hang</title>
+                </head>
+                <body style=\"margin:0;padding:0;background:#f5f7fb;font-family:Arial,sans-serif;color:#1f2937;\">
+                  <table role=\"presentation\" width=\"100%%\" cellspacing=\"0\" cellpadding=\"0\" style=\"padding:24px 12px;\">
+                    <tr>
+                      <td align=\"center\">
+                        <table role=\"presentation\" width=\"100%%\" cellspacing=\"0\" cellpadding=\"0\" style=\"max-width:720px;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.08);\">
+                          <tr>
+                            <td style=\"background:linear-gradient(135deg,#7f1d1d,#dc2626);padding:28px;color:#fff;\">
+                              <h1 style=\"margin:0;font-size:22px;line-height:1.3;\">Don hang cua ban da duoc huy</h1>
+                              <p style=\"margin:10px 0 0 0;font-size:14px;opacity:.95;\">Ma don hang: <strong>%s</strong></p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style=\"padding:24px 28px;\">
+                              <p style=\"margin:0 0 14px 0;font-size:15px;line-height:1.6;\">Xin chao <strong>%s</strong>,</p>
+                              <p style=\"margin:0 0 18px 0;font-size:15px;line-height:1.6;\">Nhom 15 Cosmetics da ghi nhan yeu cau huy don hang khi don hang chua thanh toan.</p>
+
+                              <table role=\"presentation\" width=\"100%%\" cellspacing=\"0\" cellpadding=\"0\" style=\"margin:0 0 20px 0;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;\">
+                                <tr>
+                                  <td style=\"padding:12px 14px;background:#f8fafc;font-size:13px;color:#64748b;width:34%%;\">Nguoi nhan</td>
+                                  <td style=\"padding:12px 14px;font-size:14px;color:#111827;\">%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:12px 14px;background:#f8fafc;font-size:13px;color:#64748b;\">So dien thoai</td>
+                                  <td style=\"padding:12px 14px;font-size:14px;color:#111827;\">%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:12px 14px;background:#f8fafc;font-size:13px;color:#64748b;\">Dia chi giao hang</td>
+                                  <td style=\"padding:12px 14px;font-size:14px;color:#111827;line-height:1.5;\">%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:12px 14px;background:#f8fafc;font-size:13px;color:#64748b;\">Thanh toan</td>
+                                  <td style=\"padding:12px 14px;font-size:14px;color:#111827;\">%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:12px 14px;background:#f8fafc;font-size:13px;color:#64748b;\">Ly do huy</td>
+                                  <td style=\"padding:12px 14px;font-size:14px;color:#111827;line-height:1.5;\">%s</td>
+                                </tr>
+                                <tr>
+                                  <td style=\"padding:12px 14px;background:#f8fafc;font-size:13px;color:#64748b;\">Tong tien</td>
+                                  <td style=\"padding:12px 14px;font-size:16px;font-weight:700;color:#111827;\">%s</td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style=\"padding:16px 28px 24px 28px;background:#f8fafc;border-top:1px solid #e5e7eb;\">
+                              <p style=\"margin:0 0 6px 0;font-size:13px;color:#475569;\">Tran trong,</p>
+                              <p style=\"margin:0;font-size:13px;color:#0f172a;font-weight:600;\">Nhom 15 Cosmetics</p>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </body>
+                </html>
+                """.formatted(
+                orderNo,
+                recipientName,
+                recipientName,
+                recipientPhone,
+                shippingAddress,
+                paymentMethod,
+                reason,
+                formatMoney(email.totalAmount())
+        );
+    }
+
+    private String buildOrderItemRows(List<OrderConfirmationItem> items) {
+        if (items == null || items.isEmpty()) {
+            return """
+                    <tr>
+                      <td colspan=\"4\" style=\"padding:14px 8px;font-size:14px;color:#64748b;text-align:center;\">Khong co du lieu san pham.</td>
+                    </tr>
+                    """;
+        }
+
+        return items.stream()
+                .map(item -> """
+                        <tr>
+                          <td style=\"border-bottom:1px solid #f1f5f9;padding:12px 8px;font-size:14px;color:#111827;\">
+                            <div style=\"font-weight:600;\">%s</div>
+                            <div style=\"margin-top:4px;font-size:12px;color:#64748b;\">%s</div>
+                          </td>
+                          <td align=\"center\" style=\"border-bottom:1px solid #f1f5f9;padding:12px 8px;font-size:14px;color:#111827;\">%d</td>
+                          <td align=\"right\" style=\"border-bottom:1px solid #f1f5f9;padding:12px 8px;font-size:14px;color:#111827;\">%s</td>
+                          <td align=\"right\" style=\"border-bottom:1px solid #f1f5f9;padding:12px 8px;font-size:14px;color:#111827;font-weight:600;\">%s</td>
+                        </tr>
+                        """.formatted(
+                        escapeHtml(defaultText(item.name(), "San pham")),
+                        escapeHtml(defaultText(item.sku(), "")),
+                        item.quantity(),
+                        formatMoney(item.unitPrice()),
+                        formatMoney(item.lineTotal())
+                ))
+                .reduce("", String::concat);
+    }
+
+    private String formatMoney(BigDecimal amount) {
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("vi-VN"));
+        return formatter.format(amount == null ? BigDecimal.ZERO : amount);
+    }
+
+    private String defaultText(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value.trim();
+    }
+
+    private String safeText(String value) {
+        return defaultText(value, "");
+    }
+
+    private String escapeHtml(String value) {
+        return safeText(value)
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
 
     private String resolveFromAddress() {

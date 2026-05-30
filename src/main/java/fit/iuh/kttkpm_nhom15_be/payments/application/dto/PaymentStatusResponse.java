@@ -22,6 +22,7 @@ public class PaymentStatusResponse {
     private String orderNo;
     private String transactionRef;
     private PaymentTxnStatus transactionStatus;
+    private String orderStatus;
     private String orderPaymentStatus;
     private String paymentRedirectUrl;
     private Map<String, Object> paymentInfo;
@@ -35,6 +36,7 @@ public class PaymentStatusResponse {
             .orderNo(order.getOrderNo())
             .transactionRef(transactionResponse.getTransactionRef())
             .transactionStatus(transactionResponse.getStatus())
+            .orderStatus(order.getStatus() != null ? order.getStatus().name() : null)
             .orderPaymentStatus(order.getPaymentStatus() != null ? order.getPaymentStatus().name() : null)
             .paymentRedirectUrl(transactionResponse.getPaymentRedirectUrl())
             .paymentInfo(transactionResponse.getPaymentInfo())

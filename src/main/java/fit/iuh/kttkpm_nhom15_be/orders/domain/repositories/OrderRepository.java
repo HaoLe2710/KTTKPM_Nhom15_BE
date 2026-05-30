@@ -11,6 +11,7 @@ public interface OrderRepository {
     Order save(Order order);
     Optional<Order> findById(String id);
     Optional<Order> findByIdAndUserId(String id, String userId);
+    Optional<Order> findByIdAndUserIdForUpdate(String id, String userId);
     Optional<Order> findLatestReviewableOrderByUserIdAndProductId(String userId, String productId);
     List<OrderHistoryItemDTO> findOrderHistoryByUserId(String userId);
     RawOrderStatsDTO getOrderStatistics(LocalDateTime startDate, LocalDateTime endDate);

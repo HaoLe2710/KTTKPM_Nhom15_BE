@@ -54,6 +54,7 @@ class PlaceOrderUseCaseTest {
         verify(fixture.orderRepository).save(savedOrder.capture());
         assertEquals("order-1", result.getOrderId());
         assertNull(savedOrder.getValue().getPromotionId());
+        assertEquals("customer@example.com", savedOrder.getValue().getShipEmail());
         assertEquals(BigDecimal.ZERO, savedOrder.getValue().getDiscountAmount());
         assertTrue(savedOrder.getValue().isStockDeducted());
         verify(fixture.promotionFacade, never()).markPromotionUsed(any());
@@ -230,6 +231,7 @@ class PlaceOrderUseCaseTest {
                 .clientIp("127.0.0.1")
                 .shipFullName("User")
                 .shipPhone("0123")
+                .shipEmail("customer@example.com")
                 .shipAddress("123 Street")
                 .shipCity("HCM")
                 .shipDistrict("1")
@@ -247,6 +249,7 @@ class PlaceOrderUseCaseTest {
                 .clientIp("127.0.0.1")
                 .shipFullName("User")
                 .shipPhone("0123")
+                .shipEmail("customer@example.com")
                 .shipAddress("123 Street")
                 .shipCity("HCM")
                 .shipDistrict("1")

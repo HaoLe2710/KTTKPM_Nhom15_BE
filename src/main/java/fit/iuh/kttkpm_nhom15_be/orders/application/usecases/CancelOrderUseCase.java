@@ -9,6 +9,8 @@ import fit.iuh.kttkpm_nhom15_be.orders.application.results.CancelOrderResult;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.exceptions.OrderNotFoundException;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.Order;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.repositories.OrderRepository;
+import fit.iuh.kttkpm_nhom15_be.orders.domain.models.PaymentStatus;
+import fit.iuh.kttkpm_nhom15_be.shared.application.exceptions.ApiValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -27,8 +29,12 @@ public class CancelOrderUseCase {
 
   @Transactional
   public CancelOrderResult execute(CancelOrderCommand command) {
-    Order order = orderRepository.findById(command.orderId())
+    Order order = orderRepository.findByIdAndUserIdForUpdate(command.orderId(), command.userId())
       .orElseThrow(() -> new OrderNotFoundException(command.orderId()));
+
+    if (order.getPaymentStatus() != PaymentStatus.UNPAID) {
+      throw new ApiValidationException("Don hang da thanh toan khong the huy tu phia khach hang.");
+    }
 
     order.cancelOrder(command.reason());
 
@@ -46,6 +52,11 @@ public class CancelOrderUseCase {
       savedOrder.getId(),
       savedOrder.getOrderNo(),
       savedOrder.getUserId(),
+      savedOrder.getShipEmail(),
+      savedOrder.getShipFullName(),
+      savedOrder.getShipPhone(),
+      formatShippingAddress(savedOrder),
+      savedOrder.getPaymentMethod() != null ? savedOrder.getPaymentMethod().name() : "",
       savedOrder.getTotalAmount(),
       command.reason()
     ));
@@ -64,5 +75,16 @@ public class CancelOrderUseCase {
       .orderNo(savedOrder.getOrderNo())
       .status(savedOrder.getStatus().name())
       .build();
+  }
+
+  private String formatShippingAddress(Order order) {
+    return List.of(
+        order.getShipAddress(),
+        order.getShipWard(),
+        order.getShipDistrict(),
+        order.getShipCity()
+      ).stream()
+      .filter(value -> value != null && !value.isBlank())
+      .collect(java.util.stream.Collectors.joining(", "));
   }
 }

@@ -43,7 +43,7 @@ public class OrderJpaEntity {
     @Enumerated(EnumType.STRING) private PaymentStatus paymentStatus;
     private boolean stockDeducted;
 
-    private String shipFullName; private String shipPhone; private String shipAddress;
+    private String shipFullName; private String shipPhone; private String shipEmail; private String shipAddress;
     private String shipCity; private String shipDistrict; private String shipWard;
 
     @Enumerated(EnumType.STRING) private ShippingMode shippingMode;
@@ -51,6 +51,8 @@ public class OrderJpaEntity {
 
     @JdbcTypeCode(SqlTypes.JSON) @Column(columnDefinition = "jsonb")
     private Map<String, Object> shippingMeta;
+
+    private String cancelReason;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItemJpaEntity> items;

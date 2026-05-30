@@ -5,5 +5,6 @@ package fit.iuh.kttkpm_nhom15_be.orders.application.commands;
  */
 public record CancelOrderCommand(
   String orderId,
+  String userId,
   String reason
 ) {}

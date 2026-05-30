@@ -20,6 +20,7 @@ public class PlaceOrderCommand {
     // Thông tin giao nhận
     private String shipFullName;
     private String shipPhone;
+    private String shipEmail;
     private String shipAddress;
     private String shipCity;
     private String shipDistrict;

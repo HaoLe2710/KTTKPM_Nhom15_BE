@@ -115,6 +115,7 @@ public class PlaceOrderUseCase {
       .stockDeducted(true)
       .shipFullName(command.getShipFullName())
       .shipPhone(command.getShipPhone())
+      .shipEmail(command.getShipEmail())
       .shipAddress(command.getShipAddress())
       .shipCity(command.getShipCity())
       .shipDistrict(command.getShipDistrict())
@@ -142,7 +143,24 @@ public class PlaceOrderUseCase {
       savedOrder.getId(),
       savedOrder.getOrderNo(),
       savedOrder.getUserId(),
-      savedOrder.getTotalAmount()
+      command.getShipEmail(),
+      command.getShipFullName(),
+      command.getShipPhone(),
+      formatShippingAddress(command),
+      command.getPaymentMethod() != null ? command.getPaymentMethod().name() : "",
+      savedOrder.getSubtotalAmount(),
+      savedOrder.getDiscountAmount(),
+      savedOrder.getShippingFee(),
+      savedOrder.getTotalAmount(),
+      orderItems.stream()
+        .map(item -> new OrderPlacedEvent.Item(
+          item.getName(),
+          item.getSku(),
+          item.getQuantity(),
+          item.getUnitPrice(),
+          item.getLineTotal()
+        ))
+        .toList()
     ));
     eventPublisher.publishEvent(new ProductSalesChangedEvent(
       orderItems.stream()
@@ -220,5 +238,16 @@ public class PlaceOrderUseCase {
 
   private String generateOrderNo() {
     return "ORD-" + System.currentTimeMillis();
+  }
+
+  private String formatShippingAddress(PlaceOrderCommand command) {
+    return List.of(
+        command.getShipAddress(),
+        command.getShipWard(),
+        command.getShipDistrict(),
+        command.getShipCity()
+      ).stream()
+      .filter(value -> value != null && !value.isBlank())
+      .collect(Collectors.joining(", "));
   }
 }

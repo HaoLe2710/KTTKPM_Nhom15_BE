@@ -11,6 +11,11 @@ public record OrderCancelledEvent(
   String orderId,
   String orderNo,
   String userId,
+  String recipientEmail,
+  String recipientName,
+  String recipientPhone,
+  String shippingAddress,
+  String paymentMethod,
   BigDecimal totalAmount,
   String reason
 ) {}

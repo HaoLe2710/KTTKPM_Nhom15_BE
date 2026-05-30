@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.payments.application.usecases;
 
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.Order;
+import fit.iuh.kttkpm_nhom15_be.orders.domain.models.OrderStatus;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.repositories.OrderRepository;
 import fit.iuh.kttkpm_nhom15_be.payments.application.commands.CreatePaymentCommand;
 import fit.iuh.kttkpm_nhom15_be.payments.application.dto.PaymentInitializationResult;
@@ -38,6 +39,10 @@ public class CreatePaymentUseCase {
 
     @Transactional
     public PaymentTransactionResponse execute(Order order, String clientIp) {
+        if (order.getStatus() == OrderStatus.CANCELLED) {
+            throw new ApiValidationException("Cannot create payment for a cancelled order.");
+        }
+
         PaymentTransaction existingTransaction = paymentTransactionRepository.findByOrderId(order.getId()).orElse(null);
         if (existingTransaction != null) {
             return PaymentTransactionResponse.from(existingTransaction, order.getPaymentStatus());

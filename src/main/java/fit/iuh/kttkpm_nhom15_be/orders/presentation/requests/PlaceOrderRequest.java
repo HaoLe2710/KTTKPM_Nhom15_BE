@@ -3,6 +3,7 @@ package fit.iuh.kttkpm_nhom15_be.orders.presentation.requests;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.ShippingMode;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.ShippingProvider;
 import fit.iuh.kttkpm_nhom15_be.payments.domain.models.PaymentMethod;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -28,6 +29,10 @@ public class PlaceOrderRequest {
 
   @NotBlank(message = "Số điện thoại không được để trống")
   private String shipPhone;
+
+  @NotBlank(message = "Email nguoi nhan khong duoc de trong")
+  @Email(message = "Email nguoi nhan khong hop le")
+  private String shipEmail;
 
   @NotBlank(message = "Địa chỉ không được để trống")
   private String shipAddress;

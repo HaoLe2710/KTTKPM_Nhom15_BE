@@ -1,6 +1,7 @@
 package fit.iuh.kttkpm_nhom15_be.payments.application.usecases;
 
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.Order;
+import fit.iuh.kttkpm_nhom15_be.orders.domain.models.OrderStatus;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.models.PaymentStatus;
 import fit.iuh.kttkpm_nhom15_be.orders.domain.repositories.OrderRepository;
 import fit.iuh.kttkpm_nhom15_be.payments.application.dto.PaymentStatusResponse;
@@ -148,6 +149,10 @@ public class HandlePaymentCallbackUseCase {
 
         if (!amountMatches(paymentTransaction.getAmount(), paidAmount)) {
             throw new ApiValidationException("Payment amount does not match the order total.");
+        }
+
+        if (order.getStatus() == OrderStatus.CANCELLED && newStatus == PaymentTxnStatus.SUCCESS) {
+            throw new ApiValidationException("Cannot confirm payment for a cancelled order.");
         }
 
         if (paymentTransaction.getStatus() == PaymentTxnStatus.SUCCESS) {

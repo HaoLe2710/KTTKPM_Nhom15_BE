@@ -185,17 +185,18 @@ class OrderControllerWebMvcTest {
 
         mockMvc.perform(post("/api/v1/orders")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of(
-                        "userId", "user-1",
-                        "shipFullName", "Nguyen Van A",
-                        "shipPhone", "0901234567",
-                        "shipAddress", "123 Lê Lợi",
-                        "shipCity", "Ho Chi Minh",
-                        "shipDistrict", "District 1",
-                        "shipWard", "Ben Nghe",
-                        "shippingMode", "STANDARD",
-                        "shippingFee", 30000,
-                        "paymentMethod", "COD"
+                .content(objectMapper.writeValueAsString(Map.ofEntries(
+                        Map.entry("userId", "user-1"),
+                        Map.entry("shipFullName", "Nguyen Van A"),
+                        Map.entry("shipPhone", "0901234567"),
+                        Map.entry("shipEmail", "customer@example.com"),
+                        Map.entry("shipAddress", "123 Lê Lợi"),
+                        Map.entry("shipCity", "Ho Chi Minh"),
+                        Map.entry("shipDistrict", "District 1"),
+                        Map.entry("shipWard", "Ben Nghe"),
+                        Map.entry("shippingMode", "STANDARD"),
+                        Map.entry("shippingFee", 30000),
+                        Map.entry("paymentMethod", "COD")
                 ))))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.success").value(true))
@@ -213,7 +214,10 @@ class OrderControllerWebMvcTest {
 
         mockMvc.perform(post("/api/v1/orders/order-404/cancel")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(Map.of("reason", "Khách hàng muốn hủy"))))
+                .content(objectMapper.writeValueAsString(Map.of(
+                    "userId", "user-1",
+                    "reason", "Khách hàng muốn hủy"
+                ))))
             .andExpect(status().isNotFound())
             .andExpect(jsonPath("$.success").value(false))
             .andExpect(jsonPath("$.code").value("ORDER_NOT_FOUND"))
