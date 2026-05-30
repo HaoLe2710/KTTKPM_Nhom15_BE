@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.ApiSuccessResponse;
 import fit.iuh.kttkpm_nhom15_be.shared.presentation.responses.MessageResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -58,7 +59,7 @@ public class ApiSuccessResponseAdvice implements ResponseBodyAdvice<Object> {
     );
 
     if (StringHttpMessageConverter.class.isAssignableFrom(selectedConverterType)) {
-      response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
+      response.getHeaders().setContentType(new MediaType("application", "json", StandardCharsets.UTF_8));
       return writeAsJson(envelope);
     }
 

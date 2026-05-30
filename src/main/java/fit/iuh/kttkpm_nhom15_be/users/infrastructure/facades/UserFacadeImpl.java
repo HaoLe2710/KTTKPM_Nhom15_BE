@@ -33,6 +33,11 @@ public class UserFacadeImpl implements UserFacade {
     }
 
     @Override
+    public Optional<User> findById(String userId) {
+        return userRepository.findById(userId);
+    }
+
+    @Override
     public Optional<User> findByIdentifier(String identifier) {
         if (identifier == null || identifier.isBlank()) {
             return Optional.empty();

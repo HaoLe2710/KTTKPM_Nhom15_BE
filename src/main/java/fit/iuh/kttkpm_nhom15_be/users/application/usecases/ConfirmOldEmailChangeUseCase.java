@@ -21,7 +21,7 @@ public class ConfirmOldEmailChangeUseCase {
                 .orElseThrow(() -> new UserNotFoundException("Không tìm thấy tài khoản để đổi email."));
 
         if (user.getEmail().equals(newEmail)) {
-            throw new ActionNotAllowedException("Email moi trung voi email hien tai.");
+            throw new ActionNotAllowedException("Email mới trùng với email hiện tại.");
         }
 
         User existingUser = userRepository.findByEmail(newEmail).orElse(null);

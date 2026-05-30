@@ -12,6 +12,7 @@ import fit.iuh.kttkpm_nhom15_be.chat.domain.models.ChatMessage;
 import fit.iuh.kttkpm_nhom15_be.chat.domain.models.ChatRoom;
 import fit.iuh.kttkpm_nhom15_be.chat.domain.repositories.ChatRepository;
 import fit.iuh.kttkpm_nhom15_be.users.application.interfaces.UserFacade;
+import fit.iuh.kttkpm_nhom15_be.users.domain.models.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,15 @@ public class StaffReplyMessageUseCase {
     public MessageDTO execute(SendMessageCommand command) {
         payloadSupport.validate(command);
 
-        if (!userFacade.isUserActive(command.senderId())) {
+        var staff = userFacade.findById(command.senderId())
+                .orElseThrow(() -> new InactiveChatUserException(command.senderId()));
+
+        if (!staff.isActive()) {
             throw new InactiveChatUserException(command.senderId());
+        }
+
+        if (staff.getRole() != UserRole.STAFF && staff.getRole() != UserRole.ADMIN) {
+            throw new UnauthorizedChatAccessException(command.roomId(), command.senderId());
         }
 
         ChatRoom room = chatRepository.findRoomById(command.roomId())
